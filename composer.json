@@ -13,7 +13,8 @@
         }
     },
     "require": {
-        "php": "^7.1"
+        "php": "^7.1",
+        "mf/collections-php": "^3.5"
     },
     "require-dev": {
         "lmc/coding-standard": "^1.1",
