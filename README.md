@@ -142,7 +142,7 @@ composer all
     $stmt = $connection->prepare($sql);
     $stmt->execute($filters->getPreparedValues());
     ```
-    - (possibly remove escapes)
+    - either remove escapes or rename them to escapers
 - allow Tuples in values
     - request with Tuple
     ```http request
