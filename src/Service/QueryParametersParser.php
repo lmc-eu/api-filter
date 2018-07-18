@@ -16,12 +16,12 @@ class QueryParametersParser
     {
         $filters = Seq::init(function () use ($queryParameters) {
             foreach ($queryParameters as $column => $values) {
-                if (!is_array($values)) {
-                    yield Tuple::of($column, 'eq', new Value($values));
-                } else {
-                    foreach ($values as $filter => $value) {
-                        yield Tuple::of($column, mb_strtolower($filter), new Value($value));
-                    }
+                $values = is_array($values)
+                    ? $values
+                    : ['eq' => $values];
+
+                foreach ($values as $filter => $value) {
+                    yield Tuple::of($column, $filter, new Value($value));
                 }
             }
         })
@@ -35,7 +35,7 @@ class QueryParametersParser
 
     private function createFilter(string $column, string $filter, Value $value): FilterInterface
     {
-        switch ($filter) {
+        switch (mb_strtolower($filter)) {
             case 'eq':
                 return new FilterWithOperator($column, $value, '=');
             case 'gt':
