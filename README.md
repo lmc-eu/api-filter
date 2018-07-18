@@ -1,11 +1,11 @@
-Api Filter
+API Filter
 ==========
 
 [![Latest Stable Version](https://img.shields.io/packagist/v/lmc/api-filter.svg)](https://packagist.org/packages/lmc/api-filter)
 [![Build Status](https://travis-ci.org/lmc-eu/api-filter.svg?branch=master)](https://travis-ci.org/lmc-eu/api-filter)
 [![Coverage Status](https://coveralls.io/repos/github/lmc-eu/api-filter/badge.svg?branch=master)](https://coveralls.io/github/lmc-eu/api-filter?branch=master)
 
-Parser/builder for filters from api query parameters.
+Parser/builder for filters from API query parameters.
 
 It is just a parser/builder for filters, it is not a place for business logic so it should be wrapped by your class, if you want to be more strict about filters.
 Same if you want different settings per entity/table, it should be done by specific wrapper around this library.
@@ -24,7 +24,7 @@ composer require lmc/api-filter
 GET http://host/endpoint/?field[eq]=value
 GET http://host/endpoint/?field=value
 ```
-_All examples ☝️ are equal_
+_All examples ☝ are equal_
 
 ### GT (>)
 ```http request
@@ -50,7 +50,7 @@ GET http://host/endpoint/?field[lt]=value
 ```http request
 GET http://host/endpoint/?type[in][]=one&type[in][]=two
 ```
-_☝️ is not implemented yet_
+_☝ is not implemented yet_
 
 
 ## Usage

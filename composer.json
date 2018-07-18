@@ -1,6 +1,6 @@
 {
     "name": "lmc/api-filter",
-    "description": "Parser/builder for filters from api query parameters.",
+    "description": "Parser/builder for filters from API query parameters.",
     "type": "library",
     "autoload": {
         "psr-4": {
