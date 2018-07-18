@@ -7,50 +7,14 @@ API Filter
 
 Parser/builder for filters from API query parameters.
 
-It is just a parser/builder for filters, it is not a place for business logic so it should be wrapped by your class, if you want to be more strict about filters.
-Same if you want different settings per entity/table, it should be done by specific wrapper around this library.
+It is just a parser/builder for filters, it is not a place for business logic so it should be wrapped by your class if you want to be more strict about filters.
+Same if you want different settings per entity/table, it should be done by a specific wrapper around this library.
 
 
 ## Installation
 ```bash
 composer require lmc/api-filter
 ```
-
-
-## Filters
-
-### EQ (=)
-```http request
-GET http://host/endpoint/?field[eq]=value
-GET http://host/endpoint/?field=value
-```
-_All examples ☝ are equal_
-
-### GT (>)
-```http request
-GET http://host/endpoint/?field[gt]=value
-```
-
-### GTE (>=)
-```http request
-GET http://host/endpoint/?field[gte]=value
-```
-
-### LT (<)
-```http request
-GET http://host/endpoint/?field[lt]=value
-```
-
-### LTE (<=)
-```http request
-GET http://host/endpoint/?field[lt]=value
-```
-
-### IN
-```http request
-GET http://host/endpoint/?type[in][]=one&type[in][]=two
-```
-_☝ is not implemented yet_
 
 
 ## Usage
@@ -63,14 +27,24 @@ GET http://host/endpoint/?field=value
 ```php
 // in DI container/factory
 $apiFilter = new ApiFilter();
-$apiFilter->registerApplicator(...);  // optional
-$apiFilter->registerEscape(...);      // optional
+$apiFilter->registerApplicator(...);  // optional, when you want to use non-standard implementation
+$apiFilter->registerEscape(...);      // optional, when you want to use non-standard implementation
 
 // in service/controller/...
 $filters = $apiFiter->parseFilters($request->query->all());
+
+// [
+//     0 => Lmc\ApiFilter\Filter\FilterWithOperator {
+//         private $operator => '='
+//         private $column   => 'field'
+//         private $value    => Lmc\ApiFilter\Entity\Value {
+//             private $value = 'value'
+//         }
+//     }
+// ]
 ```
 
-### With basic `SQL Applicator`
+### With `SQL Applicator`
 ```php
 // in Model/EntityRepository
 $sql = 'SELECT * FROM table';
@@ -121,6 +95,42 @@ foreach ($filters as $filter) {
     // 1. SELECT * FROM person WHERE 1 AND type IN ('student', 'admin') AND name = 'Tom' 
 }
 ```
+
+
+## Supported filters
+
+### Equals - EQ (=)
+```http request
+GET http://host/endpoint/?field[eq]=value
+GET http://host/endpoint/?field=value
+```
+_Both examples ☝ are equal_
+
+### Greater Than - GT (>)
+```http request
+GET http://host/endpoint/?field[gt]=value
+```
+
+### Greater Than Or Equals - GTE (>=)
+```http request
+GET http://host/endpoint/?field[gte]=value
+```
+
+### Lower Than - LT (<)
+```http request
+GET http://host/endpoint/?field[lt]=value
+```
+
+### Lower Than Or Equals - LTE (<=)
+```http request
+GET http://host/endpoint/?field[lt]=value
+```
+
+### IN
+```http request
+GET http://host/endpoint/?type[in][]=one&type[in][]=two
+```
+_☝ is not implemented yet_
 
 
 ## Development
