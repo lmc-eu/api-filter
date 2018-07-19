@@ -1,6 +1,6 @@
 {
     "name": "lmc/api-filter",
-    "description": "Parser/builder for filters from api query parameters.",
+    "description": "Parser/builder for filters from API query parameters.",
     "type": "library",
     "autoload": {
         "psr-4": {
@@ -13,7 +13,8 @@
         }
     },
     "require": {
-        "php": "^7.1"
+        "php": "^7.1",
+        "mf/collections-php": "^3.5"
     },
     "require-dev": {
         "lmc/coding-standard": "^1.1",
