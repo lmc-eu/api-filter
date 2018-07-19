@@ -57,6 +57,7 @@ foreach ($filters as $filter) {
 ```
 
 ### With `Doctrine Applicator`
+- requires `doctrine/orm` installed
 _not implemented yet_
 ```php
 // in EntityRepository/Model
