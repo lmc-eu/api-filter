@@ -46,4 +46,17 @@ abstract class AbstractApplicator implements ApplicatorInterface
     {
         return $this->createColumnPlaceholder($prefix, $filter);
     }
+
+    protected function getColumnMultiPlaceholders(string $prefix, FilterInterface $filter): string
+    {
+        $values = $filter->getValue()->getValue();
+
+        $placeholders = [];
+        $i = 0;
+        foreach ($values as $value) {
+            $placeholders[] = $this->createColumnPlaceholder($prefix, $filter, (string) $i++);
+        }
+
+        return implode(', ', $placeholders);
+    }
 }
