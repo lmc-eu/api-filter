@@ -28,7 +28,6 @@ GET http://host/endpoint/?field=value
 // in DI container/factory
 $apiFilter = new ApiFilter();
 $apiFilter->registerApplicator(...);  // optional, when you want to use non-standard implementation
-$apiFilter->registerEscape(...);      // optional, when you want to use non-standard implementation
 
 // in service/controller/...
 $filters = $apiFiter->parseFilters($request->query->all());
@@ -167,13 +166,6 @@ composer all
 ```
 
 ## Todo
-- add prepared statements into `SqlApplicator`
-    ```php
-    $sql = $apiFilter->applyFilters($filters, $sql);
-    $stmt = $connection->prepare($sql);
-    $stmt->execute($filters->getPreparedValues());
-    ```
-    - either remove escapes or rename them to escapers
 - allow Tuples in values
     - request with Tuple
     ```http request
