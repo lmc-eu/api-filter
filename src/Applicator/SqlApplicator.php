@@ -5,7 +5,7 @@ namespace Lmc\ApiFilter\Applicator;
 use Lmc\ApiFilter\Entity\Filterable;
 use Lmc\ApiFilter\Filter\FilterInterface;
 
-class ApplicatorSql extends AbstractApplicator
+class SqlApplicator extends AbstractApplicator
 {
     public function supports(Filterable $filterable): bool
     {

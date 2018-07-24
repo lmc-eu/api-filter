@@ -3,7 +3,7 @@
 namespace Lmc\ApiFilter\Service;
 
 use Lmc\ApiFilter\AbstractTestCase;
-use Lmc\ApiFilter\Applicator\ApplicatorSql;
+use Lmc\ApiFilter\Applicator\SqlApplicator;
 use Lmc\ApiFilter\Entity\Filterable;
 use Lmc\ApiFilter\Entity\Value;
 use Lmc\ApiFilter\Filter\FilterInterface;
@@ -28,7 +28,7 @@ class FilterApplicatorTest extends AbstractTestCase
      */
     public function shouldApplyFilter(FilterInterface $filter, string $filterable, string $expected): void
     {
-        $this->filterApplicator->registerApplicator(new ApplicatorSql(), 1);
+        $this->filterApplicator->registerApplicator(new SqlApplicator(), 1);
 
         $result = $this->filterApplicator->apply($filter, new Filterable($filterable))->getValue();
 
@@ -63,7 +63,7 @@ class FilterApplicatorTest extends AbstractTestCase
      */
     public function shouldApplyAllFilters(array $filters, string $filterable, string $expected): void
     {
-        $this->filterApplicator->registerApplicator(new ApplicatorSql(), 1);
+        $this->filterApplicator->registerApplicator(new SqlApplicator(), 1);
 
         $result = $this->filterApplicator->applyAll(Filters::from($filters), new Filterable($filterable))->getValue();
 
