@@ -30,7 +30,7 @@ $apiFilter = new ApiFilter();
 $apiFilter->registerApplicator(...);  // optional, when you want to use non-standard implementation
 
 // in service/controller/...
-$filters = $apiFiter->parseFilters($request->query->all());
+$filters = $apiFilter->parseFilters($request->query->all());
 
 // [
 //     0 => Lmc\ApiFilter\Filter\FilterWithOperator {
@@ -71,16 +71,37 @@ $stmt = $connection->prepare($apiFilter->applyAll($filters, $sql)); // SELECT * 
 $stmt->execute($apiFilter->getPreparedValues($filters, $sql));      // ['field_eq' => 'value']
 ```
 
-### With `Doctrine Applicator`
-_not implemented yet_
+### With Doctrine `Query Builder Applicator`
+- requires `doctrine/orm` installed
+- applying filters uses **cloned** `QueryBuilder` -> original `QueryBuilder` is **untouched**
 ```php
 // in EntityRepository/Model
-$apiFilter->applyAll($filters, $queryBuilder)
+$queryBuilder = $this->createQueryBuilder('alias');
+$queryBuilder = $apiFilter->applyAll($filters, $queryBuilder);
 
 // or one by one
 foreach ($filters as $filter) {
     $queryBuilder = $apiFilter->applyFilter($filter, $queryBuilder);
 }
+
+// get prepared values for applied filters
+$preparedValues = $apiFilter->getPreparedValues($filters, $queryBuilder); // ['field_eq' => 'value']
+
+// get query
+$queryBuilder
+    ->setParameters($preparedValues)
+    ->getQuery();
+```
+
+#### Shorter example (_same as ☝_)
+```php
+// in EntityRepository/Model
+$queryBuilder = $this->createQueryBuilder('alias');
+
+$apiFilter
+    ->applyAll($filters, $queryBuilder)                                     // query builder with applied filters
+    ->setParameters($apiFilter->getPreparedValues($filters, $queryBuilder)) // ['field_eq' => 'value']
+    ->getQuery();
 ```
 
 ## Supported filters
@@ -173,17 +194,7 @@ composer all
     ```
 - add filters:
     - `in`
-- add applicator:
-    - `Doctrine\QueryBuilder`
-        - prepared:
-        ```php
-        $queryBuilder = $apiFilter->applyFilters($filters, queryBuilder);
-        $queryBuilder->setParameters($filters->getPreparedValues());
-        ```
-    - for "special" applicators:
-        - if class exists
-        - suggest in composer
-    - remove `SqlApplicator` from `ApiFilter` and mark it as "naive implementation"
+- remove `SqlApplicator` from `ApiFilter` and mark it as "naive implementation"
 - defineAllowed: (_this should be on DI level_)
     - Fields (columns)
     - Filters

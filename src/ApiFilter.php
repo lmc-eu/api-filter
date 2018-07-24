@@ -3,6 +3,7 @@
 namespace Lmc\ApiFilter;
 
 use Lmc\ApiFilter\Applicator\ApplicatorInterface;
+use Lmc\ApiFilter\Applicator\QueryBuilderApplicator;
 use Lmc\ApiFilter\Applicator\SqlApplicator;
 use Lmc\ApiFilter\Constant\Priority;
 use Lmc\ApiFilter\Entity\Filterable;
@@ -23,6 +24,9 @@ class ApiFilter
         $this->parser = new QueryParametersParser();
         $this->applicator = new FilterApplicator();
 
+        if (class_exists('Doctrine\ORM\QueryBuilder')) {
+            $this->registerApplicator(new QueryBuilderApplicator(), Priority::MEDIUM);
+        }
         $this->registerApplicator(new SqlApplicator(), Priority::MEDIUM);
     }
 
