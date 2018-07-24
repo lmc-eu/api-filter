@@ -39,6 +39,30 @@ class SqlApplicatorTest extends AbstractTestCase
 
         $result = $this->sqlApplicator->applyTo($filter, $filterable);
 
-        $this->assertSame('SELECT * FROM table WHERE 1 AND col = val', $result->getValue());
+        $this->assertSame('SELECT * FROM table WHERE 1 AND col = :col_eq', $result->getValue());
+    }
+
+    /**
+     * @test
+     */
+    public function shouldPrepareValues(): void
+    {
+        $filter = new FilterWithOperator('col', new Value('val'), '=', 'eq');
+
+        $result = $this->sqlApplicator->getPreparedValue($filter);
+
+        $this->assertSame(['col_eq' => 'val'], $result);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldPrepareMultiValue(): void
+    {
+        $filter = new FilterWithOperator('col', new Value([1, 2]), '=', 'eq');
+
+        $result = $this->sqlApplicator->getPreparedValue($filter);
+
+        $this->assertSame(['col_eq_0' => 1, 'col_eq_1' => 2], $result);
     }
 }

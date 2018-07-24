@@ -43,4 +43,14 @@ class Filters implements FiltersInterface
     {
         yield from $this->filters;
     }
+
+    public function getPreparedValues(ApplicatorInterface $applicator): array
+    {
+        $preparedValues = [];
+        foreach ($this->filters as $filter) {
+            $preparedValues += $applicator->getPreparedValue($filter);
+        }
+
+        return $preparedValues;
+    }
 }

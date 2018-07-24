@@ -20,4 +20,17 @@ interface ApplicatorInterface
     public function applyTo(FilterInterface $filter, Filterable $filterable): Filterable;
 
     public function setEscape(EscapeInterface $escape): void;
+
+    /**
+     * Prepared values for applied filter
+     *
+     * @example
+     * $filterWithOperator = new FilterWithOperator('title', 'foo', '=', 'eq');
+     * $preparedValues = $simpleSqlApplicator->getPreparedValue($filter);  // ['title_eq' => 'foo']
+     *
+     * @example
+     * $filter = new FilterIn('id', [1, 2]);
+     * $preparedValues = $simpleSqlApplicator->getPreparedValue($filter);  // ['id_in_0' => 1, 'id_in_1' => 2]
+     */
+    public function getPreparedValue(FilterInterface $filter): array;
 }
