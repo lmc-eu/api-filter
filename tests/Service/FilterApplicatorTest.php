@@ -40,17 +40,17 @@ class FilterApplicatorTest extends AbstractTestCase
         return [
             // filter, filterable, expected
             'eq' => [
-                new FilterWithOperator('col', new Value('val'), '='),
+                new FilterWithOperator('col', new Value('val'), '=', 'eq'),
                 'SELECT * FROM table WHERE public = 1',
                 'SELECT * FROM table WHERE public = 1 AND col = val',
             ],
             'gt' => [
-                new FilterWithOperator('col', new Value('val'), '>'),
+                new FilterWithOperator('col', new Value('val'), '>', 'gt'),
                 'SELECT * FROM table WHERE public = 1',
                 'SELECT * FROM table WHERE public = 1 AND col > val',
             ],
             'gte' => [
-                new FilterWithOperator('col', new Value(10), '>='),
+                new FilterWithOperator('col', new Value(10), '>=', 'gte'),
                 'SELECT * FROM table WHERE public = 1',
                 'SELECT * FROM table WHERE public = 1 AND col >= 10',
             ],
@@ -76,11 +76,11 @@ class FilterApplicatorTest extends AbstractTestCase
             // filters, filterable, expected
             'between' => [
                 [
-                    new FilterWithOperator('column', new Value('max'), '>'),
-                    new FilterWithOperator('column', new Value('min'), '<'),
+                    new FilterWithOperator('column', new Value('min'), '>', 'gt'),
+                    new FilterWithOperator('column', new Value('max'), '<', 'lt'),
                 ],
                 'SELECT * FROM table',
-                'SELECT * FROM table WHERE 1 AND column > max AND column < min',
+                'SELECT * FROM table WHERE 1 AND column > min AND column < max',
             ],
         ];
     }
@@ -91,7 +91,7 @@ class FilterApplicatorTest extends AbstractTestCase
     public function shouldThrowInvalidArgumentExceptionOnApplyFilterOnNotSupportedFilterable(): void
     {
         $filterable = new Filterable('string filterable');
-        $filter = new FilterWithOperator('any', new Value('filter'), 'any');
+        $filter = new FilterWithOperator('any', new Value('filter'), 'any', 'any');
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Unsupported filterable "\'string filterable\'".');

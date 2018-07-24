@@ -35,6 +35,7 @@ $filters = $apiFiter->parseFilters($request->query->all());
 
 // [
 //     0 => Lmc\ApiFilter\Filter\FilterWithOperator {
+//         private $title    => 'eq'
 //         private $operator => '='
 //         private $column   => 'field'
 //         private $value    => Lmc\ApiFilter\Entity\Value {

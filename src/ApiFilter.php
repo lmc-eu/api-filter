@@ -41,7 +41,19 @@ class ApiFilter
      *
      * @example
      * With Symfony
-     * $filters = $apiFilter->parseFilters($request->query->all())
+     * $queryParameters = $request->query->all();   // ['field' => 'value']
+     * $filters = $apiFilter->parseFilters($queryParameters)
+     *
+     * // [
+     * //     0 => Lmc\ApiFilter\Filter\FilterWithOperator {
+     * //         private $title    => 'eq'
+     * //         private $operator => '='
+     * //         private $column   => 'field'
+     * //         private $value    => Lmc\ApiFilter\Entity\Value {
+     * //             private $value = 'value'
+     * //         }
+     * //     }
+     * // ]
      */
     public function parseFilters(array $queryParameters): FiltersInterface
     {

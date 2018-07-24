@@ -11,4 +11,6 @@ interface FilterInterface
     public function getOperator(): string;
 
     public function getValue(): Value;
+
+    public function getTitle(): string;
 }
