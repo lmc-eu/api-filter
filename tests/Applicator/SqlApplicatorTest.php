@@ -7,14 +7,14 @@ use Lmc\ApiFilter\Entity\Filterable;
 use Lmc\ApiFilter\Entity\Value;
 use Lmc\ApiFilter\Filter\FilterWithOperator;
 
-class ApplicatorSqlTest extends AbstractTestCase
+class SqlApplicatorTest extends AbstractTestCase
 {
-    /** @var ApplicatorSql */
+    /** @var SqlApplicator */
     private $sqlApplicator;
 
     protected function setUp(): void
     {
-        $this->sqlApplicator = new ApplicatorSql();
+        $this->sqlApplicator = new SqlApplicator();
     }
 
     /**

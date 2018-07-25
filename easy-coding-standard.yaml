@@ -4,3 +4,7 @@ imports:
 services:
     PhpCsFixer\Fixer\PhpUnit\PhpUnitTestAnnotationFixer:
         style: annotation
+
+    Symplify\CodingStandard\Sniffs\Naming\ClassNameSuffixByParentSniff:
+        extraParentTypesToSuffixes:
+            '*ApplicatorInterface': 'Applicator'
