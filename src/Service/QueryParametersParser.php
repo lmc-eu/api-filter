@@ -37,15 +37,15 @@ class QueryParametersParser
     {
         switch (mb_strtolower($filter)) {
             case 'eq':
-                return new FilterWithOperator($column, $value, '=');
+                return new FilterWithOperator($column, $value, '=', 'eq');
             case 'gt':
-                return new FilterWithOperator($column, $value, '>');
+                return new FilterWithOperator($column, $value, '>', 'gt');
             case 'lt':
-                return new FilterWithOperator($column, $value, '<');
+                return new FilterWithOperator($column, $value, '<', 'lt');
             case 'lte':
-                return new FilterWithOperator($column, $value, '<=');
+                return new FilterWithOperator($column, $value, '<=', 'lt');
             case 'gte':
-                return new FilterWithOperator($column, $value, '>=');
+                return new FilterWithOperator($column, $value, '>=', 'gte');
         }
 
         throw new \InvalidArgumentException(

@@ -9,9 +9,9 @@ class FilterWithOperator extends AbstractFilter
     /** @var string */
     private $operator;
 
-    public function __construct(string $column, Value $value, string $operator)
+    public function __construct(string $column, Value $value, string $operator, string $title)
     {
-        parent::__construct($column, $value);
+        parent::__construct($title, $column, $value);
         $this->operator = $operator;
     }
 

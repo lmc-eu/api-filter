@@ -34,7 +34,7 @@ class SqlApplicatorTest extends AbstractTestCase
      */
     public function shouldApplyFilterWithOperator(): void
     {
-        $filter = new FilterWithOperator('col', new Value('val'), '=');
+        $filter = new FilterWithOperator('col', new Value('val'), '=', 'eq');
         $filterable = new Filterable('SELECT * FROM table');
 
         $result = $this->sqlApplicator->applyTo($filter, $filterable);

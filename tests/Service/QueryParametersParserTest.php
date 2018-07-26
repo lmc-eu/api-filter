@@ -37,39 +37,39 @@ class QueryParametersParserTest extends AbstractTestCase
             'empty' => [[], []],
             'simple eq' => [
                 ['title' => 'foo'],
-                [new FilterWithOperator('title', new Value('foo'), '=')],
+                [new FilterWithOperator('title', new Value('foo'), '=', 'eq')],
             ],
             'two cols eq' => [
                 ['title' => 'foo', 'value' => 'bar'],
                 [
-                    new FilterWithOperator('title', new Value('foo'), '='),
-                    new FilterWithOperator('value', new Value('bar'), '='),
+                    new FilterWithOperator('title', new Value('foo'), '=', 'eq'),
+                    new FilterWithOperator('value', new Value('bar'), '=', 'eq'),
                 ],
             ],
             'eq by array' => [
                 ['title' => ['eq' => 'foo']],
-                [new FilterWithOperator('title', new Value('foo'), '=')],
+                [new FilterWithOperator('title', new Value('foo'), '=', 'eq')],
             ],
             'one col more filters' => [
                 ['title' => ['eq' => 'foo', 'gt' => 'abc']],
                 [
-                    new FilterWithOperator('title', new Value('foo'), '='),
-                    new FilterWithOperator('title', new Value('abc'), '>'),
+                    new FilterWithOperator('title', new Value('foo'), '=', 'eq'),
+                    new FilterWithOperator('title', new Value('abc'), '>', 'gt'),
                 ],
             ],
             'one col more filters + other col' => [
                 ['title' => ['gt' => '0', 'lt' => '10'], 'value' => 'foo'],
                 [
-                    new FilterWithOperator('title', new Value('0'), '>'),
-                    new FilterWithOperator('title', new Value('10'), '<'),
-                    new FilterWithOperator('value', new Value('foo'), '='),
+                    new FilterWithOperator('title', new Value('0'), '>', 'gt'),
+                    new FilterWithOperator('title', new Value('10'), '<', 'lt'),
+                    new FilterWithOperator('value', new Value('foo'), '=', 'eq'),
                 ],
             ],
             'one col min max' => [
                 ['title' => ['gte' => '0', 'lte' => '10']],
                 [
-                    new FilterWithOperator('title', new Value('0'), '>='),
-                    new FilterWithOperator('title', new Value('10'), '<='),
+                    new FilterWithOperator('title', new Value('0'), '>=', 'gte'),
+                    new FilterWithOperator('title', new Value('10'), '<=', 'lt'),
                 ],
             ],
         ];
