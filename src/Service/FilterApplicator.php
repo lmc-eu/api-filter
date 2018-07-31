@@ -6,20 +6,21 @@ use Lmc\ApiFilter\Applicator\ApplicatorInterface;
 use Lmc\ApiFilter\Entity\Filterable;
 use Lmc\ApiFilter\Filter\FilterInterface;
 use Lmc\ApiFilter\Filters\FiltersInterface;
+use MF\Collection\Mutable\Generic\PrioritizedCollection;
 
 class FilterApplicator
 {
-    /** @var Storage|ApplicatorInterface[] */
+    /** @var PrioritizedCollection|ApplicatorInterface[] */
     private $applicators;
 
     public function __construct()
     {
-        $this->applicators = new Storage(ApplicatorInterface::class);
+        $this->applicators = new PrioritizedCollection(ApplicatorInterface::class);
     }
 
     public function registerApplicator(ApplicatorInterface $applicator, int $priority): void
     {
-        $this->applicators->addItem($applicator, $priority);
+        $this->applicators->add($applicator, $priority);
     }
 
     public function apply(FilterInterface $filter, Filterable $filterable): Filterable
