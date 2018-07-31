@@ -47,8 +47,20 @@ class FilterApplicator
         );
     }
 
+    public function getPreparedValue(FilterInterface $filter, Filterable $filterable): array
+    {
+        return $this
+            ->findApplicatorFor($filterable)
+            ->getPreparedValue($filter);
+    }
+
     public function applyAll(FiltersInterface $filters, Filterable $filterable): Filterable
     {
         return $filters->applyAllTo($this->findApplicatorFor($filterable), $filterable);
+    }
+
+    public function getPreparedValues(FiltersInterface $filters, Filterable $filterable): array
+    {
+        return $filters->getPreparedValues($this->findApplicatorFor($filterable));
     }
 }

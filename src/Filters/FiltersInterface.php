@@ -11,4 +11,6 @@ interface FiltersInterface extends \IteratorAggregate
      * Apply all filters to given filterable
      */
     public function applyAllTo(ApplicatorInterface $applicator, Filterable $filterable): Filterable;
+
+    public function getPreparedValues(ApplicatorInterface $applicator): array;
 }

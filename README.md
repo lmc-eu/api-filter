@@ -49,12 +49,27 @@ $filters = $apiFiter->parseFilters($request->query->all());
 ```php
 // in Model/EntityRepository
 $sql = 'SELECT * FROM table';
-$sql = $apiFilter->applyFilters($filters, $sql);    // "SELECT * FROM table WHERE 1 AND field = 'value'"
+$sql = $apiFilter->applyFilters($filters, $sql); // "SELECT * FROM table WHERE 1 AND field = :field_eq"
 
 // or one by one
 foreach ($filters as $filter) {
     $sql = $apiFilter->applyFilter($filter, $sql);
 }
+
+// get prepared values for applied filters
+$preparedValues = $apiFilter->getPreparedValues($filters, $sql); // ['field_eq' => 'value']
+
+// execute query
+$stmt = $connection->prepare($sql);
+$stmt->execute($preparedValues);
+```
+
+#### Shorter example (_same as ☝_)
+```php
+// in EntityRepository/Model
+$sql = 'SELECT * FROM table';
+$stmt = $connection->prepare($apiFilter->applyAll($filters, $sql)); // SELECT * FROM table WHERE 1 AND field = :field_eq 
+$stmt->execute($apiFilter->getPreparedValues($filters, $sql));      // ['field_eq' => 'value']
 ```
 
 ### With `Doctrine Applicator`
@@ -68,35 +83,6 @@ foreach ($filters as $filter) {
     $queryBuilder = $apiFilter->applyFilter($filter, $queryBuilder);
 }
 ```
-
-### Example
-```http request
-GET http://host/person/?type[in][]=student&type[in][]=admin&name=Tom
-```
-
-```php
-$parameters = $request->query->all();
-// [
-//     "type" => [
-//         "in" => [
-//             0 => "student"
-//             1 => "admin"
-//         ]
-//     ],
-//     "name" => "Tom"
-// ]
-
-$filters = $apiFiter->parseFilters($parameters);
-$sql = 'SELECT * FROM person';
-
-foreach ($filters as $filter) {
-    $sql = $apiFilter->applyFilter($filter, $sql);
-    
-    // 0. SELECT * FROM person WHERE 1 AND type IN ('student', 'admin') 
-    // 1. SELECT * FROM person WHERE 1 AND type IN ('student', 'admin') AND name = 'Tom' 
-}
-```
-
 
 ## Supported filters
 
@@ -133,6 +119,40 @@ GET http://host/endpoint/?type[in][]=one&type[in][]=two
 ```
 _☝ is not implemented yet_
 
+## Examples
+```http request
+GET http://host/person/?type[in][]=student&type[in][]=admin&name=Tom
+```
+
+```php
+$parameters = $request->query->all();
+// [
+//     "type" => [
+//         "in" => [
+//             0 => "student"
+//             1 => "admin"
+//         ]
+//     ],
+//     "name" => "Tom"
+// ]
+
+$filters = $apiFilter->parseFilters($parameters);
+$sql = 'SELECT * FROM person';
+
+foreach ($filters as $filter) {
+    $sql = $apiFilter->applyFilter($filter, $sql);
+    
+    // 0. SELECT * FROM person WHERE 1 AND type IN (:type_in_0, :type_in_1) 
+    // 1. SELECT * FROM person WHERE 1 AND type IN (:type_in_0, :type_in_1) AND name = :name_eq 
+}
+
+$preparedValues = $apiFilter->getPreparedValues($filters, $sql);
+// [
+//     'type_in_0' => 'student',
+//     'type_in_1' => 'admin',
+//     'name_eq'   => 'Tom',
+// ]
+```
 
 ## Development
 
@@ -171,6 +191,7 @@ composer all
     - for "special" applicators:
         - if class exists
         - suggest in composer
+    - remove `SqlApplicator` from `ApiFilter` and mark it as "naive implementation"
 - defineAllowed: (_this should be on DI level_)
     - Fields (columns)
     - Filters
