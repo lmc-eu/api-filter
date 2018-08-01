@@ -18,9 +18,7 @@ class FilterApplicatorTest extends AbstractTestCase
 
     protected function setUp(): void
     {
-        $this->filterApplicator = new FilterApplicator(
-            new EscapeService()
-        );
+        $this->filterApplicator = new FilterApplicator();
     }
 
     /**

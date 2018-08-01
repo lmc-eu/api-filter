@@ -9,14 +9,11 @@ use Lmc\ApiFilter\Filters\FiltersInterface;
 
 class FilterApplicator
 {
-    /** @var EscapeService */
-    private $escapeService;
     /** @var Storage|ApplicatorInterface[] */
     private $applicators;
 
-    public function __construct(EscapeService $escapeService)
+    public function __construct()
     {
-        $this->escapeService = $escapeService;
         $this->applicators = new Storage(ApplicatorInterface::class);
     }
 
@@ -36,8 +33,6 @@ class FilterApplicator
     {
         foreach ($this->applicators as $applicator) {
             if ($applicator->supports($filterable)) {
-                $applicator->setEscape($this->escapeService);
-
                 return $applicator;
             }
         }

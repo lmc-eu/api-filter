@@ -6,12 +6,8 @@ use Lmc\ApiFilter\Applicator\ApplicatorInterface;
 use Lmc\ApiFilter\Applicator\SqlApplicator;
 use Lmc\ApiFilter\Constant\Priority;
 use Lmc\ApiFilter\Entity\Filterable;
-use Lmc\ApiFilter\Escape\EscapeInt;
-use Lmc\ApiFilter\Escape\EscapeInterface;
-use Lmc\ApiFilter\Escape\EscapeString;
 use Lmc\ApiFilter\Filter\FilterInterface;
 use Lmc\ApiFilter\Filters\FiltersInterface;
-use Lmc\ApiFilter\Service\EscapeService;
 use Lmc\ApiFilter\Service\FilterApplicator;
 use Lmc\ApiFilter\Service\QueryParametersParser;
 
@@ -21,19 +17,13 @@ class ApiFilter
     private $parser;
     /** @var FilterApplicator */
     private $applicator;
-    /** @var EscapeService */
-    private $escapeService;
 
     public function __construct()
     {
         $this->parser = new QueryParametersParser();
-        $this->escapeService = new EscapeService();
-        $this->applicator = new FilterApplicator($this->escapeService);
+        $this->applicator = new FilterApplicator();
 
         $this->registerApplicator(new SqlApplicator(), Priority::MEDIUM);
-
-        $this->registerEscape(new EscapeInt(), Priority::MEDIUM);
-        $this->registerEscape(new EscapeString(), Priority::LOW);
     }
 
     /**
@@ -158,17 +148,5 @@ class ApiFilter
     public function registerApplicator(ApplicatorInterface $applicator, int $priority): void
     {
         $this->applicator->registerApplicator($applicator, $priority);
-    }
-
-    /**
-     * Add another escape which will be try to use on values before while applying the filter
-     * First Escape (from the highest priority), which can be applied is applied and no others
-     *
-     * Priority can be any integer value (or use predefined Priority)
-     * @see Priority
-     */
-    public function registerEscape(EscapeInterface $escape, int $priority): void
-    {
-        $this->escapeService->addEscape($escape, $priority);
     }
 }
