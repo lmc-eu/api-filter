@@ -37,7 +37,7 @@ class SqlApplicatorTest extends AbstractTestCase
         $filter = new FilterWithOperator('col', new Value('val'), '=', 'eq');
         $filterable = new Filterable('SELECT * FROM table');
 
-        $result = $this->sqlApplicator->applyTo($filter, $filterable);
+        $result = $this->sqlApplicator->applyFilterWithOperator($filter, $filterable);
 
         $this->assertSame('SELECT * FROM table WHERE 1 AND col = :col_eq', $result->getValue());
     }
