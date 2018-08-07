@@ -5,6 +5,7 @@ namespace Lmc\ApiFilter\Filters;
 use Lmc\ApiFilter\Applicator\ApplicatorInterface;
 use Lmc\ApiFilter\Entity\Filterable;
 use Lmc\ApiFilter\Filter\FilterInterface;
+use Lmc\ApiFilter\Service\FilterApplicator;
 use MF\Collection\Immutable\Generic\IList;
 use MF\Collection\Immutable\Generic\ListCollection;
 
@@ -28,11 +29,11 @@ class Filters implements FiltersInterface
     /**
      * Apply all filters to given filterable
      */
-    public function applyAllTo(ApplicatorInterface $applicator, Filterable $filterable): Filterable
+    public function applyAllTo(Filterable $filterable, FilterApplicator $filterApplicator): Filterable
     {
         return $this->filters->reduce(
-            function (Filterable $filterable, FilterInterface $filter) use ($applicator) {
-                return $applicator->applyTo($filter, $filterable);
+            function (Filterable $filterable, FilterInterface $filter) use ($filterApplicator) {
+                return $filterApplicator->apply($filter, $filterable);
             },
             $filterable
         );

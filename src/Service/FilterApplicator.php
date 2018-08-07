@@ -52,7 +52,7 @@ class FilterApplicator
 
     public function applyAll(FiltersInterface $filters, Filterable $filterable): Filterable
     {
-        return $filters->applyAllTo($this->findApplicatorFor($filterable), $filterable);
+        return $filters->applyAllTo($filterable, $this);
     }
 
     public function getPreparedValues(FiltersInterface $filters, Filterable $filterable): array
