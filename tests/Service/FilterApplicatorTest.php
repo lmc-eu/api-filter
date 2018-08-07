@@ -117,15 +117,31 @@ class FilterApplicatorTest extends AbstractTestCase
 
     /**
      * @test
+     * @dataProvider provideNotSupportedFilterable
+     *
+     * @param mixed $filterableInput
      */
-    public function shouldThrowInvalidArgumentExceptionOnApplyFilterOnNotSupportedFilterable(): void
-    {
-        $filterable = new Filterable('string filterable');
+    public function shouldThrowInvalidArgumentExceptionOnApplyFilterOnNotSupportedFilterable(
+        $filterableInput,
+        string $expectedMessage
+    ): void {
+        $filterable = new Filterable($filterableInput);
         $filter = new FilterWithOperator('any', new Value('filter'), 'any', 'any');
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Unsupported filterable "\'string filterable\'".');
+        $this->expectExceptionMessage($expectedMessage);
 
         $this->filterApplicator->apply($filter, $filterable);
+    }
+
+    public function provideNotSupportedFilterable(): array
+    {
+        return [
+            // filterable, errorMessage
+            'string' => [
+                'string filterable',
+                'Unsupported filterable of type "string".',
+            ],
+        ];
     }
 }

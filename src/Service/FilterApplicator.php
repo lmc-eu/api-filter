@@ -43,8 +43,12 @@ class FilterApplicator
             }
         }
 
+        $filterableValue = $filterable->getValue();
         throw new \InvalidArgumentException(
-            sprintf('Unsupported filterable "%s".', var_export($filterable->getValue(), true))
+            sprintf(
+                'Unsupported filterable of type "%s".',
+                is_object($filterableValue) ? get_class($filterableValue) : gettype($filterableValue)
+            )
         );
     }
 
