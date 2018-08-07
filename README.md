@@ -109,7 +109,7 @@ GET http://host/endpoint/?field[lt]=value
 
 ### Lower Than Or Equals - LTE (<=)
 ```http request
-GET http://host/endpoint/?field[lt]=value
+GET http://host/endpoint/?field[lte]=value
 ```
 
 ### IN
