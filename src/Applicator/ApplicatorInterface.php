@@ -4,19 +4,23 @@ namespace Lmc\ApiFilter\Applicator;
 
 use Lmc\ApiFilter\Entity\Filterable;
 use Lmc\ApiFilter\Filter\FilterInterface;
+use Lmc\ApiFilter\Filter\FilterWithOperator;
 
 interface ApplicatorInterface
 {
     public function supports(Filterable $filterable): bool;
 
     /**
-     * Apply filter to filterable and returns the result
+     * Apply filter with operator to filterable and returns the result
      *
      * @example
-     * $simpleSqlApplicator->apply(new FilterWithOperator('title', 'foo', '='), 'SELECT * FROM table')
-     * // SELECT * FROM table WHERE 1 AND title = 'foo'
+     * $filter = new FilterWithOperator('title', 'foo', '=', 'eq');
+     * $sql = 'SELECT * FROM table';
+     *
+     * $simpleSqlApplicator->applyFilterWithOperator($filter, $sql);      // SELECT * FROM table WHERE title = :title_eq
+     * $preparedValues = $simpleSqlApplicator->getPreparedValue($filter); // ['title_eq' => 'foo']
      */
-    public function applyTo(FilterInterface $filter, Filterable $filterable): Filterable;
+    public function applyFilterWithOperator(FilterWithOperator $filter, Filterable $filterable): Filterable;
 
     /**
      * Prepared values for applied filter
