@@ -8,8 +8,6 @@ interface FilterInterface
 {
     public function getColumn(): string;
 
-    public function getOperator(): string;
-
     public function getValue(): Value;
 
     public function getTitle(): string;
