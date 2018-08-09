@@ -4,6 +4,7 @@ namespace Lmc\ApiFilter\Filters;
 
 use Lmc\ApiFilter\Applicator\ApplicatorInterface;
 use Lmc\ApiFilter\Entity\Filterable;
+use Lmc\ApiFilter\Filter\FilterInterface;
 use Lmc\ApiFilter\Service\FilterApplicator;
 
 interface FiltersInterface extends \IteratorAggregate
@@ -14,4 +15,6 @@ interface FiltersInterface extends \IteratorAggregate
     public function applyAllTo(Filterable $filterable, FilterApplicator $filterApplicator): Filterable;
 
     public function getPreparedValues(ApplicatorInterface $applicator): array;
+
+    public function addFilter(FilterInterface $filter): self;
 }
