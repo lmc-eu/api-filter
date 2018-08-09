@@ -2,13 +2,19 @@
 
 namespace Lmc\ApiFilter;
 
+use Doctrine\ORM\QueryBuilder;
+
 class ApiFilterTest extends AbstractTestCase
 {
     /** @var ApiFilter */
     private $apiFilter;
+    /** @var QueryBuilder */
+    private $queryBuilder;
 
     protected function setUp(): void
     {
+        $this->queryBuilder = $this->setUpQueryBuilder();
+
         $this->apiFilter = new ApiFilter();
     }
 
@@ -80,6 +86,79 @@ class ApiFilterTest extends AbstractTestCase
         }
 
         $this->assertSame($expectedSql, $sql);
+        $this->assertSame($expectedPreparedValues, $preparedValues);
+    }
+
+    /**
+     * @test
+     * @dataProvider provideQueryParametersForQueryBuilder
+     */
+    public function shouldParseQueryParametersAndApplyThemToQueryBuilder(
+        array $queryParameters,
+        ?array $expectedDqlWhere,
+        array $expectedPreparedValues
+    ): void {
+        $filters = $this->apiFilter->parseFilters($queryParameters);
+
+        /** @var QueryBuilder $queryBuilderWithFilters */
+        $queryBuilderWithFilters = $this->apiFilter->applyFilters($filters, $this->queryBuilder);
+        $preparedValues = $this->apiFilter->getPreparedValues($filters, $this->queryBuilder);
+
+        if (!empty($queryParameters)) {
+            // application of filters should not change original query builder
+            $this->assertNotSame($this->queryBuilder, $queryBuilderWithFilters);
+        }
+
+        $this->assertInstanceOf(QueryBuilder::class, $queryBuilderWithFilters);
+        $this->assertDqlWhere($expectedDqlWhere, $queryBuilderWithFilters);
+        $this->assertSame($expectedPreparedValues, $preparedValues);
+    }
+
+    public function provideQueryParametersForQueryBuilder(): array
+    {
+        return [
+            // query parameters, expected dql where, expected prepared values
+            'empty' => [
+                [],
+                null,
+                [],
+            ],
+            'title=foo' => [
+                ['title' => 'foo'],
+                ['t.title = :title_eq'],
+                ['title_eq' => 'foo'],
+            ],
+            'title[eq]=foobar' => [
+                ['title' => ['eq' => 'foo']],
+                ['t.title = :title_eq'],
+                ['title_eq' => 'foo'],
+            ],
+            'title[eq]=foobar&value[gt]=10' => [
+                ['title' => ['eq' => 'foo'], 'value' => ['gt' => '10']],
+                ['t.title = :title_eq', 't.value > :value_gt'],
+                ['title_eq' => 'foo', 'value_gt' => '10'],
+            ],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider provideQueryParametersForQueryBuilder
+     */
+    public function shouldParseQueryParametersAndApplyThemOneByOneToQueryBuilder(
+        array $queryParameters,
+        ?array $expectedDqlWhere,
+        array $expectedPreparedValues
+    ): void {
+        $filters = $this->apiFilter->parseFilters($queryParameters);
+
+        foreach ($filters as $filter) {
+            $this->queryBuilder = $this->apiFilter->applyFilter($filter, $this->queryBuilder);
+        }
+        $preparedValues = $this->apiFilter->getPreparedValues($filters, $this->queryBuilder);
+
+        $this->assertInstanceOf(QueryBuilder::class, $this->queryBuilder);
+        $this->assertDqlWhere($expectedDqlWhere, $this->queryBuilder);
         $this->assertSame($expectedPreparedValues, $preparedValues);
     }
 }

@@ -2,14 +2,18 @@
 
 namespace Lmc\ApiFilter\Service;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
 use Lmc\ApiFilter\AbstractTestCase;
 use Lmc\ApiFilter\Applicator\ApplicatorInterface;
+use Lmc\ApiFilter\Applicator\QueryBuilderApplicator;
 use Lmc\ApiFilter\Applicator\SqlApplicator;
 use Lmc\ApiFilter\Entity\Filterable;
 use Lmc\ApiFilter\Entity\Value;
 use Lmc\ApiFilter\Filter\FilterInterface;
 use Lmc\ApiFilter\Filter\FilterWithOperator;
 use Lmc\ApiFilter\Filters\Filters;
+use Mockery as m;
 
 class FilterApplicatorTest extends AbstractTestCase
 {
@@ -70,6 +74,27 @@ class FilterApplicatorTest extends AbstractTestCase
                 'SELECT * FROM table WHERE public = 1 AND col >= :col_gte',
                 ['col_gte' => 10],
             ],
+            'queryBuilder - eq' => [
+                new QueryBuilderApplicator(),
+                new FilterWithOperator('col', new Value('val'), '=', 'eq'),
+                $this->setUpQueryBuilder(),
+                $this->setUpQueryBuilder()->andWhere('t.col = :col_eq'),
+                ['col_eq' => 'val'],
+            ],
+            'queryBuilder - gt' => [
+                new QueryBuilderApplicator(),
+                new FilterWithOperator('col', new Value('val'), '>', 'gt'),
+                $this->setUpQueryBuilder(),
+                $this->setUpQueryBuilder()->andWhere('t.col > :col_gt'),
+                ['col_gt' => 'val'],
+            ],
+            'queryBuilder - gte' => [
+                new QueryBuilderApplicator(),
+                new FilterWithOperator('col', new Value(10), '>=', 'gte'),
+                $this->setUpQueryBuilder(),
+                $this->setUpQueryBuilder()->andWhere('t.col >= :col_gte'),
+                ['col_gte' => 10],
+            ],
         ];
     }
 
@@ -112,6 +137,16 @@ class FilterApplicatorTest extends AbstractTestCase
                 'SELECT * FROM table WHERE 1 AND column > :column_gt AND column < :column_lt',
                 ['column_gt' => 'min', 'column_lt' => 'max'],
             ],
+            'queryBuilder - between' => [
+                new QueryBuilderApplicator(),
+                [
+                    new FilterWithOperator('column', new Value('min'), '>', 'gt'),
+                    new FilterWithOperator('column', new Value('max'), '<', 'lt'),
+                ],
+                $this->setUpQueryBuilder(),
+                $this->setUpQueryBuilder()->andWhere('t.column > :column_gt')->andWhere('t.column < :column_lt'),
+                ['column_gt' => 'min', 'column_lt' => 'max'],
+            ],
         ];
     }
 
@@ -141,6 +176,10 @@ class FilterApplicatorTest extends AbstractTestCase
             'string' => [
                 'string filterable',
                 'Unsupported filterable of type "string".',
+            ],
+            'queryBuilder' => [
+                new QueryBuilder(m::mock(EntityManagerInterface::class)),
+                'Unsupported filterable of type "Doctrine\ORM\QueryBuilder".',
             ],
         ];
     }

@@ -16,8 +16,13 @@
         "php": "^7.1",
         "mf/collections-php": "^3.10"
     },
+    "suggest": {
+        "doctrine/orm": "To allow applying filters directly to QueryBuilder"
+    },
     "require-dev": {
+        "doctrine/orm": "^2.6",
         "lmc/coding-standard": "^1.1",
+        "mockery/mockery": "^1.1",
         "php-coveralls/php-coveralls": "^2.1",
         "phpstan/phpstan-shim": "^0.10",
         "phpunit/phpunit": "^7.0"
