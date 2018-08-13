@@ -23,9 +23,11 @@ Same if you want different settings per entity/table, it should be done by a spe
     - [Lower than](#lower-than---lt-)
     - [Lower than or Equals](#lower-than-or-equals---lte-)
     - [IN](#in)
+- [Tuples in filters](#tuples-in-filters)
 - [Examples](#examples)
     - [IN + EQ](#in--eq-filter)
     - [GT + LT _(between)_](#gt--lt-filter-between)
+    - [EQ `Tuple`](#eq-with-tuple)
 - [Development](#development)
 
 ## Installation
@@ -55,7 +57,7 @@ $filters = $apiFilter->parseFilters($request->query->all());
 //         private $operator => '='
 //         private $column   => 'field'
 //         private $value    => Lmc\ApiFilter\Entity\Value {
-//             private $value = 'value'
+//             private $value => 'value'
 //         }
 //     }
 // ]
@@ -166,6 +168,28 @@ GET http://host/endpoint/?field[lte]=value
 ```http request
 GET http://host/endpoint/?type[in][]=one&type[in][]=two
 ```
+- `Tuples` are not allowed in `IN` filter
+
+## `Tuples` in filters
+`Tuples`
+- are important in filters if you have some values, which **must** be sent together
+- are composed of two or more values (_`Tuple` of one value is just a value_)
+- items should be in `(` `)` and separated by `,`
+- it is advised NOT to use a _space_ between values because of the _URL_ specific behavior
+- for more information about `Tuples` see https://github.com/MortalFlesh/MFCollectionsPHP#immutabletuple 
+
+### Column with `Tuple`
+Columns declared by `Tuple` behaves the same as a single value but its value must be a `Tuple` as well.
+
+### Values with `Tuple`
+Values in the `Tuple` must have the same number of items as is the number of columns.
+
+### Usage
+```http request
+GET http://host/endpoint/?(first,second)[eq]=(one,two) 
+```
+☝ means that you have two columns `first` and `second` and they must be sent together.
+Column `first` must `equal` the value `"one"` and column `second` must `equal` the value `"two"`.
 
 ## Examples
 ❗For simplicity of examples, they are shown on the [`SQL Applicator`](#with-sql-applicator) which is NOT auto-registered❗
@@ -226,6 +250,39 @@ $sql = $apiFilter->applyFilters($filters, $sql); // SELECT * FROM person WHERE 1
 $preparedValues = $apiFilter->getPreparedValues($filters, $sql); // ['age_gt' => 18, 'age_lt' => 30]
 ```
 
+### `EQ` with `Tuple`
+```http request
+GET http://host/person/?(firstname,surname)=(John,Snow)
+```
+
+```php
+$parameters = $request->query->all(); // ["(firstname,surname)" => "(John,Snow)"]
+
+$sql = 'SELECT * FROM person';
+$filters = $apiFilter->parseFilters($parameters);
+// [
+//     0 => Lmc\ApiFilter\Filter\FilterWithOperator {
+//         private $title    => "eq"
+//         private $operator => "="
+//         private $column   => "firstname"
+//         private $value    => Lmc\ApiFilter\Entity\Value {
+//             private $value => "John"
+//         }
+//     },
+//     1 => Lmc\ApiFilter\Filter\FilterWithOperator {
+//         private $title    => "eq"
+//         private $operator => "="
+//         private $column   => "surname"
+//         private $value    => Lmc\ApiFilter\Entity\Value {
+//             private $value => "Snow"
+//         }
+//     }
+// ]
+
+$sql = $apiFilter->applyFilters($filters, $sql); // SELECT * FROM person WHERE 1 AND firstname = :firstname_eq AND surname = :surname_eq
+$preparedValues = $apiFilter->getPreparedValues($filters, $sql); // ['firstname_eq' => 'John', 'surname_eq' => 'Snow']
+```
+
 ## Development
 
 ### Install
@@ -239,11 +296,6 @@ composer all
 ```
 
 ## Todo
-- allow Tuples in values
-    - request with Tuple
-    ```http request
-    GET http://host/person/?complex-field=(first,second)
-    ```
 - defineAllowed: (_this should be on DI level_)
     - Fields (columns)
     - Filters
