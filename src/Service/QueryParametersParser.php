@@ -3,6 +3,7 @@
 namespace Lmc\ApiFilter\Service;
 
 use Lmc\ApiFilter\Entity\Value;
+use Lmc\ApiFilter\Filter\FilterIn;
 use Lmc\ApiFilter\Filter\FilterInterface;
 use Lmc\ApiFilter\Filter\FilterWithOperator;
 use Lmc\ApiFilter\Filters\Filters;
@@ -14,7 +15,7 @@ class QueryParametersParser
 {
     public function parse(array $queryParameters): FiltersInterface
     {
-        $filters = Seq::init(function () use ($queryParameters) {
+        return Seq::init(function () use ($queryParameters) {
             foreach ($queryParameters as $column => $values) {
                 $values = is_array($values)
                     ? $values
@@ -25,12 +26,12 @@ class QueryParametersParser
                 }
             }
         })
-            ->map(function (Tuple $tuple): FilterInterface {
-                return $this->createFilter(...$tuple);
-            })
-            ->toArray();
-
-        return Filters::from($filters);
+            ->reduce(
+                function (FiltersInterface $filters, Tuple $tuple): FiltersInterface {
+                    return $filters->addFilter($this->createFilter(...$tuple));
+                },
+                new Filters()
+            );
     }
 
     private function createFilter(string $column, string $filter, Value $value): FilterInterface
@@ -46,6 +47,8 @@ class QueryParametersParser
                 return new FilterWithOperator($column, $value, '<=', 'lt');
             case 'gte':
                 return new FilterWithOperator($column, $value, '>=', 'gte');
+            case 'in':
+                return new FilterIn($column, $value);
         }
 
         throw new \InvalidArgumentException(

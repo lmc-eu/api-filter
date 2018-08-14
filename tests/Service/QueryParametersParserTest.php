@@ -4,6 +4,7 @@ namespace Lmc\ApiFilter\Service;
 
 use Lmc\ApiFilter\AbstractTestCase;
 use Lmc\ApiFilter\Entity\Value;
+use Lmc\ApiFilter\Filter\FilterIn;
 use Lmc\ApiFilter\Filter\FilterWithOperator;
 use Lmc\ApiFilter\Filters\Filters;
 
@@ -70,6 +71,19 @@ class QueryParametersParserTest extends AbstractTestCase
                 [
                     new FilterWithOperator('title', new Value('0'), '>=', 'gte'),
                     new FilterWithOperator('title', new Value('10'), '<=', 'lt'),
+                ],
+            ],
+            'in array' => [
+                ['color' => ['in' => ['red', 'green', 'blue']]],
+                [
+                    new FilterIn('color', new Value(['red', 'green', 'blue'])),
+                ],
+            ],
+            'eq + in array' => [
+                ['allowed' => true, 'id' => ['in' => [1, 2, 3]]],
+                [
+                    new FilterWithOperator('allowed', new Value(true), '=', 'eq'),
+                    new FilterIn('id', new Value([1, 2, 3])),
                 ],
             ],
         ];
