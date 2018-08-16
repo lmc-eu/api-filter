@@ -44,33 +44,6 @@ $filters = $apiFilter->parseFilters($request->query->all());
 // ]
 ```
 
-### With `SQL Applicator`
-```php
-// in Model/EntityRepository
-$sql = 'SELECT * FROM table';
-$sql = $apiFilter->applyFilters($filters, $sql); // "SELECT * FROM table WHERE 1 AND field = :field_eq"
-
-// or one by one
-foreach ($filters as $filter) {
-    $sql = $apiFilter->applyFilter($filter, $sql);
-}
-
-// get prepared values for applied filters
-$preparedValues = $apiFilter->getPreparedValues($filters, $sql); // ['field_eq' => 'value']
-
-// execute query
-$stmt = $connection->prepare($sql);
-$stmt->execute($preparedValues);
-```
-
-#### Shorter example (_same as ☝_)
-```php
-// in EntityRepository/Model
-$sql = 'SELECT * FROM table';
-$stmt = $connection->prepare($apiFilter->applyAll($filters, $sql)); // SELECT * FROM table WHERE 1 AND field = :field_eq 
-$stmt->execute($apiFilter->getPreparedValues($filters, $sql));      // ['field_eq' => 'value']
-```
-
 ### With Doctrine `Query Builder Applicator`
 - requires `doctrine/orm` installed
 - applying filters uses **cloned** `QueryBuilder` -> original `QueryBuilder` is **untouched**
@@ -102,6 +75,43 @@ $apiFilter
     ->applyAll($filters, $queryBuilder)                                     // query builder with applied filters
     ->setParameters($apiFilter->getPreparedValues($filters, $queryBuilder)) // ['field_eq' => 'value']
     ->getQuery();
+```
+
+### With `SQL Applicator`
+- ❗it is just a **naive implementation** and should be used carefully❗
+- it still might be used on simple `SQL`s without `ORDER BY`, `GROUP BY` etc. because it simply adds filters as a `WHERE` conditions
+
+`SQL Applicator` must be registered explicitly
+```php
+// in DI container
+$apiFilter->registerApplicator(new SqlApplicator(), Priority::MEDIUM);
+```
+
+Example:
+```php
+// in Model/EntityRepository
+$sql = 'SELECT * FROM table';
+$sql = $apiFilter->applyFilters($filters, $sql); // "SELECT * FROM table WHERE 1 AND field = :field_eq"
+
+// or one by one
+foreach ($filters as $filter) {
+    $sql = $apiFilter->applyFilter($filter, $sql);
+}
+
+// get prepared values for applied filters
+$preparedValues = $apiFilter->getPreparedValues($filters, $sql); // ['field_eq' => 'value']
+
+// execute query
+$stmt = $connection->prepare($sql);
+$stmt->execute($preparedValues);
+```
+
+#### Shorter example (_same as ☝_)
+```php
+// in EntityRepository/Model
+$sql = 'SELECT * FROM table';
+$stmt = $connection->prepare($apiFilter->applyAll($filters, $sql)); // SELECT * FROM table WHERE 1 AND field = :field_eq 
+$stmt->execute($apiFilter->getPreparedValues($filters, $sql));      // ['field_eq' => 'value']
 ```
 
 ## Supported filters
@@ -191,7 +201,6 @@ composer all
     ```http request
     GET http://host/person/?complex-field=(first,second)
     ```
-- remove `SqlApplicator` from `ApiFilter` and mark it as "naive implementation"
 - defineAllowed: (_this should be on DI level_)
     - Fields (columns)
     - Filters

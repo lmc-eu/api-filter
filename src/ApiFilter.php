@@ -4,7 +4,6 @@ namespace Lmc\ApiFilter;
 
 use Lmc\ApiFilter\Applicator\ApplicatorInterface;
 use Lmc\ApiFilter\Applicator\QueryBuilderApplicator;
-use Lmc\ApiFilter\Applicator\SqlApplicator;
 use Lmc\ApiFilter\Constant\Priority;
 use Lmc\ApiFilter\Entity\Filterable;
 use Lmc\ApiFilter\Filter\FilterInterface;
@@ -27,7 +26,6 @@ class ApiFilter
         if (class_exists('Doctrine\ORM\QueryBuilder')) {
             $this->registerApplicator(new QueryBuilderApplicator(), Priority::MEDIUM);
         }
-        $this->registerApplicator(new SqlApplicator(), Priority::MEDIUM);
     }
 
     /**

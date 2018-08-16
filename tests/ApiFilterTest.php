@@ -3,6 +3,8 @@
 namespace Lmc\ApiFilter;
 
 use Doctrine\ORM\QueryBuilder;
+use Lmc\ApiFilter\Applicator\SqlApplicator;
+use Lmc\ApiFilter\Constant\Priority;
 
 class ApiFilterTest extends AbstractTestCase
 {
@@ -16,6 +18,9 @@ class ApiFilterTest extends AbstractTestCase
         $this->queryBuilder = $this->setUpQueryBuilder();
 
         $this->apiFilter = new ApiFilter();
+
+        // register naive SQL applicator
+        $this->apiFilter->registerApplicator(new SqlApplicator(), Priority::MEDIUM);
     }
 
     /**
