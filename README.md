@@ -10,6 +10,21 @@ Parser/builder for filters from API query parameters.
 It is just a parser/builder for filters, it is not a place for business logic so it should be wrapped by your class if you want to be more strict about filters.
 Same if you want different settings per entity/table, it should be done by a specific wrapper around this library.
 
+## Table of Contents
+- [Installation](#installation)
+- [Usage](#usage)
+    - [Initialization](#initialization)
+    - [With Doctrine Query Builder](#with-doctrine-query-builder-applicator)
+    - [With simple SQL](#with-sql-applicator)
+- [Supported filters](#supported-filters)
+    - [Equals](#equals---eq-)
+    - [Greater than](#greater-than---gt-)
+    - [Greater than or Equals](#greater-than-or-equals---gte-)
+    - [Lower than](#lower-than---lt-)
+    - [Lower than or Equals](#lower-than-or-equals---lte-)
+    - [IN](#in)
+- [Examples](#examples)
+- [Development](#development)
 
 ## Installation
 ```bash
