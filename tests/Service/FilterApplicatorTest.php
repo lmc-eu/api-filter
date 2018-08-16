@@ -10,6 +10,7 @@ use Lmc\ApiFilter\Applicator\QueryBuilderApplicator;
 use Lmc\ApiFilter\Applicator\SqlApplicator;
 use Lmc\ApiFilter\Entity\Filterable;
 use Lmc\ApiFilter\Entity\Value;
+use Lmc\ApiFilter\Filter\FilterIn;
 use Lmc\ApiFilter\Filter\FilterInterface;
 use Lmc\ApiFilter\Filter\FilterWithOperator;
 use Lmc\ApiFilter\Filters\Filters;
@@ -74,6 +75,13 @@ class FilterApplicatorTest extends AbstractTestCase
                 'SELECT * FROM table WHERE public = 1 AND col >= :col_gte',
                 ['col_gte' => 10],
             ],
+            'sql - in' => [
+                new SqlApplicator(),
+                new FilterIn('col', new Value([1, 2])),
+                'SELECT * FROM table WHERE public = 1',
+                'SELECT * FROM table WHERE public = 1 AND col IN (:col_in_0, :col_in_1)',
+                ['col_in_0' => 1, 'col_in_1' => 2],
+            ],
             'queryBuilder - eq' => [
                 new QueryBuilderApplicator(),
                 new FilterWithOperator('col', new Value('val'), '=', 'eq'),
@@ -94,6 +102,13 @@ class FilterApplicatorTest extends AbstractTestCase
                 $this->setUpQueryBuilder(),
                 $this->setUpQueryBuilder()->andWhere('t.col >= :col_gte'),
                 ['col_gte' => 10],
+            ],
+            'queryBuilder - in' => [
+                new QueryBuilderApplicator(),
+                new FilterIn('col', new Value([1, 2])),
+                $this->setUpQueryBuilder(),
+                $this->setUpQueryBuilder()->andWhere('t.col IN (:col_in)'),
+                ['col_in' => [1, 2]],
             ],
         ];
     }
@@ -137,6 +152,16 @@ class FilterApplicatorTest extends AbstractTestCase
                 'SELECT * FROM table WHERE 1 AND column > :column_gt AND column < :column_lt',
                 ['column_gt' => 'min', 'column_lt' => 'max'],
             ],
+            'sql - eq + in' => [
+                new SqlApplicator(),
+                [
+                    new FilterWithOperator('allowed', new Value('true'), '=', 'eq'),
+                    new FilterIn('color', new Value(['red', 'blue'])),
+                ],
+                'SELECT * FROM table',
+                'SELECT * FROM table WHERE 1 AND allowed = :allowed_eq AND color IN (:color_in_0, :color_in_1)',
+                ['allowed_eq' => 'true', 'color_in_0' => 'red', 'color_in_1' => 'blue'],
+            ],
             'queryBuilder - between' => [
                 new QueryBuilderApplicator(),
                 [
@@ -146,6 +171,16 @@ class FilterApplicatorTest extends AbstractTestCase
                 $this->setUpQueryBuilder(),
                 $this->setUpQueryBuilder()->andWhere('t.column > :column_gt')->andWhere('t.column < :column_lt'),
                 ['column_gt' => 'min', 'column_lt' => 'max'],
+            ],
+            'queryBuilder - eq + in' => [
+                new QueryBuilderApplicator(),
+                [
+                    new FilterWithOperator('allowed', new Value('true'), '=', 'eq'),
+                    new FilterIn('color', new Value(['red', 'blue'])),
+                ],
+                $this->setUpQueryBuilder(),
+                $this->setUpQueryBuilder()->andWhere('t.allowed = :allowed_eq')->andWhere('t.color IN (:color_in)'),
+                ['allowed_eq' => 'true', 'color_in' => ['red', 'blue']],
             ],
         ];
     }

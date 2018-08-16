@@ -137,7 +137,6 @@ GET http://host/endpoint/?field[lte]=value
 ```http request
 GET http://host/endpoint/?type[in][]=one&type[in][]=two
 ```
-_☝ is not implemented yet_
 
 ## Examples
 ```http request
@@ -192,8 +191,6 @@ composer all
     ```http request
     GET http://host/person/?complex-field=(first,second)
     ```
-- add filters:
-    - `in`
 - remove `SqlApplicator` from `ApiFilter` and mark it as "naive implementation"
 - defineAllowed: (_this should be on DI level_)
     - Fields (columns)
