@@ -3,6 +3,10 @@
 namespace Lmc\ApiFilter;
 
 use Doctrine\ORM\QueryBuilder;
+use Lmc\ApiFilter\Applicator\SqlApplicator;
+use Lmc\ApiFilter\Constant\Priority;
+use Lmc\ApiFilter\Entity\Value;
+use Lmc\ApiFilter\Filter\FilterWithOperator;
 
 class ApiFilterTest extends AbstractTestCase
 {
@@ -28,12 +32,19 @@ class ApiFilterTest extends AbstractTestCase
         string $expectedSql,
         array $expectedPreparedValues
     ): void {
+        $this->registerSQLApplicator();
+
         $filters = $this->apiFilter->parseFilters($queryParameters);
         $sqlWithFilters = $this->apiFilter->applyFilters($filters, $sql);
         $preparedValues = $this->apiFilter->getPreparedValues($filters, $sql);
 
         $this->assertSame($expectedSql, $sqlWithFilters);
         $this->assertSame($expectedPreparedValues, $preparedValues);
+    }
+
+    private function registerSQLApplicator(): void
+    {
+        $this->apiFilter->registerApplicator(new SqlApplicator(), Priority::MEDIUM);
     }
 
     public function provideQueryParametersForSql(): array
@@ -77,6 +88,8 @@ class ApiFilterTest extends AbstractTestCase
         string $expectedSql,
         array $expectedPreparedValues
     ): void {
+        $this->registerSQLApplicator();
+
         $filters = $this->apiFilter->parseFilters($queryParameters);
 
         $preparedValues = [];
@@ -160,5 +173,34 @@ class ApiFilterTest extends AbstractTestCase
         $this->assertInstanceOf(QueryBuilder::class, $this->queryBuilder);
         $this->assertDqlWhere($expectedDqlWhere, $this->queryBuilder);
         $this->assertSame($expectedPreparedValues, $preparedValues);
+    }
+
+    /**
+     * @test
+     * @dataProvider provideNotSupportedFilterable
+     *
+     * @param mixed $filterable
+     */
+    public function shouldThrowInvalidArgumentExceptionOnApplyFilterOnNotSupportedFilterable(
+        $filterable,
+        string $expectedMessage
+    ): void {
+        $filter = new FilterWithOperator('any', new Value('filter'), 'any', 'any');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage($expectedMessage);
+
+        $this->apiFilter->applyFilter($filter, $filterable);
+    }
+
+    public function provideNotSupportedFilterable(): array
+    {
+        return [
+            // filterable, errorMessage
+            'simple SQL' => [
+                'SELECT * FROM table',
+                'Unsupported filterable of type "string".',
+            ],
+        ];
     }
 }
