@@ -47,6 +47,8 @@ $filters = $apiFilter->parseFilters($request->query->all());
 ### With Doctrine `Query Builder Applicator`
 - requires `doctrine/orm` installed
 - applying filters uses **cloned** `QueryBuilder` -> original `QueryBuilder` is **untouched**
+
+#### Example
 ```php
 // in EntityRepository/Model
 $queryBuilder = $this->createQueryBuilder('alias');
@@ -87,7 +89,7 @@ $apiFilter
 $apiFilter->registerApplicator(new SqlApplicator(), Priority::MEDIUM);
 ```
 
-Example:
+#### Example
 ```php
 // in Model/EntityRepository
 $sql = 'SELECT * FROM table';
