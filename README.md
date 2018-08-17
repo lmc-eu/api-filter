@@ -24,6 +24,8 @@ Same if you want different settings per entity/table, it should be done by a spe
     - [Lower than or Equals](#lower-than-or-equals---lte-)
     - [IN](#in)
 - [Examples](#examples)
+    - [IN + EQ](#in--eq-filter)
+    - [GT + LT _(between)_](#gt--lt-filter-between)
 - [Development](#development)
 
 ## Installation
@@ -166,6 +168,9 @@ GET http://host/endpoint/?type[in][]=one&type[in][]=two
 ```
 
 ## Examples
+❗For simplicity of examples, they are shown on the [`SQL Applicator`](#with-sql-applicator) which is NOT auto-registered❗
+
+### `IN` + `EQ` filter
 ```http request
 GET http://host/person/?type[in][]=student&type[in][]=admin&name=Tom
 ```
@@ -198,6 +203,27 @@ $preparedValues = $apiFilter->getPreparedValues($filters, $sql);
 //     'type_in_1' => 'admin',
 //     'name_eq'   => 'Tom',
 // ]
+```
+
+### `GT` + `LT` filter (_between_)
+```http request
+GET http://host/person/?age[gt]=18&age[lt]=30
+```
+
+```php
+$parameters = $request->query->all();
+// [
+//     "age" => [
+//         "gt" => 18
+//         "lt" => 30
+//     ],
+// ]
+
+$filters = $apiFilter->parseFilters($parameters);
+$sql = 'SELECT * FROM person';
+
+$sql = $apiFilter->applyFilters($filters, $sql); // SELECT * FROM person WHERE 1 AND age > :age_gt AND age < :age_lt
+$preparedValues = $apiFilter->getPreparedValues($filters, $sql); // ['age_gt' => 18, 'age_lt' => 30]
 ```
 
 ## Development
