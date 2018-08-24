@@ -2,12 +2,14 @@
 
 namespace Lmc\ApiFilter\Service;
 
+use Assert\Assertion;
 use Lmc\ApiFilter\Entity\Value;
 use Lmc\ApiFilter\Filter\FilterIn;
 use Lmc\ApiFilter\Filter\FilterInterface;
 use Lmc\ApiFilter\Filter\FilterWithOperator;
 use Lmc\ApiFilter\Filters\Filters;
 use Lmc\ApiFilter\Filters\FiltersInterface;
+use MF\Collection\Immutable\ITuple;
 use MF\Collection\Immutable\Seq;
 use MF\Collection\Immutable\Tuple;
 
@@ -17,21 +19,51 @@ class QueryParametersParser
     {
         return Seq::init(function () use ($queryParameters) {
             foreach ($queryParameters as $column => $values) {
-                $values = is_array($values)
-                    ? $values
-                    : ['eq' => $values];
+                $columns = $this->parseColumns($column);
+                $columnsCount = count($columns);
 
-                foreach ($values as $filter => $value) {
-                    yield Tuple::of($column, $filter, new Value($value));
+                foreach ($this->normalizeFilters($values) as $filter => $value) {
+                    $this->assertTupleIsAllowed($filter, $columnsCount);
+                    $parsedValues = $this->parseValues($value, $columnsCount);
+
+                    foreach ($columns as $column) {
+                        yield Tuple::of($column, $filter, new Value(array_shift($parsedValues)));
+                    }
                 }
             }
         })
             ->reduce(
-                function (FiltersInterface $filters, Tuple $tuple): FiltersInterface {
+                function (FiltersInterface $filters, ITuple $tuple): FiltersInterface {
                     return $filters->addFilter($this->createFilter(...$tuple));
                 },
                 new Filters()
             );
+    }
+
+    private function parseColumns(string $column): array
+    {
+        return mb_substr($column, 0, 1) === '('
+            ? Tuple::parse($column)->toArray()
+            : [$column];
+    }
+
+    private function normalizeFilters($values): array
+    {
+        return is_array($values)
+            ? $values
+            : ['eq' => $values];
+    }
+
+    private function assertTupleIsAllowed(string $filter, int $columnsCount): void
+    {
+        Assertion::false($columnsCount > 1 && $filter === 'in', 'Tuples are not allowed in IN filter.');
+    }
+
+    private function parseValues($value, int $columnsCount): array
+    {
+        return $columnsCount > 1
+            ? Tuple::parse($value, $columnsCount)->toArray()
+            : [$value];
     }
 
     private function createFilter(string $column, string $filter, Value $value): FilterInterface

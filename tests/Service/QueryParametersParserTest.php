@@ -86,6 +86,23 @@ class QueryParametersParserTest extends AbstractTestCase
                     new FilterIn('id', new Value([1, 2, 3])),
                 ],
             ],
+            'tuple - eq + in array' => [
+                ['(zone,bucket)' => '(lmc,all)', 'id' => ['in' => [1, 2, 3]]],
+                [
+                    new FilterWithOperator('zone', new Value('lmc'), '=', 'eq'),
+                    new FilterWithOperator('bucket', new Value('all'), '=', 'eq'),
+                    new FilterIn('id', new Value([1, 2, 3])),
+                ],
+            ],
+            'tuple - between' => [
+                ['(number,alpha)' => ['gte' => '(0, a)', 'lt' => '(10, z)']],
+                [
+                    new FilterWithOperator('number', new Value('0'), '>=', 'gte'),
+                    new FilterWithOperator('alpha', new Value('a'), '>=', 'gte'),
+                    new FilterWithOperator('number', new Value('10'), '<', 'lt'),
+                    new FilterWithOperator('alpha', new Value('z'), '<', 'lt'),
+                ],
+            ],
         ];
     }
 
@@ -114,6 +131,18 @@ class QueryParametersParserTest extends AbstractTestCase
             'unknown filter' => [
                 ['column' => ['unknown' => 'value']],
                 'Filter "unknown" is not implemented. For column "column" with value "value".',
+            ],
+            'invalid tuple - too much values' => [
+                ['(id,name)' => ['eq' => '(42,foo,bar)']],
+                'Invalid tuple given - expected 2 items but parsed 3 items from "(42,foo,bar)".',
+            ],
+            'invalid tuple - insufficient values' => [
+                ['(id, name, type)' => ['eq' => '(42, foo)']],
+                'Invalid tuple given - expected 3 items but parsed 2 items from "(42, foo)".',
+            ],
+            'tuples in IN filter' => [
+                ['(id, name)' => ['in' => ['(1,one)', '(2,two)']]],
+                'Tuples are not allowed in IN filter.',
             ],
         ];
     }
