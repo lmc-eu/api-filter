@@ -5,3 +5,19 @@
 
 ## Unreleased
 - Initial version.
+    - **Filters**
+        - Equal to
+        - Lower than 
+        - Lower or equal than
+        - Greater than
+        - Greater or equal than
+        - IN
+    - **Applicators**
+        - Doctrine Query Builder
+        - _Naive_ SQL 
+    - **Tuple** allowed in
+        - Equal to
+        - Lower than 
+        - Lower or equal than
+        - Greater than
+        - Greater or equal than
