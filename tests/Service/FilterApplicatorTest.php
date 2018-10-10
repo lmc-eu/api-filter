@@ -30,8 +30,8 @@ class FilterApplicatorTest extends AbstractTestCase
      * @test
      * @dataProvider provideFilter
      *
-     * @param mixed $filterable
-     * @param mixed $expected
+     * @param mixed $filterable of type <T>
+     * @param mixed $expected of type <T>
      */
     public function shouldApplyFilter(
         ApplicatorInterface $applicator,
@@ -117,8 +117,8 @@ class FilterApplicatorTest extends AbstractTestCase
      * @test
      * @dataProvider provideFilters
      *
-     * @param mixed $filterable
-     * @param mixed $expected
+     * @param mixed $filterable of type <T>
+     * @param mixed $expected of type <T>
      */
     public function shouldApplyAllFilters(
         ApplicatorInterface $applicator,
@@ -189,7 +189,7 @@ class FilterApplicatorTest extends AbstractTestCase
      * @test
      * @dataProvider provideNotSupportedFilterable
      *
-     * @param mixed $filterableInput
+     * @param mixed $filterableInput of type <T>
      */
     public function shouldThrowInvalidArgumentExceptionOnApplyFilterOnNotSupportedFilterable(
         $filterableInput,

@@ -7,13 +7,13 @@ class Filterable
     /** @var mixed */
     private $value;
 
-    /** @param mixed $value */
+    /** @param mixed $value This must be supported by any applicator */
     public function __construct($value)
     {
         $this->value = $value;
     }
 
-    /** @return mixed */
+    /** @return mixed This must be supported by any applicator */
     public function getValue()
     {
         return $this->value;

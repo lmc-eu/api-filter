@@ -69,8 +69,8 @@ class ApiFilter
      * $sqlWithFilter = $apiFilter->applyFilter($firstFilters, $sql);      // SELECT * FROM table WHERE title = :title_eq
      * $preparedValue = $apiFilter->getPreparedValue($firstFilters, $sql); // ['title_eq' => 'foo']
      *
-     * @param mixed $filterable
-     * @return mixed
+     * @param mixed $filterable of type <T> - this must be supported by any applicator
+     * @return mixed of type <T> - same as given filterable
      */
     public function applyFilter(FilterInterface $filter, $filterable)
     {
@@ -89,7 +89,7 @@ class ApiFilter
      * $sqlWithFilter = $apiFilter->applyFilter($firstFilters, $sql);      // SELECT * FROM table WHERE title = :title_eq
      * $preparedValue = $apiFilter->getPreparedValue($firstFilters, $sql); // ['title_eq' => 'foo']
      *
-     * @param mixed $filterable
+     * @param mixed $filterable of type <T>
      */
     public function getPreparedValue(FilterInterface $filter, $filterable): array
     {
@@ -113,8 +113,8 @@ class ApiFilter
      * $sqlWithFilters = $apiFilter->applyFilters($filters, $sql);      // SELECT * FROM table WHERE title = :title_eq
      * $preparedValues = $apiFilter->getPreparedValues($filters, $sql); // ['title_eq' => 'foo']
      *
-     * @param mixed $filterable
-     * @return mixed
+     * @param mixed $filterable of type <T> - this must be supported by any applicator
+     * @return mixed of type <T> - same as given filterable
      */
     public function applyFilters(FiltersInterface $filters, $filterable)
     {
@@ -133,7 +133,7 @@ class ApiFilter
      * $sqlWithFilters = $apiFilter->applyFilters($filters, $sql);      // SELECT * FROM table WHERE title = :title_eq
      * $preparedValues = $apiFilter->getPreparedValues($filters, $sql); // ['title_eq' => 'foo']
      *
-     * @param mixed $filterable
+     * @param mixed $filterable of type <T>
      */
     public function getPreparedValues(FiltersInterface $filters, $filterable): array
     {
