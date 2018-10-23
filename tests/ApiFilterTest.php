@@ -6,7 +6,9 @@ use Doctrine\ORM\QueryBuilder;
 use Lmc\ApiFilter\Applicator\SqlApplicator;
 use Lmc\ApiFilter\Constant\Priority;
 use Lmc\ApiFilter\Entity\Value;
+use Lmc\ApiFilter\Exception\ApiFilterExceptionInterface;
 use Lmc\ApiFilter\Filter\FilterWithOperator;
+use Lmc\ApiFilter\Filters\Filters;
 
 class ApiFilterTest extends AbstractTestCase
 {
@@ -177,17 +179,48 @@ class ApiFilterTest extends AbstractTestCase
 
     /**
      * @test
+     * @dataProvider provideInvalidQueryParameters
+     */
+    public function shouldNotParseInvalidQueryParameters(array $invalidQueryParameters, string $expectedMessage): void
+    {
+        $this->expectException(ApiFilterExceptionInterface::class);
+        $this->expectExceptionMessage($expectedMessage);
+
+        $this->apiFilter->parseFilters($invalidQueryParameters);
+    }
+
+    public function provideInvalidQueryParameters(): array
+    {
+        return [
+            // invalidQueryParameters, expectedMessage
+            'empty filter' => [
+                ['column' => ['' => 'value']],
+                'Filter "" is not implemented. For column "column" with value "value".',
+            ],
+            'unknown filter' => [
+                ['column' => ['unknown' => 'value']],
+                'Filter "unknown" is not implemented. For column "column" with value "value".',
+            ],
+            'tuples in IN filter' => [
+                ['(id, name)' => ['in' => ['(1,one)', '(2,two)']]],
+                'Tuples are not allowed in IN filter.',
+            ],
+        ];
+    }
+
+    /**
+     * @test
      * @dataProvider provideNotSupportedFilterable
      *
      * @param mixed $filterable of type <T>
      */
-    public function shouldThrowInvalidArgumentExceptionOnApplyFilterOnNotSupportedFilterable(
+    public function shouldNotApplyFilterOnInvalidFilterable(
         $filterable,
         string $expectedMessage
     ): void {
         $filter = new FilterWithOperator('any', new Value('filter'), 'any', 'any');
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(ApiFilterExceptionInterface::class);
         $this->expectExceptionMessage($expectedMessage);
 
         $this->apiFilter->applyFilter($filter, $filterable);
@@ -201,6 +234,62 @@ class ApiFilterTest extends AbstractTestCase
                 'SELECT * FROM table',
                 'Unsupported filterable of type "string".',
             ],
+            'array' => [
+                [],
+                'Unsupported filterable of type "array".',
+            ],
         ];
+    }
+
+    /**
+     * @test
+     * @dataProvider provideNotSupportedFilterable
+     *
+     * @param mixed $filterable of type <T>
+     */
+    public function shouldNotApplyFiltersToUnsupportedFilterable(
+        $filterable,
+        string $expectedMessage
+    ): void {
+        $filters = Filters::from([new FilterWithOperator('col', new Value('val'), '=', 'eq')]);
+
+        $this->expectException(ApiFilterExceptionInterface::class);
+        $this->expectExceptionMessage($expectedMessage);
+
+        $this->apiFilter->applyFilters($filters, $filterable);
+    }
+
+    /**
+     * @test
+     * @dataProvider provideNotSupportedFilterable
+     *
+     * @param mixed $filterable of type <T>
+     */
+    public function shouldNotPrepareValueForInvalidFilterable(
+        $filterable,
+        string $expectedMessage
+    ): void {
+        $this->expectException(ApiFilterExceptionInterface::class);
+        $this->expectExceptionMessage($expectedMessage);
+
+        $this->apiFilter->getPreparedValue(new FilterWithOperator('col', new Value('val'), '=', 'eq'), $filterable);
+    }
+
+    /**
+     * @test
+     * @dataProvider provideNotSupportedFilterable
+     *
+     * @param mixed $filterable of type <T>
+     */
+    public function shouldNotPrepareValuesForInvalidFilterable(
+        $filterable,
+        string $expectedMessage
+    ): void {
+        $filters = Filters::from([new FilterWithOperator('col', new Value('val'), '=', 'eq')]);
+
+        $this->expectException(ApiFilterExceptionInterface::class);
+        $this->expectExceptionMessage($expectedMessage);
+
+        $this->apiFilter->getPreparedValues($filters, $filterable);
     }
 }

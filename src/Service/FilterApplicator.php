@@ -4,6 +4,8 @@ namespace Lmc\ApiFilter\Service;
 
 use Lmc\ApiFilter\Applicator\ApplicatorInterface;
 use Lmc\ApiFilter\Entity\Filterable;
+use Lmc\ApiFilter\Exception\UnsupportedFilterableException;
+use Lmc\ApiFilter\Exception\UnsupportedFilterException;
 use Lmc\ApiFilter\Filter\FilterIn;
 use Lmc\ApiFilter\Filter\FilterInterface;
 use Lmc\ApiFilter\Filter\FilterWithOperator;
@@ -35,7 +37,7 @@ class FilterApplicator
             return $applicator->applyFilterIn($filter, $filterable);
         }
 
-        throw new \InvalidArgumentException(sprintf('Unsupported filter given "%s".', get_class($filter)));
+        throw UnsupportedFilterException::forFilter($filter);
     }
 
     private function findApplicatorFor(Filterable $filterable): ApplicatorInterface
@@ -46,13 +48,7 @@ class FilterApplicator
             }
         }
 
-        $filterableValue = $filterable->getValue();
-        throw new \InvalidArgumentException(
-            sprintf(
-                'Unsupported filterable of type "%s".',
-                is_object($filterableValue) ? get_class($filterableValue) : gettype($filterableValue)
-            )
-        );
+        throw UnsupportedFilterableException::forFilterable($filterable);
     }
 
     public function getPreparedValue(FilterInterface $filter, Filterable $filterable): array

@@ -6,6 +6,7 @@ use Lmc\ApiFilter\Applicator\ApplicatorInterface;
 use Lmc\ApiFilter\Applicator\QueryBuilderApplicator;
 use Lmc\ApiFilter\Constant\Priority;
 use Lmc\ApiFilter\Entity\Filterable;
+use Lmc\ApiFilter\Exception\ApiFilterExceptionInterface;
 use Lmc\ApiFilter\Filter\FilterInterface;
 use Lmc\ApiFilter\Filters\FiltersInterface;
 use Lmc\ApiFilter\Service\FilterApplicator;
@@ -46,6 +47,9 @@ class ApiFilter
      * //         }
      * //     }
      * // ]
+     *
+     * @throws ApiFilterExceptionInterface
+     * @return FiltersInterface|FilterInterface[]
      */
     public function parseFilters(array $queryParameters): FiltersInterface
     {
@@ -70,6 +74,7 @@ class ApiFilter
      * $preparedValue = $apiFilter->getPreparedValue($firstFilters, $sql); // ['title_eq' => 'foo']
      *
      * @param mixed $filterable of type <T> - this must be supported by any applicator
+     * @throws ApiFilterExceptionInterface
      * @return mixed of type <T> - same as given filterable
      */
     public function applyFilter(FilterInterface $filter, $filterable)
@@ -90,6 +95,7 @@ class ApiFilter
      * $preparedValue = $apiFilter->getPreparedValue($firstFilters, $sql); // ['title_eq' => 'foo']
      *
      * @param mixed $filterable of type <T>
+     * @throws ApiFilterExceptionInterface
      */
     public function getPreparedValue(FilterInterface $filter, $filterable): array
     {
@@ -114,6 +120,7 @@ class ApiFilter
      * $preparedValues = $apiFilter->getPreparedValues($filters, $sql); // ['title_eq' => 'foo']
      *
      * @param mixed $filterable of type <T> - this must be supported by any applicator
+     * @throws ApiFilterExceptionInterface
      * @return mixed of type <T> - same as given filterable
      */
     public function applyFilters(FiltersInterface $filters, $filterable)
@@ -134,6 +141,7 @@ class ApiFilter
      * $preparedValues = $apiFilter->getPreparedValues($filters, $sql); // ['title_eq' => 'foo']
      *
      * @param mixed $filterable of type <T>
+     * @throws ApiFilterExceptionInterface
      */
     public function getPreparedValues(FiltersInterface $filters, $filterable): array
     {
@@ -147,8 +155,10 @@ class ApiFilter
      * Priority can be any integer value (or use predefined Priority)
      * @see Priority
      */
-    public function registerApplicator(ApplicatorInterface $applicator, int $priority): void
+    public function registerApplicator(ApplicatorInterface $applicator, int $priority): self
     {
         $this->applicator->registerApplicator($applicator, $priority);
+
+        return $this;
     }
 }

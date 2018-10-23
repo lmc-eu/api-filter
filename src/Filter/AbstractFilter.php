@@ -2,7 +2,7 @@
 
 namespace Lmc\ApiFilter\Filter;
 
-use Assert\Assertion;
+use Lmc\ApiFilter\Assertion;
 use Lmc\ApiFilter\Entity\Value;
 
 abstract class AbstractFilter implements FilterInterface

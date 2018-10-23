@@ -2,7 +2,7 @@
 
 namespace Lmc\ApiFilter\Entity;
 
-use Assert\Assertion;
+use Lmc\ApiFilter\Assertion;
 
 class Filterable
 {

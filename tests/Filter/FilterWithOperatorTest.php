@@ -4,6 +4,7 @@ namespace Lmc\ApiFilter\Filter;
 
 use Lmc\ApiFilter\AbstractTestCase;
 use Lmc\ApiFilter\Entity\Value;
+use Lmc\ApiFilter\Exception\InvalidArgumentException;
 
 class FilterWithOperatorTest extends AbstractTestCase
 {
@@ -25,7 +26,7 @@ class FilterWithOperatorTest extends AbstractTestCase
      */
     public function shouldNotCreateFilterWithInvalidTitle(string $invalidTitle, string $expectedMessage): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage($expectedMessage);
 
         new FilterWithOperator('column', new Value('value'), '=', $invalidTitle);

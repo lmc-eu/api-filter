@@ -4,6 +4,7 @@ namespace Lmc\ApiFilter\Service;
 
 use Lmc\ApiFilter\AbstractTestCase;
 use Lmc\ApiFilter\Entity\Value;
+use Lmc\ApiFilter\Exception\InvalidArgumentException;
 use Lmc\ApiFilter\Filter\FilterIn;
 use Lmc\ApiFilter\Filter\FilterWithOperator;
 use Lmc\ApiFilter\Filters\Filters;
@@ -114,7 +115,7 @@ class QueryParametersParserTest extends AbstractTestCase
         array $queryParameters,
         string $expectedMessage
     ): void {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage($expectedMessage);
 
         $this->queryParametersParser->parse($queryParameters);

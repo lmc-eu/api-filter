@@ -4,6 +4,7 @@ namespace Lmc\ApiFilter\Filter;
 
 use Lmc\ApiFilter\AbstractTestCase;
 use Lmc\ApiFilter\Entity\Value;
+use Lmc\ApiFilter\Exception\InvalidArgumentException;
 
 class FilterInTest extends AbstractTestCase
 {
@@ -51,7 +52,7 @@ class FilterInTest extends AbstractTestCase
      */
     public function shouldNotCreateFilterIn($invalidValues): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new FilterIn('column', new Value($invalidValues));
     }
