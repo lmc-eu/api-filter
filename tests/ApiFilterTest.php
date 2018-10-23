@@ -179,7 +179,7 @@ class ApiFilterTest extends AbstractTestCase
      * @test
      * @dataProvider provideNotSupportedFilterable
      *
-     * @param mixed $filterable
+     * @param mixed $filterable of type <T>
      */
     public function shouldThrowInvalidArgumentExceptionOnApplyFilterOnNotSupportedFilterable(
         $filterable,

@@ -7,13 +7,13 @@ class Value
     /** @var mixed */
     private $value;
 
-    /** @param mixed $value */
+    /** @param mixed $value Value of different types */
     public function __construct($value)
     {
         $this->value = $value;
     }
 
-    /** @return mixed */
+    /** @return mixed Value of different types */
     public function getValue()
     {
         return $this->value;

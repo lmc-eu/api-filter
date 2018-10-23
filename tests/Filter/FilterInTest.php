@@ -21,7 +21,7 @@ class FilterInTest extends AbstractTestCase
      * @test
      * @dataProvider provideValues
      *
-     * @param mixed $values
+     * @param mixed $values of type <T>
      */
     public function shouldCreateFilterIn($values, array $expected): void
     {
@@ -47,7 +47,7 @@ class FilterInTest extends AbstractTestCase
      * @test
      * @dataProvider provideInvalidValues
      *
-     * @param mixed $invalidValues
+     * @param mixed $invalidValues Unsupported value type
      */
     public function shouldNotCreateFilterIn($invalidValues): void
     {
