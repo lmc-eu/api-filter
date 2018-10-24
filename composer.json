@@ -14,8 +14,9 @@
     },
     "require": {
         "php": "^7.1",
+        "ext-mbstring": "*",
         "beberlei/assert": "^2.9 || ^3.0",
-        "mf/collections-php": "^3.10"
+        "mf/collections-php": "^3.16"
     },
     "suggest": {
         "doctrine/orm": "To allow applying filters directly to QueryBuilder"
@@ -25,6 +26,8 @@
         "lmc/coding-standard": "^1.1",
         "mockery/mockery": "^1.1",
         "php-coveralls/php-coveralls": "^2.1",
+        "phpstan/phpstan-beberlei-assert": "^0.10.0",
+        "phpstan/phpstan-mockery": "^0.10.2",
         "phpstan/phpstan-shim": "^0.10",
         "phpunit/phpunit": "^7.0"
     },
