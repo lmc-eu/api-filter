@@ -3,15 +3,16 @@
 namespace Lmc\ApiFilter\Filter;
 
 use Lmc\ApiFilter\Assertion;
+use Lmc\ApiFilter\Constant\Filter;
 use Lmc\ApiFilter\Entity\Value;
 
 class FilterIn extends AbstractFilter
 {
-    public const TITLE = 'in';
+    public const TITLE = Filter::IN;
 
-    public function __construct(string $column, Value $value, string $title = self::TITLE)
+    public function __construct(string $column, Value $value, ?string $title = null)
     {
-        parent::__construct($title, $column, $this->sanitizeValue($value));
+        parent::__construct($title ?? self::TITLE, $column, $this->sanitizeValue($value));
     }
 
     private function sanitizeValue(Value $value): Value

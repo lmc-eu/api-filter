@@ -9,6 +9,10 @@ use Lmc\ApiFilter\Filter\FilterIn;
 use Lmc\ApiFilter\Filter\FilterWithOperator;
 use Lmc\ApiFilter\Filters\Filters;
 
+/**
+ * @covers \Lmc\ApiFilter\Exception\TupleException
+ * @covers \Lmc\ApiFilter\Service\QueryParametersParser
+ */
 class QueryParametersParserTest extends AbstractTestCase
 {
     /** @var QueryParametersParser */
@@ -16,7 +20,9 @@ class QueryParametersParserTest extends AbstractTestCase
 
     protected function setUp(): void
     {
-        $this->queryParametersParser = new QueryParametersParser();
+        $this->queryParametersParser = new QueryParametersParser(
+            new FilterFactory()
+        );
     }
 
     /**
@@ -71,7 +77,7 @@ class QueryParametersParserTest extends AbstractTestCase
                 ['title' => ['gte' => '0', 'lte' => '10']],
                 [
                     new FilterWithOperator('title', new Value('0'), '>=', 'gte'),
-                    new FilterWithOperator('title', new Value('10'), '<=', 'lt'),
+                    new FilterWithOperator('title', new Value('10'), '<=', 'lte'),
                 ],
             ],
             'in array' => [
@@ -144,6 +150,10 @@ class QueryParametersParserTest extends AbstractTestCase
             'tuples in IN filter' => [
                 ['(id, name)' => ['in' => ['(1,one)', '(2,two)']]],
                 'Tuples are not allowed in IN filter.',
+            ],
+            'invalid tuple' => [
+                ['(id, name)' => '(foo)'],
+                'Invalid tuple given - expected 2 items but parsed 1 items from "(foo)".',
             ],
         ];
     }

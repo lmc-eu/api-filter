@@ -10,6 +10,7 @@ use Lmc\ApiFilter\Exception\ApiFilterExceptionInterface;
 use Lmc\ApiFilter\Filter\FilterInterface;
 use Lmc\ApiFilter\Filters\FiltersInterface;
 use Lmc\ApiFilter\Service\FilterApplicator;
+use Lmc\ApiFilter\Service\FilterFactory;
 use Lmc\ApiFilter\Service\QueryParametersParser;
 
 class ApiFilter
@@ -21,7 +22,8 @@ class ApiFilter
 
     public function __construct()
     {
-        $this->parser = new QueryParametersParser();
+        $filterFactory = new FilterFactory();
+        $this->parser = new QueryParametersParser($filterFactory);
         $this->applicator = new FilterApplicator();
 
         if (class_exists('Doctrine\ORM\QueryBuilder')) {
