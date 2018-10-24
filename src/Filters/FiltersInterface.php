@@ -6,8 +6,9 @@ use Lmc\ApiFilter\Applicator\ApplicatorInterface;
 use Lmc\ApiFilter\Entity\Filterable;
 use Lmc\ApiFilter\Filter\FilterInterface;
 use Lmc\ApiFilter\Service\FilterApplicator;
+use MF\Collection\IEnumerable;
 
-interface FiltersInterface extends \IteratorAggregate
+interface FiltersInterface extends IEnumerable
 {
     /**
      * Apply all filters to given filterable
@@ -17,4 +18,6 @@ interface FiltersInterface extends \IteratorAggregate
     public function getPreparedValues(ApplicatorInterface $applicator): array;
 
     public function addFilter(FilterInterface $filter): self;
+
+    public function toArray(): array;
 }
