@@ -14,7 +14,7 @@ class FilterInTest extends AbstractTestCase
     {
         $filterIn = new FilterIn('col', new Value([1, 2, 3]));
 
-        $this->assertSame('in', $filterIn->getTitle());
+        $this->assertSame('col_in', $filterIn->getTitle());
     }
 
     /**
@@ -82,5 +82,17 @@ class FilterInTest extends AbstractTestCase
         $valueContent = $inFilter->getValue()->getValue();
 
         $this->assertSame([1, 2], $valueContent);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldOverrideDefaultTitleByFullTitle(): void
+    {
+        $filter = new FilterIn('column', new Value('value'), 'title');
+        $this->assertSame('column_title', $filter->getTitle());
+
+        $filter->setFullTitle('full_title');
+        $this->assertSame('full_title', $filter->getTitle());
     }
 }

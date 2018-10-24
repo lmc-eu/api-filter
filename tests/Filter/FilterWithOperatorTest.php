@@ -16,7 +16,7 @@ class FilterWithOperatorTest extends AbstractTestCase
 
         $title = $filter->getTitle();
 
-        $this->assertSame('eq', $title);
+        $this->assertSame('column_eq', $title);
     }
 
     /**
@@ -35,10 +35,22 @@ class FilterWithOperatorTest extends AbstractTestCase
     {
         return [
             // invalid title, expected message
-            'empty' => ['', 'Title must be only [a-z] letters but "" given.'],
-            'upper case' => ['Title', 'Title must be only [a-z] letters but "Title" given.'],
-            'dash' => ['tit-le', 'Title must be only [a-z] letters but "tit-le" given.'],
-            'underscore' => ['tit_le', 'Title must be only [a-z] letters but "tit_le" given.'],
+            'empty' => ['', 'Title must be only [a-zA-Z_] letters but "" given.'],
+            'dash' => ['tit-le', 'Title must be only [a-zA-Z_] letters but "tit-le" given.'],
+            'space' => ['tit le', 'Title must be only [a-zA-Z_] letters but "tit le" given.'],
+            'special char' => ['tit*le', 'Title must be only [a-zA-Z_] letters but "tit*le" given.'],
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function shouldOverrideDefaultTitleByFullTitle(): void
+    {
+        $filter = new FilterWithOperator('column', new Value('value'), '>', 'gt');
+        $this->assertSame('column_gt', $filter->getTitle());
+
+        $filter->setFullTitle('full_title');
+        $this->assertSame('full_title', $filter->getTitle());
     }
 }

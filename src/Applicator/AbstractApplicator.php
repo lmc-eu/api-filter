@@ -28,7 +28,7 @@ abstract class AbstractApplicator implements ApplicatorInterface
 
     private function createColumnPlaceholder(string $prefix, FilterInterface $filter, string $additional = null): string
     {
-        $pieces = [$filter->getColumn(), $filter->getTitle()];
+        $pieces = [$filter->getTitle()];
 
         if ($additional !== null) {
             $pieces[] = $additional;

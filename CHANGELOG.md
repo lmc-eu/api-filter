@@ -5,6 +5,7 @@
 
 ## Unreleased
 - Forbid `Value` and `Filterable` to be nested
+- Change Filter title format to allow upper case letters and underscore
 
 ## 1.0.0 - 2018-08-28
 - Initial version.
