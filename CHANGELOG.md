@@ -4,6 +4,7 @@
 <!-- There should always be "Unreleased" section at the beginning. -->
 
 ## Unreleased
+- Forbid `Value` and `Filterable` to be nested
 
 ## 1.0.0 - 2018-08-28
 - Initial version.

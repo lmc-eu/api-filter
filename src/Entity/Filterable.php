@@ -2,6 +2,8 @@
 
 namespace Lmc\ApiFilter\Entity;
 
+use Assert\Assertion;
+
 class Filterable
 {
     /** @var mixed */
@@ -10,6 +12,11 @@ class Filterable
     /** @param mixed $value This must be supported by any applicator */
     public function __construct($value)
     {
+        Assertion::notIsInstanceOf(
+            $value,
+            self::class,
+            'Filterable must not contain another Filterable. Extract a value from Filterable or use it directly.'
+        );
         $this->value = $value;
     }
 
