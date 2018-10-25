@@ -83,4 +83,14 @@ class Filters implements FiltersInterface
             return $item instanceof FilterIn && $item->getColumn() === $filter->getColumn();
         };
     }
+
+    public function count(): int
+    {
+        return count($this->filters);
+    }
+
+    public function toArray(): array
+    {
+        return $this->filters->toArray();
+    }
 }

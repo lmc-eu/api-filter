@@ -17,19 +17,9 @@ class FiltersTest extends AbstractTestCase
     {
         $filters = new Filters($items);
 
-        $result = $this->filtersToArray($filters);
+        $result = $filters->toArray();
 
         $this->assertSame($items, $result);
-    }
-
-    private function filtersToArray($filters): array
-    {
-        $result = [];
-        foreach ($filters as $filter) {
-            $result[] = $filter;
-        }
-
-        return $result;
     }
 
     public function provideFilters(): array
@@ -56,7 +46,7 @@ class FiltersTest extends AbstractTestCase
     {
         $filters = Filters::from($items);
 
-        $result = $this->filtersToArray($filters);
+        $result = $filters->toArray();
 
         $this->assertSame($items, $result);
     }
@@ -79,7 +69,7 @@ class FiltersTest extends AbstractTestCase
 
         $filters->addFilter(new FilterWithOperator('col', new Value('val'), '=', 'eq'));
 
-        $result = $this->filtersToArray($filters);
+        $result = $filters->toArray();
 
         $this->assertEquals($expected, $result);
     }
@@ -101,8 +91,20 @@ class FiltersTest extends AbstractTestCase
         $filters->addFilter(new FilterIn('col', new Value(2)));
         $filters->addFilter(new FilterIn('col', new Value([3])));
 
-        $result = $this->filtersToArray($filters);
+        $result = $filters->toArray();
 
         $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldCountFilters(): void
+    {
+        $filters = new Filters();
+        $this->assertCount(0, $filters);
+
+        $filters->addFilter(new FilterWithOperator('column', new Value('value'), '<', 'lt'));
+        $this->assertCount(1, $filters);
     }
 }
