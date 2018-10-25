@@ -13,10 +13,12 @@ abstract class AbstractFilter implements FilterInterface
     private $column;
     /** @var Value */
     private $value;
+    /** @var ?string */
+    private $fullTitle;
 
     public function __construct(string $title, string $column, Value $value)
     {
-        Assertion::regex($title, '/^[a-z]+$/', 'Title must be only [a-z] letters but "%s" given.');
+        Assertion::regex($title, '/^[a-zA-Z_]+$/', 'Title must be only [a-zA-Z_] letters but "%s" given.');
         $this->title = $title;
         $this->column = $column;
         $this->value = $value;
@@ -24,7 +26,9 @@ abstract class AbstractFilter implements FilterInterface
 
     public function getTitle(): string
     {
-        return $this->title;
+        return $this->fullTitle !== null
+            ? $this->fullTitle
+            : implode('_', [$this->getColumn(), $this->title]);
     }
 
     public function getColumn(): string
@@ -40,5 +44,10 @@ abstract class AbstractFilter implements FilterInterface
     protected function setValue(Value $value): void
     {
         $this->value = $value;
+    }
+
+    public function setFullTitle(string $title): void
+    {
+        $this->fullTitle = $title;
     }
 }
