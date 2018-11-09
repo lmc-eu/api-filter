@@ -7,48 +7,92 @@ use Lmc\ApiFilter\Entity\Value;
 use Lmc\ApiFilter\Exception\TupleException;
 use Lmc\ApiFilter\Filters\Filters;
 use Lmc\ApiFilter\Filters\FiltersInterface;
+use Lmc\ApiFilter\Service\Parser\ParserInterface;
+use Lmc\ApiFilter\Service\Parser\SingleColumnSingleValueParser;
 use MF\Collection\Exception\TupleExceptionInterface;
 use MF\Collection\Immutable\ITuple;
 use MF\Collection\Immutable\Seq;
 use MF\Collection\Immutable\Tuple;
+use MF\Collection\Mutable\Generic\PrioritizedCollection;
 
 class QueryParametersParser
 {
-    /** @var FilterFactory */
+    /**
+     * @deprecated this should be used from parsers
+     * @var FilterFactory
+     */
     private $filterFactory;
+    /** @var PrioritizedCollection|ParserInterface[] */
+    private $parsers;
 
     public function __construct(FilterFactory $filterFactory)
     {
         $this->filterFactory = $filterFactory;
+
+        $this->parsers = new PrioritizedCollection(ParserInterface::class);
+        $this->parsers->add(new SingleColumnSingleValueParser($filterFactory), 1);
     }
 
     public function parse(array $queryParameters): FiltersInterface
     {
         try {
-            return Seq::init(function () use ($queryParameters) {
-                foreach ($queryParameters as $column => $values) {
-                    $columns = $this->parseColumns($column);
-                    $columnsCount = count($columns);
+            $filters = new Filters();
+            foreach ($this->parseFilters($queryParameters) as $filter) {
+                $filters->addFilter($filter);
+            }
 
-                    foreach ($this->normalizeFilters($values) as $filter => $value) {
-                        $this->assertTupleIsAllowed($filter, $columnsCount);
-                        $parsedValues = $this->parseValues($value, $columnsCount);
+            $filters = $this->parseOld($queryParameters, $filters);
 
-                        foreach ($columns as $column) {
-                            yield Tuple::of($column, $filter, new Value(array_shift($parsedValues)));
-                        }
-                    }
-                }
-            })
-                ->reduce(
-                    function (FiltersInterface $filters, ITuple $tuple): FiltersInterface {
-                        return $filters->addFilter($this->filterFactory->createFilter(...$tuple));
-                    },
-                    new Filters()
-                );
+            return $filters;
         } catch (TupleExceptionInterface $e) {
             throw TupleException::forBaseTupleException($e);
         }
+    }
+
+    private function parseFilters(array $queryParameters): iterable
+    {
+        foreach ($queryParameters as $rawColumn => $rawValue) {
+            foreach ($this->parsers as $parser) {
+                if ($parser->supports($rawColumn, $rawValue)) {
+                    yield from $parser->parse($rawColumn, $rawValue);
+
+                    // continue to next query parameter
+                    continue 2;
+                }
+            }
+        }
+    }
+
+    /**
+     * @deprecated this should be done by parsers
+     */
+    private function parseOld(array $queryParameters, FiltersInterface $filters): FiltersInterface
+    {
+        return Seq::init(function () use ($queryParameters) {
+            foreach ($queryParameters as $column => $values) {
+                $columns = $this->parseColumns($column);
+                $columnsCount = count($columns);
+
+                foreach ($this->normalizeFilters($values) as $filter => $value) {
+                    $this->assertTupleIsAllowed($filter, $columnsCount);
+                    $parsedValues = $this->parseValues($value, $columnsCount);
+
+                    foreach ($columns as $column) {
+                        yield Tuple::of($column, $filter, new Value(array_shift($parsedValues)));
+                    }
+                }
+            }
+        })
+            ->reduce(
+                function (FiltersInterface $filters, ITuple $tuple): FiltersInterface {
+                    $filter = $this->filterFactory->createFilter(...$tuple);
+
+                    return $filters->hasFilter($filter)
+                        ? $filters
+                        : $filters->addFilter($filter);
+                },
+                $filters
+            );
     }
 
     private function parseColumns(string $column): array

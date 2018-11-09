@@ -17,6 +17,8 @@ interface FiltersInterface extends IEnumerable
 
     public function getPreparedValues(ApplicatorInterface $applicator): array;
 
+    public function hasFilter(FilterInterface $filter): bool;
+
     public function addFilter(FilterInterface $filter): self;
 
     public function toArray(): array;
