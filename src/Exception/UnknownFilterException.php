@@ -13,7 +13,9 @@ class UnknownFilterException extends InvalidArgumentException
                 'Filter "%s" is not implemented. For column "%s" with value "%s".',
                 $filter,
                 $column,
-                $value->getValue()
+                is_callable($value->getValue())
+                    ? 'callable'
+                    : $value->getValue()
             )
         );
     }

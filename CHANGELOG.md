@@ -9,6 +9,7 @@
 - Extends `IEnumerable` interface by `FiltersInterface` to implement both `Countable` and `IteratorAgregate` interfaces.
 - Add `toArray` method to `FiltersInterface` to allow better debugging.
 - Add `ApiFilterExceptionInterface` to covers all (_known_) internal exceptions.
+- Fix parsing `lte` filter.
 
 ## 1.0.0 - 2018-08-28
 - Initial version.
