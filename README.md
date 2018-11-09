@@ -28,6 +28,7 @@ Same if you want different settings per entity/table, it should be done by a spe
     - [IN + EQ](#in--eq-filter)
     - [GT + LT _(between)_](#gt--lt-filter-between)
     - [EQ `Tuple`](#eq-with-tuple)
+- [Exceptions and error handling](#exceptions-and-error-handling)
 - [Development](#development)
 
 ## Installation
@@ -282,6 +283,21 @@ $filters = $apiFilter->parseFilters($parameters);
 $sql = $apiFilter->applyFilters($filters, $sql); // SELECT * FROM person WHERE 1 AND firstname = :firstname_eq AND surname = :surname_eq
 $preparedValues = $apiFilter->getPreparedValues($filters, $sql); // ['firstname_eq' => 'John', 'surname_eq' => 'Snow']
 ```
+
+## Exceptions and error handling
+
+_Known_ exceptions occurring inside ApiFilter implements `Lmc\ApiFilter\Exception\ApiFilterExceptionInterface`. The exception tree is:
+
+| Exception | Thrown when |
+| ---       | ---         |
+| ApiFilterExceptionInterface | Common interface of all ApiFilter exceptions |
+| └ InvalidArgumentException | Base exception for assertion failed |
+|   └ UnknownFilterException | Unknown filter is used in query parameters |
+|   └ UnsupportedFilterableException | This exception will be thrown when no _applicator_ supports given _filterable_. |
+|   └ UnsupportedFilterException | This exception should not be thrown on the client side. It is meant for developing an ApiFilter library - to ensure all Filter types are supported. |
+|   └ TupleException | Common exception for all problems with a `Tuple`. It also implements `MF\Collection\Exception\TupleExceptionInterface` which might be thrown inside parsing. |
+
+Please note if you register a custom _applicator_ to the ApiFilter (via `$apiFilter->registerApplicator()`), it may throw other exceptions which might not implement `ApiFilterExceptionInterface`.
 
 ## Development
 

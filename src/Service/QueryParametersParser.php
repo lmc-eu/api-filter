@@ -2,13 +2,16 @@
 
 namespace Lmc\ApiFilter\Service;
 
-use Assert\Assertion;
+use Lmc\ApiFilter\Assertion;
 use Lmc\ApiFilter\Entity\Value;
+use Lmc\ApiFilter\Exception\TupleException;
+use Lmc\ApiFilter\Exception\UnknownFilterException;
 use Lmc\ApiFilter\Filter\FilterIn;
 use Lmc\ApiFilter\Filter\FilterInterface;
 use Lmc\ApiFilter\Filter\FilterWithOperator;
 use Lmc\ApiFilter\Filters\Filters;
 use Lmc\ApiFilter\Filters\FiltersInterface;
+use MF\Collection\Exception\TupleExceptionInterface;
 use MF\Collection\Immutable\ITuple;
 use MF\Collection\Immutable\Seq;
 use MF\Collection\Immutable\Tuple;
@@ -17,27 +20,31 @@ class QueryParametersParser
 {
     public function parse(array $queryParameters): FiltersInterface
     {
-        return Seq::init(function () use ($queryParameters) {
-            foreach ($queryParameters as $column => $values) {
-                $columns = $this->parseColumns($column);
-                $columnsCount = count($columns);
+        try {
+            return Seq::init(function () use ($queryParameters) {
+                foreach ($queryParameters as $column => $values) {
+                    $columns = $this->parseColumns($column);
+                    $columnsCount = count($columns);
 
-                foreach ($this->normalizeFilters($values) as $filter => $value) {
-                    $this->assertTupleIsAllowed($filter, $columnsCount);
-                    $parsedValues = $this->parseValues($value, $columnsCount);
+                    foreach ($this->normalizeFilters($values) as $filter => $value) {
+                        $this->assertTupleIsAllowed($filter, $columnsCount);
+                        $parsedValues = $this->parseValues($value, $columnsCount);
 
-                    foreach ($columns as $column) {
-                        yield Tuple::of($column, $filter, new Value(array_shift($parsedValues)));
+                        foreach ($columns as $column) {
+                            yield Tuple::of($column, $filter, new Value(array_shift($parsedValues)));
+                        }
                     }
                 }
-            }
-        })
-            ->reduce(
-                function (FiltersInterface $filters, ITuple $tuple): FiltersInterface {
-                    return $filters->addFilter($this->createFilter(...$tuple));
-                },
-                new Filters()
-            );
+            })
+                ->reduce(
+                    function (FiltersInterface $filters, ITuple $tuple): FiltersInterface {
+                        return $filters->addFilter($this->createFilter(...$tuple));
+                    },
+                    new Filters()
+                );
+        } catch (TupleExceptionInterface $e) {
+            throw TupleException::forBaseTupleException($e);
+        }
     }
 
     private function parseColumns(string $column): array
@@ -83,13 +90,6 @@ class QueryParametersParser
                 return new FilterIn($column, $value);
         }
 
-        throw new \InvalidArgumentException(
-            sprintf(
-                'Filter "%s" is not implemented. For column "%s" with value "%s".',
-                $filter,
-                $column,
-                $value->getValue()
-            )
-        );
+        throw UnknownFilterException::forFilterWithColumnAndValue($filter, $column, $value);
     }
 }

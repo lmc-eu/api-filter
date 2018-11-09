@@ -3,6 +3,7 @@
 namespace Lmc\ApiFilter\Entity;
 
 use Lmc\ApiFilter\AbstractTestCase;
+use Lmc\ApiFilter\Exception\InvalidArgumentException;
 
 class FilterableTest extends AbstractTestCase
 {
@@ -39,7 +40,7 @@ class FilterableTest extends AbstractTestCase
      */
     public function shouldNotCreateFilterableFromFilterable(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Filterable must not contain another Filterable. Extract a value from Filterable or use it directly.');
 
         new Filterable(new Filterable('nested filterable'));

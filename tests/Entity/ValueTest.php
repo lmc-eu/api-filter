@@ -3,6 +3,7 @@
 namespace Lmc\ApiFilter\Entity;
 
 use Lmc\ApiFilter\AbstractTestCase;
+use Lmc\ApiFilter\Exception\InvalidArgumentException;
 
 class ValueTest extends AbstractTestCase
 {
@@ -38,7 +39,7 @@ class ValueTest extends AbstractTestCase
      */
     public function shouldNotCreateValueFromValue(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Value must not contain another Value. Extract a value from Value or use it directly.');
 
         new Value(new Value('nested value'));
