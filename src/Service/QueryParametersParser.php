@@ -3,6 +3,7 @@
 namespace Lmc\ApiFilter\Service;
 
 use Lmc\ApiFilter\Assertion;
+use Lmc\ApiFilter\Constant\Priority;
 use Lmc\ApiFilter\Entity\Value;
 use Lmc\ApiFilter\Exception\TupleException;
 use Lmc\ApiFilter\Filters\Filters;
@@ -31,8 +32,8 @@ class QueryParametersParser
         $this->filterFactory = $filterFactory;
 
         $this->parsers = new PrioritizedCollection(ParserInterface::class);
-        $this->parsers->add(new SingleColumnArrayValueParser($filterFactory), 2);
-        $this->parsers->add(new SingleColumnSingleValueParser($filterFactory), 1);
+        $this->parsers->add(new SingleColumnArrayValueParser($filterFactory), Priority::LOWER);
+        $this->parsers->add(new SingleColumnSingleValueParser($filterFactory), Priority::LOWEST);
     }
 
     public function parse(array $queryParameters): FiltersInterface
