@@ -56,6 +56,15 @@ class Filters implements FiltersInterface
         return $preparedValues;
     }
 
+    public function hasFilter(FilterInterface $filter): bool
+    {
+        return $this->filters->containsBy(function (FilterInterface $item) use ($filter) {
+            return $item->getColumn() === $filter->getColumn()
+                && $item->getTitle() === $filter->getTitle()
+                && $item->getValue()->getValue() === $filter->getValue()->getValue();
+        });
+    }
+
     public function addFilter(FilterInterface $filter): FiltersInterface
     {
         if ($filter instanceof FilterIn && $this->shouldMergeInFilter($filter)) {
