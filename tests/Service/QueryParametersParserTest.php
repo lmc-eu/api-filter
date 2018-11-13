@@ -75,9 +75,9 @@ class QueryParametersParserTest extends AbstractTestCase
             'one col more filters + other col - explicit/implicit' => [
                 ['title' => ['gt' => '0', 'lt' => '10'], 'value' => 'foo'],
                 [
-                    new FilterWithOperator('value', new Value('foo'), '=', 'eq'),
                     new FilterWithOperator('title', new Value('0'), '>', 'gt'),
                     new FilterWithOperator('title', new Value('10'), '<', 'lt'),
+                    new FilterWithOperator('value', new Value('foo'), '=', 'eq'),
                 ],
             ],
             'one col - between - explicit' => [
@@ -103,9 +103,9 @@ class QueryParametersParserTest extends AbstractTestCase
             'tuple - implicit eq + explicit in' => [
                 ['(zone,bucket)' => '(lmc,all)', 'id' => ['in' => [1, 2, 3]]],
                 [
+                    new FilterIn('id', new Value([1, 2, 3])),
                     new FilterWithOperator('zone', new Value('lmc'), '=', 'eq'),
                     new FilterWithOperator('bucket', new Value('all'), '=', 'eq'),
-                    new FilterIn('id', new Value([1, 2, 3])),
                 ],
             ],
             'tuple - between - explicit in values' => [
