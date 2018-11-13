@@ -103,9 +103,9 @@ class QueryParametersParserTest extends AbstractTestCase
             'tuple - implicit eq + explicit in' => [
                 ['(zone,bucket)' => '(lmc,all)', 'id' => ['in' => [1, 2, 3]]],
                 [
-                    new FilterIn('id', new Value([1, 2, 3])),
                     new FilterWithOperator('zone', new Value('lmc'), '=', 'eq'),
                     new FilterWithOperator('bucket', new Value('all'), '=', 'eq'),
+                    new FilterIn('id', new Value([1, 2, 3])),
                 ],
             ],
             'tuple - between - explicit in values' => [
@@ -167,11 +167,11 @@ class QueryParametersParserTest extends AbstractTestCase
             ],
             'more columns than values' => [
                 ['(col1, col2, col3)' => '(val1, val2)'],
-                'Invalid tuple given - expected 3 items but parsed 2 items from "(val1, val2)".',
+                'Number of given columns (3) and values (2) in tuple are not same.',
             ],
             'more values than columns' => [
                 ['(col1, col2)' => '(val1, val2, val3)'],
-                'Invalid tuple given - expected 2 items but parsed 3 items from "(val1, val2, val3)".',
+                'Number of given columns (2) and values (3) in tuple are not same.',
             ],
             'invalid tuple - explicit filters' => [
                 ['(id,name)' => ['eq' => '(42,foo,bar)']],
@@ -183,7 +183,7 @@ class QueryParametersParserTest extends AbstractTestCase
             ],
             'invalid tuple' => [
                 ['(id, name)' => '(foo)'],
-                'Invalid tuple given - expected 2 items but parsed 1 items from "(foo)".',
+                'Tuple must have at least two values.',
             ],
         ];
     }
