@@ -11,6 +11,7 @@ use Lmc\ApiFilter\Filters\FiltersInterface;
 use Lmc\ApiFilter\Service\Parser\ParserInterface;
 use Lmc\ApiFilter\Service\Parser\SingleColumnArrayValueParser;
 use Lmc\ApiFilter\Service\Parser\SingleColumnSingleValueParser;
+use Lmc\ApiFilter\Service\Parser\TupleColumnArrayValueParser;
 use Lmc\ApiFilter\Service\Parser\TupleColumnTupleValueParser;
 use MF\Collection\Exception\TupleExceptionInterface;
 use MF\Collection\Immutable\ITuple;
@@ -34,6 +35,7 @@ class QueryParametersParser
 
         $this->parsers = new PrioritizedCollection(ParserInterface::class);
         $this->parsers->add(new TupleColumnTupleValueParser($filterFactory), Priority::HIGH);
+        $this->parsers->add(new TupleColumnArrayValueParser($filterFactory), Priority::MEDIUM);
         $this->parsers->add(new SingleColumnArrayValueParser($filterFactory), Priority::LOWER);
         $this->parsers->add(new SingleColumnSingleValueParser($filterFactory), Priority::LOWEST);
     }
