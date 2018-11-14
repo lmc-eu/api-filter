@@ -175,7 +175,7 @@ class QueryParametersParserTest extends AbstractTestCase
             ],
             'invalid tuple - explicit filters' => [
                 ['(id,name)' => ['eq' => '(42,foo,bar)']],
-                'Invalid tuple given - expected 2 items but parsed 3 items from "(42,foo,bar)".',
+                'Number of given columns (2) and values (3) in tuple are not same.',
             ],
             'tuples in IN filter' => [
                 ['(id, name)' => ['in' => ['(1,one)', '(2,two)']]],
