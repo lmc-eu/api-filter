@@ -175,15 +175,21 @@ GET http://host/endpoint/?type[in][]=one&type[in][]=two
 `Tuples`
 - are important in filters if you have some values, which **must** be sent together
 - are composed of two or more values (_`Tuple` of one value is just a value_)
-- items should be in `(` `)` and separated by `,`
+- items **must** be in `(` `)` and separated by `,`
+    - `array` in `Tuple` **must** be in `[` `]` and items separated by `;`
 - it is advised NOT to use a _space_ between values because of the _URL_ specific behavior
 - for more information about `Tuples` see https://github.com/MortalFlesh/MFCollectionsPHP#immutabletuple 
 
 ### Column with `Tuple`
 Columns declared by `Tuple` behaves the same as a single value but its value must be a `Tuple` as well.
+Columns can contain a filter specification for each value.
+- default filter is `EQ` for a single value and `IN` for an array of values (_in `Tuple`_)
 
 ### Values with `Tuple`
 Values in the `Tuple` must have the same number of items as is the number of columns.
+Values can contain a filter specification for all values in a `Tuple`.
+
+❗**NOTE**: A filter specification **must not** be in both columns and values.
 
 ### Usage
 ```http request
@@ -282,6 +288,101 @@ $filters = $apiFilter->parseFilters($parameters);
 
 $sql = $apiFilter->applyFilters($filters, $sql); // SELECT * FROM person WHERE 1 AND firstname = :firstname_eq AND surname = :surname_eq
 $preparedValues = $apiFilter->getPreparedValues($filters, $sql); // ['firstname_eq' => 'John', 'surname_eq' => 'Snow']
+```
+
+### More Examples
+
+#### Equals (_implicit and explicit_)
+```http request
+GET http://host/person/?fullName=Jon Snow
+GET http://host/person/?fullName[eq]=Jon Snow
+```
+Result:
+```yaml
+-   column: fullName
+    filters: eq
+    value: Jon Snow
+```
+
+#### Multiple filters (_implicit and explicit_)
+By single values
+```http request
+GET http://host/person/?firstName=Jon&surname=Snow
+GET http://host/person/?firstName[eq]=Jon&surname[eq]=Snow
+```
+
+By Tuples
+```http request
+GET http://host/person/?(firstName,surname)=(Jon,Snow)
+GET http://host/person/?(firstName,surname)[eq]=(Jon,Snow)
+GET http://host/person/?(firstName[eq],surname[eq])=(Jon,Snow)
+```
+Result:
+```yaml
+-   column: firstName
+    filters: eq
+    value: Jon
+
+-   column: surname
+    filters: eq
+    value: Snow
+```
+
+#### Multiple filters
+You can mix all types of filters (_tuples, explicit, implicit_).
+
+##### _Perfect wife_ by generic filters
+By single values
+```http request
+GET http://host/person/?age[gte]=18&age[lt]=30&category[in][]=serious&category[in][]=marriage&sense-of-humor=true
+```
+
+By Tuples
+```http request
+GET http://host/person/?(age[gte],age[lt],category,sense-of-humor)=(18,30,[serious;marriage],true)
+```
+Result:
+```yaml
+-   column: age
+    filters: gte
+    value: 18
+
+-   column: age
+    filters: lt
+    value: 30
+
+-   column: category
+    filters: in
+    value: [ serious, marriage ]
+
+-   column: sense-of-humor
+    filters: eq
+    value: true
+```
+
+##### _Want to see movies_ by generic filters
+By single values
+```http request
+GET http://host/movie/?year[gte]=2018&rating[gte]=80&genre[in][]=action&genre[in][]=fantasy
+```
+
+By Tuples
+```http request
+GET http://host/movie/?(year[gte],rating[gte],genre)=(2018,80,[action;fantasy])
+```
+Result:
+```yaml
+-   column: year
+    filters: gte
+    value: 2018
+
+-   column: rating
+    filters: gte
+    value: 80
+
+-   column: genre
+    filters: in
+    value: [ action, fantasy ]
 ```
 
 ## Exceptions and error handling
