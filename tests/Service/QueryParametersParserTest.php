@@ -163,7 +163,7 @@ class QueryParametersParserTest extends AbstractTestCase
             ],
             'tuple columns and a single value' => [
                 ['(col1, col2)' => 'value'],
-                'Invalid tuple given - expected 2 items but parsed 1 items from "value".',
+                'Invalid combination of a tuple and a scalar. Column (col1, col2) and value value.',
             ],
             'more columns than values' => [
                 ['(col1, col2, col3)' => '(val1, val2)'],
