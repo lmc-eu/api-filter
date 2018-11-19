@@ -32,4 +32,11 @@ abstract class AbstractTestCase extends TestCase
             $this->assertSame($expectedDqlWhere, $where->getParts());
         }
     }
+
+    protected function createDummyCallback(string $name): callable
+    {
+        return function () use ($name): void {
+            throw new \Exception(sprintf('Function "%s" is not meant to be called.', $name));
+        };
+    }
 }
