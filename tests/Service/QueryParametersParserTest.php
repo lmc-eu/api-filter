@@ -11,6 +11,7 @@ use Lmc\ApiFilter\Filters\Filters;
 
 /**
  * @covers \Lmc\ApiFilter\Exception\TupleException
+ * @covers \Lmc\ApiFilter\Service\Parser\AbstractParser
  * @covers \Lmc\ApiFilter\Service\QueryParametersParser
  */
 class QueryParametersParserTest extends AbstractTestCase

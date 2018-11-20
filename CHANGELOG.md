@@ -10,6 +10,7 @@
 - Add `toArray` method to `FiltersInterface` to allow better debugging.
 - Add `ApiFilterExceptionInterface` to covers all (_known_) internal exceptions.
 - Fix parsing `lte` filter.
+- Allow explicit filter definition in a **Tuple** _raw column_.
 
 ## 1.0.0 - 2018-08-28
 - Initial version.
