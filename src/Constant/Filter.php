@@ -12,4 +12,5 @@ final class Filter
     public const IN = 'in';
 
     public const FUNCTION = 'function';
+    public const FUNCTION_PARAMETER = 'functionParameter';
 }
