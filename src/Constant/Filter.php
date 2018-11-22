@@ -10,4 +10,6 @@ final class Filter
     public const GREATER_THAN = 'gt';
     public const GREATER_THAN_OR_EQUAL = 'gte';
     public const IN = 'in';
+
+    public const FUNCTION = 'function';
 }
