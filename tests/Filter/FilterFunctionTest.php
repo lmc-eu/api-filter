@@ -4,6 +4,7 @@ namespace Lmc\ApiFilter\Filter;
 
 use Lmc\ApiFilter\AbstractTestCase;
 use Lmc\ApiFilter\Entity\Value;
+use Lmc\ApiFilter\Exception\InvalidArgumentException;
 
 class FilterFunctionTest extends AbstractTestCase
 {
@@ -43,7 +44,7 @@ class FilterFunctionTest extends AbstractTestCase
      */
     public function shouldNotCreateFilterFunction(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Value for filter function must be callable. "not-callable" given.');
 
         new FilterFunction('column', new Value('not-callable'));

@@ -2,6 +2,7 @@
 
 namespace Lmc\ApiFilter\Service\Parser;
 
+use Lmc\ApiFilter\Exception\InvalidArgumentException;
 use Lmc\ApiFilter\Service\FilterFactory;
 
 /**
@@ -27,7 +28,7 @@ class UnsupportedTupleCombinationParserTest extends AbstractParserTestCase
      */
     public function shouldParseColumnAndValue(string $rawColumn, $rawValue, array $expected): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         parent::shouldParseColumnAndValue($rawColumn, $rawValue, $expected);
     }
@@ -51,7 +52,7 @@ class UnsupportedTupleCombinationParserTest extends AbstractParserTestCase
      */
     public function shouldNotSupportParsing($rawColumn, $rawValue, string $expectedMessage): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage($expectedMessage);
 
         foreach ($this->parser->parse($rawColumn, $rawValue) as $item) {
