@@ -17,7 +17,7 @@ class FunctionParameterTest extends AbstractTestCase
     {
         $functionParameter = new FunctionParameter('firstName', new Value('Jon'));
 
-        $this->assertSame('firstName_functionParameter', $functionParameter->getTitle());
+        $this->assertSame('firstName_function_parameter', $functionParameter->getTitle());
     }
 
     /**

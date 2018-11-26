@@ -3,10 +3,14 @@
 namespace Lmc\ApiFilter\Service;
 
 use Lmc\ApiFilter\AbstractTestCase;
+use Lmc\ApiFilter\Constant\Filter;
 use Lmc\ApiFilter\Entity\Value;
+use Lmc\ApiFilter\Exception\InvalidArgumentException;
+use Lmc\ApiFilter\Filter\FilterFunction;
 use Lmc\ApiFilter\Filter\FilterIn;
 use Lmc\ApiFilter\Filter\FilterInterface;
 use Lmc\ApiFilter\Filter\FilterWithOperator;
+use Lmc\ApiFilter\Filter\FunctionParameter;
 
 class FilterFactoryTest extends AbstractTestCase
 {
@@ -55,8 +59,15 @@ class FilterFactoryTest extends AbstractTestCase
             'gte' => ['gte', FilterWithOperator::class],
             'lt' => ['lt', FilterWithOperator::class],
             'lte' => ['lte', FilterWithOperator::class],
-            'in' => ['in', FilterIn::class, self::COLUMN . '_in', 'value', ['value']],
+            'in' => ['in', FilterIn::class, 'column_in', 'value', ['value']],
             'gte - mixed case' => ['GtE', FilterWithOperator::class, self::COLUMN . '_gte'],
+            'function' => [
+                'function',
+                FilterFunction::class,
+                'column_function',
+                $this->createDummyCallback('function'),
+            ],
+            'function parameter' => ['function_parameter', FunctionParameter::class],
         ];
     }
 
@@ -65,7 +76,7 @@ class FilterFactoryTest extends AbstractTestCase
      */
     public function shouldNotCreateUnknownFilter(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Filter "unknown" is not implemented. For column "column" with value "foo".');
 
         $this->filterFactory->createFilter(self::COLUMN, 'unknown', new Value('foo'));
@@ -76,11 +87,22 @@ class FilterFactoryTest extends AbstractTestCase
      */
     public function shouldNotCreateUnknownFilterWithCallableValue(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Filter "unknown" is not implemented. For column "column" with value "callable".');
 
         $this->filterFactory->createFilter(self::COLUMN, 'unknown', new Value(function () {
             return 'this is callable';
         }));
+    }
+
+    /**
+     * @test
+     */
+    public function shouldNotCreateFilterFunctionWithoutCallableValue(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Value for filter function must be callable. "not a callback" given.');
+
+        $this->filterFactory->createFilter(self::COLUMN, Filter::FUNCTION, new Value('not a callback'));
     }
 }
