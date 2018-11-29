@@ -6,6 +6,7 @@ use Lmc\ApiFilter\Exception\InvalidArgumentException;
 
 /**
  * @covers \Lmc\ApiFilter\Service\Parser\FunctionParser
+ * @covers \Lmc\ApiFilter\Service\Parser\FunctionParser\AbstractFunctionParser
  */
 class FunctionParserTest extends AbstractParserTestCase
 {
