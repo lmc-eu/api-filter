@@ -83,4 +83,11 @@ class Functions
     {
         return $this->functions->containsKey($functionName);
     }
+
+    public function getParametersFor(string $functionName): array
+    {
+        $this->assertRegistered($functionName);
+
+        return $this->functionParameters[$functionName];
+    }
 }

@@ -2,7 +2,10 @@
 
 namespace Lmc\ApiFilter\Service\Parser;
 
+use Lmc\ApiFilter\Constant\Priority;
 use Lmc\ApiFilter\Service\FilterFactory;
+use Lmc\ApiFilter\Service\Functions;
+use Lmc\ApiFilter\Service\Parser\FunctionParser\ExplicitFunctionDefinitionInValueParser;
 use Lmc\ApiFilter\Service\Parser\FunctionParser\FunctionParserInterface;
 use MF\Collection\Mutable\Generic\Map;
 use MF\Collection\Mutable\Generic\PrioritizedCollection;
@@ -12,11 +15,12 @@ class FunctionParser extends AbstractParser
     /** @var PrioritizedCollection|FunctionParserInterface[] */
     private $parsers;
 
-    public function __construct(FilterFactory $filterFactory)
+    public function __construct(FilterFactory $filterFactory, Functions $functions)
     {
         parent::__construct($filterFactory);
 
         $this->parsers = new PrioritizedCollection(FunctionParserInterface::class);
+        $this->parsers->add(new ExplicitFunctionDefinitionInValueParser($filterFactory, $functions), Priority::HIGHER);
     }
 
     public function setQueryParameters(array $queryParameters): void
