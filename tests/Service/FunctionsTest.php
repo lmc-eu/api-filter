@@ -49,11 +49,18 @@ class FunctionsTest extends AbstractTestCase
             }
         );
 
+        // assert definition
         $this->assertTrue($this->functions->isFunctionRegistered('fullName'));
 
+        // assert function definition
         $fullNameFunction = $this->functions->getFunction('fullName');
         $this->assertInternalType('callable', $fullNameFunction);
 
+        // assert parameters definition
+        $parameters = $this->functions->getParametersFor('fullName');
+        $this->assertSame(['firstName', 'surname'], $parameters);
+
+        // assert execution
         $appliedSql = $fullNameFunction(
             $sql,
             new FunctionParameter('firstName', new Value($firstName)),
@@ -74,6 +81,17 @@ class FunctionsTest extends AbstractTestCase
         $this->expectExceptionMessage('Function "not-registered-function" is not registered.');
 
         $this->functions->getFunction($functionName);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldNotGetFunctionParametersOfNotRegisteredFunction(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Function "not-registered-function" is not registered.');
+
+        $this->functions->getParametersFor('not-registered-function');
     }
 
     /**

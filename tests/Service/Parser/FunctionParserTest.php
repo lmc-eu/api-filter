@@ -3,6 +3,7 @@
 namespace Lmc\ApiFilter\Service\Parser;
 
 use Lmc\ApiFilter\Exception\InvalidArgumentException;
+use Lmc\ApiFilter\Service\Functions;
 
 /**
  * @covers \Lmc\ApiFilter\Service\Parser\FunctionParser
@@ -12,10 +13,16 @@ class FunctionParserTest extends AbstractParserTestCase
 {
     /** @var FunctionParser */
     protected $parser;
+    /** @var Functions */
+    private $functions;
 
     protected function setUp(): void
     {
-        $this->parser = new FunctionParser($this->mockFilterFactory());
+        $this->functions = new Functions();
+
+        $this->parser = new FunctionParser($this->mockFilterFactory(), $this->functions);
+
+        $this->functions->register('fullName', ['firstName', 'surname'], $this->createDummyCallback('fullName'));
     }
 
     /**
@@ -136,7 +143,14 @@ class FunctionParserTest extends AbstractParserTestCase
     {
         return [
             // queryParameters, expected
-            // nothing for now
+            'explicit - values' => [
+                ['function' => ['fullName'], 'firstName' => 'Jon', 'surname' => 'Snow'],
+                [
+                    ['fullName', 'function', 'callable'],
+                    ['firstName', 'function_parameter', 'Jon'],
+                    ['surname', 'function_parameter', 'Snow'],
+                ],
+            ],
         ];
     }
 
@@ -145,7 +159,6 @@ class FunctionParserTest extends AbstractParserTestCase
      */
     public function shouldNotSupportWithoutQueryParameters(): void
     {
-        $this->markTestSkipped('Skipped because there are no parsers yet');
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Query parameters must be set to FunctionParser.');
 
@@ -157,12 +170,35 @@ class FunctionParserTest extends AbstractParserTestCase
      */
     public function shouldNotParseWithoutQueryParameters(): void
     {
-        $this->markTestSkipped('Skipped because there are no parsers yet');
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Query parameters must be set to FunctionParser.');
 
         foreach ($this->parser->parse('foo', 'bar') as $filter) {
             $this->fail('This should not be reached');
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function shouldNotParseFunctionByExplicitValueDefinition(): void
+    {
+        // ?fun=fullName&firstName=Jon&surname=Snow
+        $queryParameters = ['function' => 'fullName', 'firstName' => 'Jon', 'surname' => 'Snow'];
+
+        $this->parser->setQueryParameters($queryParameters);
+
+        foreach ($queryParameters as $column => $value) {
+            $this->assertTrue($this->parser->supports($column, $value));
+        }
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Explicit function definition by values must be an array of functions. fullName given.');
+
+        foreach ($queryParameters as $column => $value) {
+            foreach ($this->parser->parse($column, $value) as $filter) {
+                $this->fail('This should not be reached.');
+            }
         }
     }
 }

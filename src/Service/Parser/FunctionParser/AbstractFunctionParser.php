@@ -100,4 +100,10 @@ abstract class AbstractFunctionParser extends AbstractParser implements Function
         return $this->alreadyParsedColumns !== null
             && $this->alreadyParsedColumns->containsKey($column);
     }
+
+    protected function markColumnAsParsed(string $column): void
+    {
+        Assertion::notNull($this->alreadyParsedColumns, 'Already parsed query parameters must be set before parsing.');
+        $this->alreadyParsedColumns[$column] = true;
+    }
 }

@@ -23,18 +23,18 @@ abstract class AbstractFunctionParserTestCase extends AbstractTestCase
             ['fullName' => '(Jon,Snow)'],
             [
                 ['fullName', 'function', 'callable'],
-                ['firstName', 'function-parameter', 'Jon'],
-                ['surname', 'function-parameter', 'Snow'],
+                ['firstName', 'function_parameter', 'Jon'],
+                ['surname', 'function_parameter', 'Snow'],
             ],
         ],
     ];
     protected const CASE_EXPLICIT_FUNCTION_DEFINITION_BY_VALUES = [
         'explicit function definition by values - fullName' => [
-            ['fun' => ['fullName'], 'firstName' => 'Jon', 'surname' => 'Snow'],
+            ['function' => ['fullName'], 'firstName' => 'Jon', 'surname' => 'Snow'],
             [
                 ['fullName', 'function', 'callable'],
-                ['firstName', 'function-parameter', 'Jon'],
-                ['surname', 'function-parameter', 'Snow'],
+                ['firstName', 'function_parameter', 'Jon'],
+                ['surname', 'function_parameter', 'Snow'],
             ],
         ],
     ];
@@ -43,8 +43,8 @@ abstract class AbstractFunctionParserTestCase extends AbstractTestCase
             ['firstName' => 'Jon', 'surname' => 'Snow'],
             [
                 ['fullName', 'function', 'callable'],
-                ['firstName', 'function-parameter', 'Jon'],
-                ['surname', 'function-parameter', 'Snow'],
+                ['firstName', 'function_parameter', 'Jon'],
+                ['surname', 'function_parameter', 'Snow'],
             ],
         ],
     ];
@@ -53,8 +53,8 @@ abstract class AbstractFunctionParserTestCase extends AbstractTestCase
             ['(fun,firstName,surname)' => '(fullName, Jon, Snow)'],
             [
                 ['fullName', 'function', 'callable'],
-                ['firstName', 'function-parameter', 'Jon'],
-                ['surname', 'function-parameter', 'Snow'],
+                ['firstName', 'function_parameter', 'Jon'],
+                ['surname', 'function_parameter', 'Snow'],
             ],
         ],
     ];
@@ -63,8 +63,8 @@ abstract class AbstractFunctionParserTestCase extends AbstractTestCase
             ['(firstName,surname)' => '(Jon, Snow)'],
             [
                 ['fullName', 'function', 'callable'],
-                ['firstName', 'function-parameter', 'Jon'],
-                ['surname', 'function-parameter', 'Snow'],
+                ['firstName', 'function_parameter', 'Jon'],
+                ['surname', 'function_parameter', 'Snow'],
             ],
         ],
     ];
@@ -73,8 +73,8 @@ abstract class AbstractFunctionParserTestCase extends AbstractTestCase
             ['filter' => ['(fullName, Jon, Snow)']],
             [
                 ['fullName', 'function', 'callable'],
-                ['firstName', 'function-parameter', 'Jon'],
-                ['surname', 'function-parameter', 'Snow'],
+                ['firstName', 'function_parameter', 'Jon'],
+                ['surname', 'function_parameter', 'Snow'],
             ],
         ],
     ];
