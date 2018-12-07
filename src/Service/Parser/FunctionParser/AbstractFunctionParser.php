@@ -106,4 +106,15 @@ abstract class AbstractFunctionParser extends AbstractParser implements Function
         Assertion::notNull($this->alreadyParsedColumns, 'Already parsed query parameters must be set before parsing.');
         $this->alreadyParsedColumns[$column] = true;
     }
+
+    /**
+     * @param string|array $rawValue Raw value from query parameters
+     */
+    protected function validateTupleValue($rawValue, string $errorMessage): string
+    {
+        Assertion::isTuple($rawValue, $errorMessage);
+        Assertion::false(is_array($rawValue), $errorMessage);
+
+        return $rawValue;
+    }
 }

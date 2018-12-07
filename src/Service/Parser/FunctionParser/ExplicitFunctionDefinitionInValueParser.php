@@ -10,7 +10,7 @@ class ExplicitFunctionDefinitionInValueParser extends AbstractFunctionParser
     /**
      * @param string|array $rawValue Raw value from query parameters
      */
-    public function supportsParameters(array $queryParameters, string $rawColumn, $rawValue): bool
+    protected function supportsParameters(array $queryParameters, string $rawColumn, $rawValue): bool
     {
         return array_key_exists(Column::FUNCTION, $queryParameters);
     }
@@ -18,7 +18,7 @@ class ExplicitFunctionDefinitionInValueParser extends AbstractFunctionParser
     /**
      * @param string|array $rawValue Raw value from query parameters
      */
-    public function parseParameters(array $queryParameters, string $rawColumn, $rawValue): iterable
+    protected function parseParameters(array $queryParameters, string $rawColumn, $rawValue): iterable
     {
         if ($this->isColumnParsed(Column::FUNCTION)) {
             return;
