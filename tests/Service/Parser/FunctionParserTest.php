@@ -23,6 +23,7 @@ class FunctionParserTest extends AbstractParserTestCase
         $this->parser = new FunctionParser($this->mockFilterFactory(), $this->functions);
 
         $this->functions->register('fullName', ['firstName', 'surname'], $this->createDummyCallback('fullName'));
+        $this->functions->register('sql', ['query'], $this->createDummyCallback('sql'));
     }
 
     /**
@@ -151,6 +152,20 @@ class FunctionParserTest extends AbstractParserTestCase
                     ['surname', 'function_parameter', 'Snow'],
                 ],
             ],
+            'sql by single value' => [
+                ['sql' => 'SELECT * FROM table'],
+                [
+                    ['sql', 'function', 'callable'],
+                    ['query', 'function_parameter', 'SELECT * FROM table'],
+                ],
+            ],
+            'explicit sql by values' => [
+                ['function' => ['sql'], 'query' => 'SELECT * FROM table'],
+                [
+                    ['sql', 'function', 'callable'],
+                    ['query', 'function_parameter', 'SELECT * FROM table'],
+                ],
+            ],
         ];
     }
 
@@ -199,6 +214,48 @@ class FunctionParserTest extends AbstractParserTestCase
             foreach ($this->parser->parse($column, $value) as $filter) {
                 $this->fail('This should not be reached.');
             }
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function shouldNotParseFunctionDefinedBadly(): void
+    {
+        // ?fullName=Jon,Snow
+        $column = 'fullName';
+        $value = 'Jon,Snow';
+        $this->parser->setQueryParameters([$column => $value]);
+
+        $this->assertTrue($this->parser->supports($column, $value));
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Explicit function definition must have a tuple value.');
+
+        foreach ($this->parser->parse($column, $value) as $filter) {
+            // just iterate through
+            continue;
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function shouldNotCallOneFunctionTwice(): void
+    {
+        // ?fullName[]=(Jon,Snow)&fullName[]=(Peter,Parker)
+        $column = 'fullName';
+        $value = ['(Jon,Snow)', '(Peter,Parker)'];
+        $this->parser->setQueryParameters([$column => $value]);
+
+        $this->assertTrue($this->parser->supports($column, $value));
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Explicit function definition must have a tuple value.');
+
+        foreach ($this->parser->parse($column, $value) as $filter) {
+            // just iterate through
+            continue;
         }
     }
 }
