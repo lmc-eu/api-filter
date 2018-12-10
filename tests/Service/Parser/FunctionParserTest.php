@@ -24,6 +24,11 @@ class FunctionParserTest extends AbstractParserTestCase
 
         $this->functions->register('fullName', ['firstName', 'surname'], $this->createDummyCallback('fullName'));
         $this->functions->register('sql', ['query'], $this->createDummyCallback('sql'));
+        $this->functions->register(
+            'perfectBook',
+            ['ageFrom', 'ageTo', 'size'],
+            $this->createDummyCallback('perfectBook')
+        );
     }
 
     /**
@@ -144,12 +149,72 @@ class FunctionParserTest extends AbstractParserTestCase
     {
         return [
             // queryParameters, expected
+            'function' => [
+                ['fullName' => '(Jon, Snow)'],
+                [
+                    ['fullName', 'function', 'callable'],
+                    ['firstName', 'function_parameter', 'Jon'],
+                    ['surname', 'function_parameter', 'Snow'],
+                ],
+            ],
+            'implicit - values' => [
+                ['firstName' => 'Jon', 'surname' => 'Snow'],
+                [
+                    ['fullName', 'function', 'callable'],
+                    ['firstName', 'function_parameter', 'Jon'],
+                    ['surname', 'function_parameter', 'Snow'],
+                ],
+            ],
             'explicit - values' => [
                 ['function' => ['fullName'], 'firstName' => 'Jon', 'surname' => 'Snow'],
                 [
                     ['fullName', 'function', 'callable'],
                     ['firstName', 'function_parameter', 'Jon'],
                     ['surname', 'function_parameter', 'Snow'],
+                ],
+            ],
+            // multiple functions
+            'multiple functions' => [
+                ['fullName' => '(Jon, Snow)', 'perfectBook' => '(18, 30, [A4; A5])'],
+                [
+                    ['fullName', 'function', 'callable'],
+                    ['firstName', 'function_parameter', 'Jon'],
+                    ['surname', 'function_parameter', 'Snow'],
+                    ['perfectBook', 'function', 'callable'],
+                    ['ageFrom', 'function_parameter', 18],
+                    ['ageTo', 'function_parameter', 30],
+                    ['size', 'function_parameter', ['A4', 'A5']],
+                ],
+            ],
+            'multiple - implicit - values' => [
+                ['firstName' => 'Jon', 'surname' => 'Snow', 'ageFrom' => 18, 'ageTo' => 30, 'size' => ['A4', 'A5']],
+                [
+                    ['fullName', 'function', 'callable'],
+                    ['firstName', 'function_parameter', 'Jon'],
+                    ['surname', 'function_parameter', 'Snow'],
+                    ['perfectBook', 'function', 'callable'],
+                    ['ageFrom', 'function_parameter', 18],
+                    ['ageTo', 'function_parameter', 30],
+                    ['size', 'function_parameter', ['A4', 'A5']],
+                ],
+            ],
+            'multiple - explicit - values' => [
+                [
+                    'function' => ['fullName', 'perfectBook'],
+                    'size' => ['A4', 'A5'],
+                    'firstName' => 'Jon',
+                    'surname' => 'Snow',
+                    'ageFrom' => 18,
+                    'ageTo' => 30,
+                ],
+                [
+                    ['fullName', 'function', 'callable'],
+                    ['firstName', 'function_parameter', 'Jon'],
+                    ['surname', 'function_parameter', 'Snow'],
+                    ['perfectBook', 'function', 'callable'],
+                    ['ageFrom', 'function_parameter', 18],
+                    ['ageTo', 'function_parameter', 30],
+                    ['size', 'function_parameter', ['A4', 'A5']],
                 ],
             ],
             'sql by single value' => [
@@ -161,6 +226,13 @@ class FunctionParserTest extends AbstractParserTestCase
             ],
             'explicit sql by values' => [
                 ['function' => ['sql'], 'query' => 'SELECT * FROM table'],
+                [
+                    ['sql', 'function', 'callable'],
+                    ['query', 'function_parameter', 'SELECT * FROM table'],
+                ],
+            ],
+            'implicit sql by value' => [
+                ['query' => 'SELECT * FROM table'],
                 [
                     ['sql', 'function', 'callable'],
                     ['query', 'function_parameter', 'SELECT * FROM table'],

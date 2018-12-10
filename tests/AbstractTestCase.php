@@ -53,4 +53,14 @@ abstract class AbstractTestCase extends TestCase
 
         return $filterFactory;
     }
+
+    protected function iteratorToArray(iterable $iterable): array
+    {
+        $result = [];
+        foreach ($iterable as $key => $value) {
+            $result[$key] = $value;
+        }
+
+        return $result;
+    }
 }
