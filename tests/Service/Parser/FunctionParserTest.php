@@ -84,7 +84,49 @@ class FunctionParserTest extends AbstractParserTestCase
     {
         return [
             // rawColumn, rawValue, expectedFilters
-            // nothing for now
+            'scalar column + tuple value - fullName' => [
+                'fullName',
+                '(Jon,Snow)',
+                [
+                    ['fullName', 'function', 'callable'],
+                    ['firstName', 'function_parameter', 'Jon'],
+                    ['surname', 'function_parameter', 'Snow'],
+                ],
+            ],
+            'tuple column + tuple value - explicit perfectBook by tuple' => [
+                '(function, ageFrom, ageTo, size)',
+                '(perfectBook, 18, 30, [A4; A5])',
+                [
+                    ['perfectBook', 'function', 'callable'],
+                    ['ageFrom', 'function_parameter', 18],
+                    ['ageTo', 'function_parameter', 30],
+                    ['size', 'function_parameter', ['A4', 'A5']],
+                ],
+            ],
+            'scalar column + scalar value - sql' => [
+                'sql',
+                'SELECT * FROM table',
+                [
+                    ['sql', 'function', 'callable'],
+                    ['query', 'function_parameter', 'SELECT * FROM table'],
+                ],
+            ],
+            'scalar column + scalar value - implicit sql' => [
+                'query',
+                'SELECT * FROM table',
+                [
+                    ['sql', 'function', 'callable'],
+                    ['query', 'function_parameter', 'SELECT * FROM table'],
+                ],
+            ],
+            'tuple column + tuple value - explicit sql by tuple' => [
+                '(function,query)',
+                '(sql, "SELECT * FROM table")',
+                [
+                    ['sql', 'function', 'callable'],
+                    ['query', 'function_parameter', 'SELECT * FROM table'],
+                ],
+            ],
         ];
     }
 
@@ -165,12 +207,48 @@ class FunctionParserTest extends AbstractParserTestCase
                     ['surname', 'function_parameter', 'Snow'],
                 ],
             ],
+            'explicit - tuple' => [
+                ['(function,firstName, surname)' => '(fullName,Jon, Snow)'],
+                [
+                    ['fullName', 'function', 'callable'],
+                    ['firstName', 'function_parameter', 'Jon'],
+                    ['surname', 'function_parameter', 'Snow'],
+                ],
+            ],
             'explicit - values' => [
                 ['function' => ['fullName'], 'firstName' => 'Jon', 'surname' => 'Snow'],
                 [
                     ['fullName', 'function', 'callable'],
                     ['firstName', 'function_parameter', 'Jon'],
                     ['surname', 'function_parameter', 'Snow'],
+                ],
+            ],
+            'sql by single value' => [
+                ['sql' => 'SELECT * FROM table'],
+                [
+                    ['sql', 'function', 'callable'],
+                    ['query', 'function_parameter', 'SELECT * FROM table'],
+                ],
+            ],
+            'explicit sql by tuple' => [
+                ['(function,query)' => '(sql, "SELECT * FROM table")'],
+                [
+                    ['sql', 'function', 'callable'],
+                    ['query', 'function_parameter', 'SELECT * FROM table'],
+                ],
+            ],
+            'explicit sql by values' => [
+                ['function' => ['sql'], 'query' => 'SELECT * FROM table'],
+                [
+                    ['sql', 'function', 'callable'],
+                    ['query', 'function_parameter', 'SELECT * FROM table'],
+                ],
+            ],
+            'implicit sql by value' => [
+                ['query' => 'SELECT * FROM table'],
+                [
+                    ['sql', 'function', 'callable'],
+                    ['query', 'function_parameter', 'SELECT * FROM table'],
                 ],
             ],
             // multiple functions
@@ -198,6 +276,21 @@ class FunctionParserTest extends AbstractParserTestCase
                     ['size', 'function_parameter', ['A4', 'A5']],
                 ],
             ],
+            'multiple - explicit - tuple' => [
+                [
+                    '(function,firstName, surname)' => '(fullName,Jon, Snow)',
+                    '(function,ageFrom,ageTo,size)' => '(perfectBook,18,30,[A4;A5])',
+                ],
+                [
+                    ['fullName', 'function', 'callable'],
+                    ['firstName', 'function_parameter', 'Jon'],
+                    ['surname', 'function_parameter', 'Snow'],
+                    ['perfectBook', 'function', 'callable'],
+                    ['ageFrom', 'function_parameter', 18],
+                    ['ageTo', 'function_parameter', 30],
+                    ['size', 'function_parameter', ['A4', 'A5']],
+                ],
+            ],
             'multiple - explicit - values' => [
                 [
                     'function' => ['fullName', 'perfectBook'],
@@ -215,27 +308,6 @@ class FunctionParserTest extends AbstractParserTestCase
                     ['ageFrom', 'function_parameter', 18],
                     ['ageTo', 'function_parameter', 30],
                     ['size', 'function_parameter', ['A4', 'A5']],
-                ],
-            ],
-            'sql by single value' => [
-                ['sql' => 'SELECT * FROM table'],
-                [
-                    ['sql', 'function', 'callable'],
-                    ['query', 'function_parameter', 'SELECT * FROM table'],
-                ],
-            ],
-            'explicit sql by values' => [
-                ['function' => ['sql'], 'query' => 'SELECT * FROM table'],
-                [
-                    ['sql', 'function', 'callable'],
-                    ['query', 'function_parameter', 'SELECT * FROM table'],
-                ],
-            ],
-            'implicit sql by value' => [
-                ['query' => 'SELECT * FROM table'],
-                [
-                    ['sql', 'function', 'callable'],
-                    ['query', 'function_parameter', 'SELECT * FROM table'],
                 ],
             ],
         ];
@@ -328,6 +400,34 @@ class FunctionParserTest extends AbstractParserTestCase
         foreach ($this->parser->parse($column, $value) as $filter) {
             // just iterate through
             continue;
+        }
+    }
+
+    /** @test */
+    public function shouldNotCallOneFunctionTwiceByDifferentDefinitions(): void
+    {
+        // ?fun[]=fullName&firstName=Jon&surname=Snow&fullName=(Peter,Parker)
+        $queryParameters = [
+            'function' => ['fullName'],
+            'firstName' => 'Jon',
+            'surname' => 'Snow',
+            'fullName' => '(Peter,Parker)',
+        ];
+
+        $this->parser->setQueryParameters($queryParameters);
+
+        foreach ($queryParameters as $column => $value) {
+            $this->assertTrue($this->parser->supports($column, $value));
+        }
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('It is not allowed to call one function multiple times.');
+
+        foreach ($queryParameters as $column => $value) {
+            foreach ($this->parser->parse($column, $value) as $filter) {
+                // just iterate through
+                continue;
+            }
         }
     }
 }
