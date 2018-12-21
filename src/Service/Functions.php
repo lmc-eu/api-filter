@@ -90,4 +90,16 @@ class Functions
 
         return $this->functionParameters[$functionName];
     }
+
+    public function getFunctionNamesByParameter(string $possiblyParameter): iterable
+    {
+        foreach ($this->functionParameters as $functionName => $parameters) {
+            foreach ($parameters as $parameter) {
+                if ($parameter === $possiblyParameter) {
+                    yield $functionName;
+                    continue 2;
+                }
+            }
+        }
+    }
 }

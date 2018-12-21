@@ -128,4 +128,29 @@ class FunctionsTest extends AbstractTestCase
 
         $this->functions->register('name', ['firstName', 'middleName', 'surname'], $this->createDummyCallback('name'));
     }
+
+    /**
+     * @test
+     * @dataProvider provideFunctionsByParameter
+     */
+    public function shouldGetFunctionNamesByParameter(string $parameter, array $expectedFunctions): void
+    {
+        $this->functions->register('fullName', ['firstName', 'surname'], $this->createDummyCallback('fullName'));
+        $this->functions->register('adult', ['ageFrom'], $this->createDummyCallback('adult'));
+
+        $result = $this->iteratorToArray($this->functions->getFunctionNamesByParameter($parameter));
+
+        $this->assertSame($expectedFunctions, $result);
+    }
+
+    public function provideFunctionsByParameter(): array
+    {
+        return [
+            // parameter, expectedFunctions
+            'unknown' => ['unknown', []],
+            'fullName by firstName' => ['firstName', ['fullName']],
+            'fullName by surname' => ['surname', ['fullName']],
+            'adult by ageFrom' => ['ageFrom', ['adult']],
+        ];
+    }
 }
