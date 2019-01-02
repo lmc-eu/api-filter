@@ -153,4 +153,31 @@ class FunctionsTest extends AbstractTestCase
             'adult by ageFrom' => ['ageFrom', ['adult']],
         ];
     }
+
+    /**
+     * @test
+     * @dataProvider provideFunctionsByAllParameters
+     */
+    public function shouldGetFunctionNamesByAllParameters(array $parameters, array $expectedFunctions): void
+    {
+        $this->functions->register('fullName', ['firstName', 'surname'], $this->createDummyCallback('fullName'));
+        $this->functions->register('adult', ['ageFrom'], $this->createDummyCallback('adult'));
+
+        $result = $this->iteratorToArray($this->functions->getFunctionNamesByAllParameters($parameters));
+
+        $this->assertSame($expectedFunctions, $result);
+    }
+
+    public function provideFunctionsByAllParameters(): array
+    {
+        return [
+            // parameters, expectedFunctions
+            'unknown' => [['unknown'], []],
+            'fullName' => [['firstName', 'surname'], ['fullName']],
+            'fullName - reverse order' => [['surname', 'firstName'], ['fullName']],
+            'nothing by partial parameters - firstName only' => [['firstName'], []],
+            'nothing by partial parameters - surname only' => [['surname'], []],
+            'adult' => [['ageFrom'], ['adult']],
+        ];
+    }
 }

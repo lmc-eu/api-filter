@@ -91,15 +91,33 @@ class Functions
         return $this->functionParameters[$functionName];
     }
 
-    public function getFunctionNamesByParameter(string $possiblyParameter): iterable
+    public function getFunctionNamesByParameter(string $possibleParameter): iterable
     {
         foreach ($this->functionParameters as $functionName => $parameters) {
             foreach ($parameters as $parameter) {
-                if ($parameter === $possiblyParameter) {
+                if ($parameter === $possibleParameter) {
                     yield $functionName;
                     continue 2;
                 }
             }
         }
+    }
+
+    public function getFunctionNamesByAllParameters(array $possibleParameters): iterable
+    {
+        $sortedPossibleParameters = $this->sort($possibleParameters);
+
+        foreach ($this->functionParameters as $functionName => $parameters) {
+            if ($this->sort($parameters) === $sortedPossibleParameters) {
+                yield $functionName;
+            }
+        }
+    }
+
+    private function sort(array $array): array
+    {
+        sort($array);
+
+        return $array;
     }
 }
