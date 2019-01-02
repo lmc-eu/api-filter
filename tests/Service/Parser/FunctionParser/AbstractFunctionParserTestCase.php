@@ -50,7 +50,7 @@ abstract class AbstractFunctionParserTestCase extends AbstractTestCase
     ];
     protected const CASE_EXPLICIT_FUNCTION_DEFINITION_BY_TUPLE = [
         'explicit function definition by tuple - fullName' => [
-            ['(fun,firstName,surname)' => '(fullName, Jon, Snow)'],
+            ['(function,firstName,surname)' => '(fullName, Jon, Snow)'],
             [
                 ['fullName', 'function', 'callable'],
                 ['firstName', 'function_parameter', 'Jon'],
