@@ -34,9 +34,4 @@ class Assertion extends BaseAssertion
     {
         return $value instanceof ITuple || (is_string($value) && mb_substr($value, 0, 1) === '(');
     }
-
-    protected static function generateMessage($message = null): string
-    {
-        return (string) parent::generateMessage($message);
-    }
 }

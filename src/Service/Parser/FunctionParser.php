@@ -9,6 +9,7 @@ use Lmc\ApiFilter\Service\Parser\FunctionParser\ExplicitFunctionDefinitionByTupl
 use Lmc\ApiFilter\Service\Parser\FunctionParser\ExplicitFunctionDefinitionInValueParser;
 use Lmc\ApiFilter\Service\Parser\FunctionParser\ExplicitFunctionDefinitionParser;
 use Lmc\ApiFilter\Service\Parser\FunctionParser\FunctionParserInterface;
+use Lmc\ApiFilter\Service\Parser\FunctionParser\ImplicitFunctionDefinitionByTupleParser;
 use Lmc\ApiFilter\Service\Parser\FunctionParser\ImplicitFunctionDefinitionByValueParser;
 use MF\Collection\Mutable\Generic\Map;
 use MF\Collection\Mutable\Generic\PrioritizedCollection;
@@ -27,6 +28,7 @@ class FunctionParser extends AbstractParser
         $this->parsers->add(new ExplicitFunctionDefinitionParser($filterFactory, $functions), Priority::HIGH);
         $this->parsers->add(new ImplicitFunctionDefinitionByValueParser($filterFactory, $functions), Priority::MEDIUM);
         $this->parsers->add(new ExplicitFunctionDefinitionByTupleParser($filterFactory, $functions), Priority::LOW);
+        $this->parsers->add(new ImplicitFunctionDefinitionByTupleParser($filterFactory, $functions), Priority::LOWER);
     }
 
     public function setQueryParameters(array $queryParameters): void

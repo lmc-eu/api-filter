@@ -13,6 +13,7 @@ use MF\Collection\Mutable\Generic\Map;
 abstract class AbstractFunctionParser extends AbstractParser implements FunctionParserInterface
 {
     private const ERROR_MULTIPLE_FUNCTION_CALL = 'It is not allowed to call one function multiple times.';
+    protected const ERROR_FUNCTION_DEFINITION_BY_TUPLE_WITHOUT_TUPLE_VALUES = 'Function definition by a tuple must have a tuple value.';
 
     /** @var Functions */
     protected $functions;

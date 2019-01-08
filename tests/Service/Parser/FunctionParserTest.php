@@ -93,6 +93,25 @@ class FunctionParserTest extends AbstractParserTestCase
                     ['surname', 'function_parameter', 'Snow'],
                 ],
             ],
+            'tuple column + tuple value - implicit fullName by tuple' => [
+                '(firstName,surname)',
+                '(Jon,Snow)',
+                [
+                    ['fullName', 'function', 'callable'],
+                    ['firstName', 'function_parameter', 'Jon'],
+                    ['surname', 'function_parameter', 'Snow'],
+                ],
+            ],
+            'tuple column + tuple value - implicit perfectBook by tuple' => [
+                '(ageFrom, ageTo, size)',
+                '(18, 30, [A4; A5])',
+                [
+                    ['perfectBook', 'function', 'callable'],
+                    ['ageFrom', 'function_parameter', 18],
+                    ['ageTo', 'function_parameter', 30],
+                    ['size', 'function_parameter', ['A4', 'A5']],
+                ],
+            ],
             'tuple column + tuple value - explicit perfectBook by tuple' => [
                 '(function, ageFrom, ageTo, size)',
                 '(perfectBook, 18, 30, [A4; A5])',
@@ -199,6 +218,22 @@ class FunctionParserTest extends AbstractParserTestCase
                     ['surname', 'function_parameter', 'Snow'],
                 ],
             ],
+            'implicit - tuple' => [
+                ['(firstName, surname)' => '(Jon, Snow)'],
+                [
+                    ['fullName', 'function', 'callable'],
+                    ['firstName', 'function_parameter', 'Jon'],
+                    ['surname', 'function_parameter', 'Snow'],
+                ],
+            ],
+            'implicit - tuple - reversed' => [
+                ['(surname, firstName)' => '(Snow, Jon)'],
+                [
+                    ['fullName', 'function', 'callable'],
+                    ['surname', 'function_parameter', 'Snow'],
+                    ['firstName', 'function_parameter', 'Jon'],
+                ],
+            ],
             'implicit - values' => [
                 ['firstName' => 'Jon', 'surname' => 'Snow'],
                 [
@@ -254,6 +289,18 @@ class FunctionParserTest extends AbstractParserTestCase
             // multiple functions
             'multiple functions' => [
                 ['fullName' => '(Jon, Snow)', 'perfectBook' => '(18, 30, [A4; A5])'],
+                [
+                    ['fullName', 'function', 'callable'],
+                    ['firstName', 'function_parameter', 'Jon'],
+                    ['surname', 'function_parameter', 'Snow'],
+                    ['perfectBook', 'function', 'callable'],
+                    ['ageFrom', 'function_parameter', 18],
+                    ['ageTo', 'function_parameter', 30],
+                    ['size', 'function_parameter', ['A4', 'A5']],
+                ],
+            ],
+            'multiple - implicit - tuple' => [
+                ['(firstName, surname)' => '(Jon, Snow)', '(ageFrom,ageTo,size)' => '(18, 30, [A4; A5])'],
                 [
                     ['fullName', 'function', 'callable'],
                     ['firstName', 'function_parameter', 'Jon'],
