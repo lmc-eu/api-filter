@@ -9,7 +9,7 @@ class Value
     /** @var mixed */
     private $value;
 
-    /** @param mixed $value Value of different types */
+    /** @param mixed $value */
     public function __construct($value)
     {
         Assertion::notIsInstanceOf(
@@ -20,7 +20,7 @@ class Value
         $this->value = $value;
     }
 
-    /** @return mixed Value of different types */
+    /** @return mixed */
     public function getValue()
     {
         return $this->value;
