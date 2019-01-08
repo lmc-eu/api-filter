@@ -13,7 +13,7 @@ class Assertion extends BaseAssertion
     /**
      * Assert that value is instance of ITuple or string value containing a Tuple.
      *
-     * @param mixed $value Tested value
+     * @param mixed $value
      * @param string|callable|null $message
      */
     public static function isTuple($value, $message = null, ?string $propertyPath = null)

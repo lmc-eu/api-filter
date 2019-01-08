@@ -13,3 +13,6 @@ services:
     Symplify\CodingStandard\Sniffs\Naming\ClassNameSuffixByParentSniff:
         extraParentTypesToSuffixes:
             '*ApplicatorInterface': 'Applicator'
+
+    PhpCsFixer\Fixer\Phpdoc\NoSuperfluousPhpdocTagsFixer:
+        allow_mixed: true

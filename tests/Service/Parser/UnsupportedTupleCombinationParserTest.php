@@ -25,6 +25,7 @@ class UnsupportedTupleCombinationParserTest extends AbstractParserTestCase
     /**
      * @test
      * @dataProvider provideParseableColumnAndValue
+     * @param mixed $rawValue
      */
     public function shouldParseColumnAndValue(string $rawColumn, $rawValue, array $expected): void
     {
