@@ -6,13 +6,13 @@ use Lmc\ApiFilter\Exception\InvalidArgumentException;
 
 /**
  * @group unit
- * @covers \Lmc\ApiFilter\Service\Parser\FunctionParser\ExplicitFunctionDefinitionInValueParser
+ * @covers \Lmc\ApiFilter\Service\Parser\FunctionParser\ExplicitFunctionDefinitionByValueParser
  */
-class ExplicitFunctionDefinitionInValueParserTest extends AbstractFunctionParserTestCase
+class ExplicitFunctionDefinitionByValueParserTest extends AbstractFunctionParserTestCase
 {
     protected function setUp(): void
     {
-        $this->parser = new ExplicitFunctionDefinitionInValueParser($this->mockFilterFactory(), $this->initFunctions());
+        $this->parser = new ExplicitFunctionDefinitionByValueParser($this->mockFilterFactory(), $this->initFunctions());
     }
 
     public function provideNotQueryParameters(): array
