@@ -5,8 +5,10 @@ namespace Lmc\ApiFilter\Service;
 use Lmc\ApiFilter\AbstractTestCase;
 use Lmc\ApiFilter\Entity\Value;
 use Lmc\ApiFilter\Exception\InvalidArgumentException;
+use Lmc\ApiFilter\Filter\FilterFunction;
 use Lmc\ApiFilter\Filter\FilterIn;
 use Lmc\ApiFilter\Filter\FilterWithOperator;
+use Lmc\ApiFilter\Filter\FunctionParameter;
 use Lmc\ApiFilter\Filters\Filters;
 
 /**
@@ -18,11 +20,16 @@ class QueryParametersParserTest extends AbstractTestCase
 {
     /** @var QueryParametersParser */
     private $queryParametersParser;
+    /** @var Functions */
+    private $functions;
 
     protected function setUp(): void
     {
+        $this->functions = new Functions();
+
         $this->queryParametersParser = new QueryParametersParser(
-            new FilterFactory()
+            new FilterFactory(),
+            $this->functions
         );
     }
 
@@ -30,8 +37,15 @@ class QueryParametersParserTest extends AbstractTestCase
      * @test
      * @dataProvider provideQueryParameters
      */
-    public function shouldParseQueryParameters(array $queryParameters, array $expectedFilters): void
-    {
+    public function shouldParseQueryParameters(
+        array $queryParameters,
+        array $expectedFilters,
+        array $functionsToRegister = []
+    ): void {
+        foreach ($functionsToRegister as $function) {
+            $this->functions->register(...$function);
+        }
+
         $expectedFilters = Filters::from($expectedFilters);
 
         $result = $this->queryParametersParser->parse($queryParameters);
@@ -42,7 +56,7 @@ class QueryParametersParserTest extends AbstractTestCase
     public function provideQueryParameters(): array
     {
         return [
-            // queryParameters, expectedFilters
+            // queryParameters, expectedFilters, functionsToRegister (optional)
             'empty' => [[], []],
             'simple - implicit eq' => [
                 ['title' => 'foo'],
@@ -118,6 +132,20 @@ class QueryParametersParserTest extends AbstractTestCase
                     new FilterWithOperator('alpha', new Value('z'), '<', 'lt'),
                 ],
             ],
+            'tuple - between - explicit in columns' => [
+                ['(age[gt],age[lt])' => '(18, 30)'],
+                [
+                    new FilterWithOperator('age', new Value(18), '>', 'gt'),
+                    new FilterWithOperator('age', new Value(30), '<', 'lt'),
+                ],
+            ],
+            'tuple - implicit eq + in' => [
+                ['(name,size)' => '(foo, [A4; A5])'],
+                [
+                    new FilterWithOperator('name', new Value('foo'), '=', 'eq'),
+                    new FilterIn('size', new Value(['A4', 'A5'])),
+                ],
+            ],
             'ints - between - explicit' => [
                 ['age' => ['gt' => 18, 'lt' => 30]],
                 [
@@ -126,11 +154,103 @@ class QueryParametersParserTest extends AbstractTestCase
                 ],
             ],
             'explicit between + explicit in' => [
-                ['age' => ['gt' => 18, 'lt' => 30], 'size' => ['in' => ['DD', 'D']]],
+                ['age' => ['gt' => 18, 'lt' => 30], 'size' => ['in' => ['A4', 'A5']]],
                 [
                     new FilterWithOperator('age', new Value(18), '>', 'gt'),
                     new FilterWithOperator('age', new Value(30), '<', 'lt'),
-                    new FilterIn('size', new Value(['DD', 'D'])),
+                    new FilterIn('size', new Value(['A4', 'A5'])),
+                ],
+            ],
+            'tuple - explicit between + implicit in and eq in columns' => [
+                ['(age[gte], age[lt], size, character)' => '(18, 30, [A4; A5], "Jon Snow")'],
+                [
+                    new FilterWithOperator('age', new Value(18), '>=', 'gte'),
+                    new FilterWithOperator('age', new Value(30), '<', 'lt'),
+                    new FilterIn('size', new Value(['A4', 'A5'])),
+                    new FilterWithOperator('character', new Value('Jon Snow'), '=', 'eq'),
+                ],
+            ],
+            'tuple - explicit between + implicit in and eq in columns + other implicit eq' => [
+                ['(age[gte], age[lt], size, character)' => '(18, 30, [A4; A5], "Jon Snow")', 'version' => 'latest'],
+                [
+                    new FilterWithOperator('age', new Value(18), '>=', 'gte'),
+                    new FilterWithOperator('age', new Value(30), '<', 'lt'),
+                    new FilterIn('size', new Value(['A4', 'A5'])),
+                    new FilterWithOperator('character', new Value('Jon Snow'), '=', 'eq'),
+                    new FilterWithOperator('version', new Value('latest'), '=', 'eq'),
+                ],
+            ],
+            'function - fullName' => [
+                ['fullName' => '(Jon, Snow)'],
+                [
+                    new FilterFunction('fullName', new Value($this->createDummyCallback('fullName'))),
+                    new FunctionParameter('firstName', new Value('Jon')),
+                    new FunctionParameter('surname', new Value('Snow')),
+                ],
+                [
+                    ['fullName', ['firstName', 'surname'], $this->createDummyCallback('fullName')],
+                ],
+            ],
+            'function - perfectBook + spot + name' => [
+                ['perfectBook' => '(18, 30, [A4; A5])', '(zone,bucket)' => '(all,common)', 'character' => 'Jon'],
+                [
+                    new FilterFunction('perfectBook', new Value($this->createDummyCallback('perfectBook'))),
+                    new FunctionParameter('ageFrom', new Value(18)),
+                    new FunctionParameter('ageTo', new Value(30)),
+                    new FunctionParameter('size', new Value(['A4', 'A5'])),
+                    new FilterFunction('spot', new Value($this->createDummyCallback('spot'))),
+                    new FunctionParameter('zone', new Value('all')),
+                    new FunctionParameter('bucket', new Value('common')),
+                    new FilterWithOperator('character', new Value('Jon'), '=', 'eq'),
+                ],
+                [
+                    ['perfectBook', ['ageFrom', 'ageTo', 'size'], $this->createDummyCallback('perfectBook')],
+                    ['spot', ['zone', 'bucket'], $this->createDummyCallback('spot')],
+                ],
+            ],
+            'explicit - function - perfectBook + spot + character' => [
+                [
+                    'perfectBook' => '(18, 30, [A4; A5])',
+                    '(function,zone,bucket)' => '(spot,all,common)',
+                    'character' => 'Jon',
+                ],
+                [
+                    new FilterFunction('perfectBook', new Value($this->createDummyCallback('perfectBook'))),
+                    new FunctionParameter('ageFrom', new Value(18)),
+                    new FunctionParameter('ageTo', new Value(30)),
+                    new FunctionParameter('size', new Value(['A4', 'A5'])),
+                    new FilterFunction('spot', new Value($this->createDummyCallback('spot'))),
+                    new FunctionParameter('zone', new Value('all')),
+                    new FunctionParameter('bucket', new Value('common')),
+                    new FilterWithOperator('character', new Value('Jon'), '=', 'eq'),
+                ],
+                [
+                    ['perfectBook', ['ageFrom', 'ageTo', 'size'], $this->createDummyCallback('perfectBook')],
+                    ['spot', ['zone', 'bucket'], $this->createDummyCallback('spot')],
+                ],
+            ],
+            'implicit by values - function - perfectBook + spot + character' => [
+                [
+                    'ageFrom' => 18,
+                    'ageTo' => 30,
+                    'character' => 'Jon',
+                    'size' => ['A4', 'A5'],
+                    'zone' => 'all',
+                    'bucket' => 'common',
+                ],
+                [
+                    new FilterFunction('perfectBook', new Value($this->createDummyCallback('perfectBook'))),
+                    new FunctionParameter('ageFrom', new Value(18)),
+                    new FunctionParameter('ageTo', new Value(30)),
+                    new FunctionParameter('size', new Value(['A4', 'A5'])),
+                    new FilterFunction('spot', new Value($this->createDummyCallback('spot'))),
+                    new FunctionParameter('zone', new Value('all')),
+                    new FunctionParameter('bucket', new Value('common')),
+                    new FilterWithOperator('character', new Value('Jon'), '=', 'eq'),
+                ],
+                [
+                    ['perfectBook', ['ageFrom', 'ageTo', 'size'], $this->createDummyCallback('perfectBook')],
+                    ['spot', ['zone', 'bucket'], $this->createDummyCallback('spot')],
                 ],
             ],
         ];
@@ -162,6 +282,10 @@ class QueryParametersParserTest extends AbstractTestCase
                 ['column' => ['unknown' => 'value']],
                 'Filter "unknown" is not implemented. For column "column" with value "value".',
             ],
+            'undefined function' => [
+                ['function' => '(arg1, arg2)'],
+                'Explicit function definition by values must be an array of functions. (arg1, arg2) given.',
+            ],
             'tuple columns and a single value' => [
                 ['(col1, col2)' => 'value'],
                 'Invalid combination of a tuple and a scalar. Column (col1, col2) and value value.',
@@ -177,6 +301,10 @@ class QueryParametersParserTest extends AbstractTestCase
             'invalid tuple - explicit filters' => [
                 ['(id,name)' => ['eq' => '(42,foo,bar)']],
                 'Number of given columns (2) and values (3) in tuple are not same.',
+            ],
+            'invalid tuple - filter definition in columns and values' => [
+                ['(first[gt],second[lt])' => ['eq' => '(1,2)']],
+                'Filters can be specified either in columns or in values - not in both',
             ],
             'tuples in IN filter' => [
                 ['(id, name)' => ['in' => ['(1,one)', '(2,two)']]],

@@ -11,10 +11,13 @@ use Lmc\ApiFilter\Filter\FilterInterface;
 use Lmc\ApiFilter\Filters\FiltersInterface;
 use Lmc\ApiFilter\Service\FilterApplicator;
 use Lmc\ApiFilter\Service\FilterFactory;
+use Lmc\ApiFilter\Service\Functions;
 use Lmc\ApiFilter\Service\QueryParametersParser;
 
 class ApiFilter
 {
+    /** @var Functions */
+    private $functions;
     /** @var QueryParametersParser */
     private $parser;
     /** @var FilterApplicator */
@@ -23,7 +26,8 @@ class ApiFilter
     public function __construct()
     {
         $filterFactory = new FilterFactory();
-        $this->parser = new QueryParametersParser($filterFactory);
+        $this->functions = new Functions();
+        $this->parser = new QueryParametersParser($filterFactory, $this->functions);
         $this->applicator = new FilterApplicator();
 
         if (class_exists('Doctrine\ORM\QueryBuilder')) {
