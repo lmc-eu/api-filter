@@ -84,6 +84,17 @@ class FunctionParserTest extends AbstractParserTestCase
     {
         return [
             // rawColumn, rawValue, expectedFilters
+            'two functions in filter parameter' => [
+                'filter',
+                ['(fullName, Jon, Snow)', '(sql, "SELECT * FROM table")'],
+                [
+                    ['fullName', 'function', 'callable'],
+                    ['firstName', 'function_parameter', 'Jon'],
+                    ['surname', 'function_parameter', 'Snow'],
+                    ['sql', 'function', 'callable'],
+                    ['query', 'function_parameter', 'SELECT * FROM table'],
+                ],
+            ],
             'scalar column + tuple value - fullName' => [
                 'fullName',
                 '(Jon,Snow)',
@@ -289,6 +300,18 @@ class FunctionParserTest extends AbstractParserTestCase
             // multiple functions
             'multiple functions' => [
                 ['fullName' => '(Jon, Snow)', 'perfectBook' => '(18, 30, [A4; A5])'],
+                [
+                    ['fullName', 'function', 'callable'],
+                    ['firstName', 'function_parameter', 'Jon'],
+                    ['surname', 'function_parameter', 'Snow'],
+                    ['perfectBook', 'function', 'callable'],
+                    ['ageFrom', 'function_parameter', 18],
+                    ['ageTo', 'function_parameter', 30],
+                    ['size', 'function_parameter', ['A4', 'A5']],
+                ],
+            ],
+            'multiple functions - in filter and explicit' => [
+                ['perfectBook' => '(18, 30, [A4; A5])', 'filter' => '(fullName, Jon, Snow)'],
                 [
                     ['fullName', 'function', 'callable'],
                     ['firstName', 'function_parameter', 'Jon'],

@@ -8,6 +8,7 @@ use Lmc\ApiFilter\Service\Functions;
 use Lmc\ApiFilter\Service\Parser\FunctionParser\ExplicitFunctionDefinitionByTupleParser;
 use Lmc\ApiFilter\Service\Parser\FunctionParser\ExplicitFunctionDefinitionByValueParser;
 use Lmc\ApiFilter\Service\Parser\FunctionParser\ExplicitFunctionDefinitionParser;
+use Lmc\ApiFilter\Service\Parser\FunctionParser\FunctionInFilterParameterParser;
 use Lmc\ApiFilter\Service\Parser\FunctionParser\FunctionParserInterface;
 use Lmc\ApiFilter\Service\Parser\FunctionParser\ImplicitFunctionDefinitionByTupleParser;
 use Lmc\ApiFilter\Service\Parser\FunctionParser\ImplicitFunctionDefinitionByValueParser;
@@ -24,6 +25,7 @@ class FunctionParser extends AbstractParser
         parent::__construct($filterFactory);
 
         $this->parsers = new PrioritizedCollection(FunctionParserInterface::class);
+        $this->parsers->add(new FunctionInFilterParameterParser($filterFactory, $functions), Priority::HIGHEST);
         $this->parsers->add(new ExplicitFunctionDefinitionByValueParser($filterFactory, $functions), Priority::HIGHER);
         $this->parsers->add(new ExplicitFunctionDefinitionParser($filterFactory, $functions), Priority::HIGH);
         $this->parsers->add(new ImplicitFunctionDefinitionByValueParser($filterFactory, $functions), Priority::MEDIUM);
