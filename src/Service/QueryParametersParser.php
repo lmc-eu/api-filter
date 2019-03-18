@@ -6,6 +6,7 @@ use Lmc\ApiFilter\Constant\Priority;
 use Lmc\ApiFilter\Exception\TupleException;
 use Lmc\ApiFilter\Filters\Filters;
 use Lmc\ApiFilter\Filters\FiltersInterface;
+use Lmc\ApiFilter\Service\Parser\FunctionParser;
 use Lmc\ApiFilter\Service\Parser\ParserInterface;
 use Lmc\ApiFilter\Service\Parser\SingleColumnArrayValueParser;
 use Lmc\ApiFilter\Service\Parser\SingleColumnSingleValueParser;
@@ -19,10 +20,15 @@ class QueryParametersParser
 {
     /** @var PrioritizedCollection|ParserInterface[] */
     private $parsers;
+    /** @var FunctionParser */
+    private $functionParser;
 
-    public function __construct(FilterFactory $filterFactory)
+    public function __construct(FilterFactory $filterFactory, Functions $functions)
     {
+        $this->functionParser = new FunctionParser($filterFactory, $functions);
+
         $this->parsers = new PrioritizedCollection(ParserInterface::class);
+        $this->parsers->add($this->functionParser, Priority::HIGHER);
         $this->parsers->add(new TupleColumnTupleValueParser($filterFactory), Priority::HIGH);
         $this->parsers->add(new TupleColumnArrayValueParser($filterFactory), Priority::MEDIUM);
         $this->parsers->add(new UnsupportedTupleCombinationParser($filterFactory), Priority::LOW);
@@ -33,6 +39,8 @@ class QueryParametersParser
     public function parse(array $queryParameters): FiltersInterface
     {
         try {
+            $this->functionParser->setQueryParameters($queryParameters);
+
             $filters = new Filters();
             foreach ($this->parseFilters($queryParameters) as $filter) {
                 $filters->addFilter($filter);
