@@ -46,7 +46,7 @@
         "phpstan": "vendor/bin/phpstan analyze ./src ./tests -c phpstan.neon --ansi --level 7",
         "tests": "vendor/bin/phpunit",
         "tests-ci": "mkdir -p reports && php -dxdebug.coverage_enable=1 vendor/bin/phpunit -c phpunit.xml.dist",
-        "cs": "vendor/bin/ecs check -vvv --ansi src/ tests/",
-        "fix": "vendor/bin/ecs check -vvv --ansi --clear-cache --fix src/ tests/"
+        "cs": "vendor/bin/ecs check -vv --ansi src/ tests/",
+        "fix": "vendor/bin/ecs check -vv --ansi --clear-cache --fix src/ tests/"
     }
 }

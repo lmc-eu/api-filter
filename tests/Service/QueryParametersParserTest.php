@@ -275,20 +275,20 @@ class QueryParametersParserTest extends AbstractTestCase
         return [
             // queryParameters, expected message
             'empty filter' => [
-                ['column' => ['' => 'value']],
-                'Filter "" is not implemented. For column "column" with value "value".',
+                ['column' => ['' => 'foo']],
+                'Filter "" is not implemented. For column "column" with value "foo".',
             ],
             'unknown filter' => [
-                ['column' => ['unknown' => 'value']],
-                'Filter "unknown" is not implemented. For column "column" with value "value".',
+                ['column' => ['unknown' => 'foo']],
+                'Filter "unknown" is not implemented. For column "column" with value "foo".',
             ],
             'undefined function' => [
                 ['function' => '(arg1, arg2)'],
                 'Explicit function definition by values must be an array of functions. (arg1, arg2) given.',
             ],
             'tuple columns and a single value' => [
-                ['(col1, col2)' => 'value'],
-                'Invalid combination of a tuple and a scalar. Column (col1, col2) and value value.',
+                ['(col1, col2)' => 'foo'],
+                'Invalid combination of a tuple and a scalar. Column (col1, col2) and value foo.',
             ],
             'more columns than values' => [
                 ['(col1, col2, col3)' => '(val1, val2)'],

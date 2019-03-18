@@ -25,27 +25,27 @@ abstract class AbstractParserTestCase extends AbstractTestCase
     protected const CASE_SCALAR_COLUMN_AND_SCALAR_VALUE = [
         'scalar column + scalar value' => [
             'column',
-            'value',
+            'foo',
             [
-                ['column', 'eq', 'value'],
+                ['column', 'eq', 'foo'],
             ],
         ],
     ];
     protected const CASE_SCALAR_COLUMN_AND_ARRAY_VALUE = [
         'scalar column + array value' => [
             'column',
-            ['gt' => 'value'],
+            ['gt' => 'foo'],
             [
-                ['column', 'gt', 'value'],
+                ['column', 'gt', 'foo'],
             ],
         ],
     ];
     protected const CASE_SCALAR_COLUMN_AND_ARRAY_VALUES = [
         'scalar column + array values' => [
             'column',
-            ['gte' => 'value', 'lte' => 'value2'],
+            ['gte' => 'value1', 'lte' => 'value2'],
             [
-                ['column', 'gte', 'value'],
+                ['column', 'gte', 'value1'],
                 ['column', 'lte', 'value2'],
             ],
         ],
@@ -70,9 +70,9 @@ abstract class AbstractParserTestCase extends AbstractTestCase
     protected const CASE_TUPLE_COLUMN_AND_TUPLE_VALUE_IMPLICIT_FILTERS = [
         'implicit filters in tuple column + value' => [
             '(col1,col2)',
-            '(value,[min;max])',
+            '(foo,[min;max])',
             [
-                ['col1', 'eq', 'value'],
+                ['col1', 'eq', 'foo'],
                 ['col2', 'in', ['min', 'max']],
             ],
         ],
@@ -100,7 +100,7 @@ abstract class AbstractParserTestCase extends AbstractTestCase
     protected const CASE_TUPLE_COLUMN_AND_SCALAR_VALUE = [
         'tuple column + scalar value' => [
             '(col1,col2)',
-            'value',
+            'foo',
             [], // not supported atm
         ],
     ];
