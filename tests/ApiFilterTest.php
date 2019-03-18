@@ -194,12 +194,12 @@ class ApiFilterTest extends AbstractTestCase
         return [
             // invalidQueryParameters, expectedMessage
             'empty filter' => [
-                ['column' => ['' => 'value']],
-                'Filter "" is not implemented. For column "column" with value "value".',
+                ['column' => ['' => 'foo']],
+                'Filter "" is not implemented. For column "column" with value "foo".',
             ],
             'unknown filter' => [
-                ['column' => ['unknown' => 'value']],
-                'Filter "unknown" is not implemented. For column "column" with value "value".',
+                ['column' => ['unknown' => 'foo']],
+                'Filter "unknown" is not implemented. For column "column" with value "foo".',
             ],
             'tuples in IN filter' => [
                 ['(id, name)' => ['in' => ['(1,one)', '(2,two)']]],
