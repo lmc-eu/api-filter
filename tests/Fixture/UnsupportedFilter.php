@@ -21,4 +21,9 @@ class UnsupportedFilter implements FilterInterface
     {
         throw new \Exception(sprintf('Method %s is not implemented yet.', __METHOD__));
     }
+
+    public function setFullTitle(string $title): void
+    {
+        throw new \Exception(sprintf('Method %s is not implemented yet.', __METHOD__));
+    }
 }

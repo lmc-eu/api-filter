@@ -11,4 +11,6 @@ interface FilterInterface
     public function getValue(): Value;
 
     public function getTitle(): string;
+
+    public function setFullTitle(string $title): void;
 }
