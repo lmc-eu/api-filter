@@ -3,9 +3,12 @@
 namespace Lmc\ApiFilter\Applicator;
 
 use Lmc\ApiFilter\Entity\Filterable;
+use Lmc\ApiFilter\Entity\ParameterDefinition;
+use Lmc\ApiFilter\Filter\FilterFunction;
 use Lmc\ApiFilter\Filter\FilterIn;
 use Lmc\ApiFilter\Filter\FilterInterface;
 use Lmc\ApiFilter\Filter\FilterWithOperator;
+use Lmc\ApiFilter\Filter\FunctionParameter;
 
 interface ApplicatorInterface
 {
@@ -47,4 +50,48 @@ interface ApplicatorInterface
      * $preparedValues = $simpleSqlApplicator->getPreparedValue($filter);  // ['id_in_0' => 1, 'id_in_1' => 2]
      */
     public function getPreparedValue(FilterInterface $filter): array;
+
+    /**
+     * Apply filter with defined function to filterable and returns the result
+     *
+     * @example
+     * $filter = new FilterFunction(
+     *      'fullName',
+     *      new Value(function ($filterable, FunctionParameter $firstName, FunctionParameter $surname) {
+     *          $filterable = $simpleSqlApplicator->applyFilterWithOperator(
+     *              new FilterWithOperator($firstName->getColumn(), $firstName->getValue(), '=', $firstName->getTitle()),
+     *              $filterable
+     *          );
+     *
+     *          $filterable = $simpleSqlApplicator->applyFilterWithOperator(
+     *              new FilterWithOperator($surname->getColumn(), $surname->getValue(), '=', $surname->getTitle()),
+     *              $filterable
+     *          );
+     *
+     *          return $filterable;
+     *      })
+     * );
+     * $sql = 'SELECT * FROM table';
+     * $parameters = [
+     *      new FunctionParameter('firstName', 'Jon'),
+     *      new FunctionParameter('surname', 'Snow'),
+     * ]
+     *
+     * $sql = $simpleSqlApplicator->applyFilterFunction($filter, $sql, $parameters);      // SELECT * FROM table WHERE firstName = :firstName_fun AND surname = :surname_fun
+     * $preparedValues = $simpleSqlApplicator->getPreparedValuesForFunction($parameters); // ['firstName_fun' => 'Jon', 'surname_fun' => 'Snow']
+     *
+     * @param FunctionParameter[] $parameters
+     */
+    public function applyFilterFunction(FilterFunction $filter, Filterable $filterable, array $parameters): Filterable;
+
+    /**
+     * Prepared values for applied function
+     *
+     * For example
+     * @see applyFilterFunction()
+     *
+     * @param FunctionParameter[] $parameters
+     * @param ParameterDefinition[] $parametersDefinitions
+     */
+    public function getPreparedValuesForFunction(array $parameters, array $parametersDefinitions = []): array;
 }
