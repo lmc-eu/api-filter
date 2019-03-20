@@ -6,6 +6,8 @@ use Doctrine\ORM\QueryBuilder;
 use Lmc\ApiFilter\Applicator\SqlApplicator;
 use Lmc\ApiFilter\Constant\Priority;
 use Lmc\ApiFilter\Exception\ApiFilterExceptionInterface;
+use Lmc\ApiFilter\Filter\FunctionParameter;
+use Lmc\ApiFilter\Fixture\SimpleClient;
 
 class ApiFilterRegisterFunctionTest extends AbstractTestCase
 {
@@ -20,6 +22,43 @@ class ApiFilterRegisterFunctionTest extends AbstractTestCase
 
         $this->apiFilter = new ApiFilter();
         $this->apiFilter->registerApplicator(new SqlApplicator(), Priority::HIGHEST);
+    }
+
+    /**
+     * @test
+     * @dataProvider provideSqlQueryParameters
+     */
+    public function shouldRegisterAndExecuteFunctionWhichBypassApiFilter(array $queryParameters): void
+    {
+        $client = new SimpleClient(['data' => 'some data']);
+        $expected = [
+            'data' => 'some data',
+            'query' => 'SELECT * FROM table',
+        ];
+
+        $result = $this->apiFilter
+            ->registerFunction(
+                'sql',
+                ['query'],
+                function (SimpleClient $filterable, FunctionParameter $query) {
+                    return $filterable->query($query->getValue()->getValue());
+                }
+            )
+            ->executeFunction('sql', $queryParameters, $client);
+
+        $this->assertSame($expected, $result);
+    }
+
+    public function provideSqlQueryParameters(): array
+    {
+        return [
+            // queryParameters
+            'implicit - single value' => [['sql' => 'SELECT * FROM table']],
+            'explicit - tuple' => [['(function,query)' => '(sql, "SELECT * FROM table")']],
+            'implicit - single values' => [['query' => 'SELECT * FROM table']],
+            'explicit - single values' => [['function' => ['sql'], 'query' => 'SELECT * FROM table']],
+            'explicit - filter' => [['filter' => ['(sql, SELECT * FROM table)']]],
+        ];
     }
 
     /**

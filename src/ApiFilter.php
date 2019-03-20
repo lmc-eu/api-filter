@@ -31,7 +31,7 @@ class ApiFilter
         $filterFactory = new FilterFactory();
         $this->functions = new Functions();
         $this->parser = new QueryParametersParser($filterFactory, $this->functions);
-        $this->applicator = new FilterApplicator();
+        $this->applicator = new FilterApplicator($this->functions);
         $this->functionCreator = new FunctionCreator($filterFactory);
 
         if (class_exists('Doctrine\ORM\QueryBuilder')) {
@@ -63,7 +63,10 @@ class ApiFilter
      */
     public function parseFilters(array $queryParameters): FiltersInterface
     {
-        return $this->parser->parse($queryParameters);
+        $filters = $this->parser->parse($queryParameters);
+        $this->applicator->setFilters($filters);
+
+        return $filters;
     }
 
     /**
@@ -87,8 +90,12 @@ class ApiFilter
      * @throws ApiFilterExceptionInterface
      * @return mixed of type <T> - same as given filterable
      */
-    public function applyFilter(FilterInterface $filter, $filterable)
+    public function applyFilter(FilterInterface $filter, $filterable, FiltersInterface $filters = null)
     {
+        if ($filters) {
+            $this->applicator->setFilters($filters);
+        }
+
         return $this->applicator->apply($filter, new Filterable($filterable))->getValue();
     }
 
@@ -135,6 +142,8 @@ class ApiFilter
      */
     public function applyFilters(FiltersInterface $filters, $filterable)
     {
+        $this->applicator->setFilters($filters);
+
         return $this->applicator->applyAll($filters, new Filterable($filterable))->getValue();
     }
 
@@ -250,5 +259,33 @@ class ApiFilter
         $this->functions->register($functionName, $parameters, $function);
 
         return $this;
+    }
+
+    /**
+     * Execute a function with parsed query parameters but without any implicit application
+     * This allows you to bypass any applicator or not to implement one if you need to
+     *
+     * It will just parse filters and call a registered function with parsed filters
+     *
+     * @example
+     * Executing a function, which bypasses ApiFilter and directly calls elastic search (see example of registerFunction)
+     * $resultFromElastic = $apiFilter->executeFunction('elastic', $request->query->all(), null);
+     *
+     * @see ApiFilter::declareFunction()
+     * @see ApiFilter::registerFunction()
+     * @see ApiFilter::applyFunction() if you want apply function with applicators and get prepared values as well
+     *
+     * @param mixed $filterable of type <T> - this might not be supported by any applicator (if you don't use apply methods of ApiFilter)
+     * @throws ApiFilterExceptionInterface
+     * @return mixed of type <U> - the output of the registered function
+     */
+    public function executeFunction(string $functionName, array $queryParameters, $filterable)
+    {
+        $filters = $this->parser->parse($queryParameters);
+        $this->applicator->setFilters($filters);
+
+        return $this->functions
+            ->execute($functionName, $filters, new Filterable($filterable))
+            ->getValue();
     }
 }
