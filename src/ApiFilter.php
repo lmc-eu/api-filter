@@ -167,4 +167,46 @@ class ApiFilter
 
         return $this;
     }
+
+    /**
+     * Add a custom function to express any intention you can have
+     *
+     * Note:
+     * You must not register more functions with same parameters (not matter of their order).
+     *
+     * @example
+     * How to abstract first and last name into a fullName function and still benefit from ApiFilter features
+     * $apiFilter->registerFunction(
+     *      'fullName',
+     *      ['first', 'last'],
+     *      function($filterable, FunctionParameter $first, FunctionParameter $last) use ($apiFilter) {
+     *          return $apiFilter->applyFilters(Filters::from([$first, $last], $filterable);
+     *      }
+     * );
+     * In this case it is the same as declareFunction method (see example there)
+     *
+     * @example
+     * How to completely bypass ApiFilter and directly search in elastic search (other storage)
+     * $apiFilter->registerFunction(
+     *      'elastic',
+     *      ['query'],
+     *      function($filterable, FunctionParameter $query) use ($elasticClient) {
+     *          return $elasticClient->query($query->getValue()->getValue());
+     *      }
+     * );
+     * In this case it is advised to execute the elastic function directly by executeFunction method (see example there)
+     *
+     * @see ApiFilter::declareFunction()
+     * @see ApiFilter::executeFunction()
+     *
+     * @param array $parameters names of needed parameters (parameters will be passed to function in given order)
+     * @param callable $function (Filterable<T> $filterable, FunctionParameter ...$parameters): Filterable<T>
+     * @throws ApiFilterExceptionInterface
+     */
+    public function registerFunction(string $functionName, array $parameters, callable $function): self
+    {
+        $this->functions->register($functionName, $parameters, $function);
+
+        return $this;
+    }
 }
