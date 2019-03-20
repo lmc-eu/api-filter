@@ -11,6 +11,7 @@ use Lmc\ApiFilter\Filter\FilterInterface;
 use Lmc\ApiFilter\Filters\FiltersInterface;
 use Lmc\ApiFilter\Service\FilterApplicator;
 use Lmc\ApiFilter\Service\FilterFactory;
+use Lmc\ApiFilter\Service\FunctionCreator;
 use Lmc\ApiFilter\Service\Functions;
 use Lmc\ApiFilter\Service\QueryParametersParser;
 
@@ -22,6 +23,8 @@ class ApiFilter
     private $parser;
     /** @var FilterApplicator */
     private $applicator;
+    /** @var FunctionCreator */
+    private $functionCreator;
 
     public function __construct()
     {
@@ -29,6 +32,7 @@ class ApiFilter
         $this->functions = new Functions();
         $this->parser = new QueryParametersParser($filterFactory, $this->functions);
         $this->applicator = new FilterApplicator();
+        $this->functionCreator = new FunctionCreator($filterFactory);
 
         if (class_exists('Doctrine\ORM\QueryBuilder')) {
             $this->registerApplicator(new QueryBuilderApplicator(), Priority::MEDIUM);
@@ -164,6 +168,44 @@ class ApiFilter
     public function registerApplicator(ApplicatorInterface $applicator, int $priority): self
     {
         $this->applicator->registerApplicator($applicator, $priority);
+
+        return $this;
+    }
+
+    /**
+     * Declare a function to specify a name for several parameters which must be given together.
+     *
+     * ApiFilter::applyFilters() method will be used with all declared parameters.
+     * If you want to have a custom callback, not just abstract a name for few parameters, use registerFunction method instead
+     *
+     * Note:
+     * It is not allowed to register more functions with same parameter (not matter of their order).
+     *
+     * @example
+     * How to abstract first and last name into a fullName function and still benefit from ApiFilter features
+     * $apiFilter->declareFunction('fullName', ['first', 'last']);
+     *
+     * @see ApiFilter::registerFunction()
+     * @see ApiFilter::executeFunction()
+     *
+     * Parameters might be defined as
+     * - array of single values (names)
+     * - array of array values (definitions)
+     * - array of ParameterDefinition
+     *
+     * @param array $parameters names or definition of needed parameters (parameters will be passed to function in given order)
+     * @throws ApiFilterExceptionInterface
+     */
+    public function declareFunction(string $functionName, array $parameters)
+    {
+        $parameters = $this->functionCreator->normalizeParameters($parameters);
+
+        $this->functions->register(
+            $functionName,
+            $this->functionCreator->getParameterNames($parameters),
+            $this->functionCreator->createByParameters($this->applicator, $parameters),
+            $this->functionCreator->getParameterDefinitions($parameters)
+        );
 
         return $this;
     }
