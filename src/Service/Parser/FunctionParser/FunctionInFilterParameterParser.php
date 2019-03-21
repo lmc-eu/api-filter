@@ -10,6 +10,10 @@ class FunctionInFilterParameterParser extends AbstractFunctionParser
 {
     protected function supportsParameters(array $queryParameters, string $rawColumn, $rawValue): bool
     {
+        if ($this->isColumnParsed(Column::FILTER)) {
+            return false;
+        }
+
         return array_key_exists(Column::FILTER, $queryParameters);
     }
 

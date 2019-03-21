@@ -4,6 +4,8 @@ namespace Lmc\ApiFilter\Service\Parser;
 
 use Lmc\ApiFilter\Exception\InvalidArgumentException;
 use Lmc\ApiFilter\Service\Functions;
+use MF\Collection\Mutable\Generic\IMap;
+use MF\Collection\Mutable\Generic\Map;
 
 /**
  * @covers \Lmc\ApiFilter\Service\Parser\FunctionParser
@@ -15,6 +17,10 @@ class FunctionParserTest extends AbstractParserTestCase
     protected $parser;
     /** @var Functions */
     private $functions;
+    /** @var IMap<string,bool>|IMap */
+    private $alreadyParsedFunctions;
+    /** @var IMap<string,bool>|IMap */
+    private $alreadyParsedColumns;
 
     protected function setUp(): void
     {
@@ -29,6 +35,9 @@ class FunctionParserTest extends AbstractParserTestCase
             ['ageFrom', 'ageTo', 'size'],
             $this->createDummyCallback('perfectBook')
         );
+
+        $this->alreadyParsedFunctions = new Map('string', 'bool');
+        $this->alreadyParsedColumns = new Map('string', 'bool');
     }
 
     /**
@@ -39,7 +48,11 @@ class FunctionParserTest extends AbstractParserTestCase
      */
     public function shouldSupportColumnAndValue(string $rawColumn, $rawValue): void
     {
-        $this->parser->setQueryParameters([$rawColumn => $rawValue]);
+        $this->parser->setQueryParameters(
+            [$rawColumn => $rawValue],
+            $this->alreadyParsedFunctions,
+            $this->alreadyParsedColumns
+        );
         parent::shouldSupportColumnAndValue($rawColumn, $rawValue);
     }
 
@@ -51,7 +64,11 @@ class FunctionParserTest extends AbstractParserTestCase
      */
     public function shouldNotSupportColumnAndValue(string $rawColumn, $rawValue): void
     {
-        $this->parser->setQueryParameters([$rawColumn => $rawValue]);
+        $this->parser->setQueryParameters(
+            [$rawColumn => $rawValue],
+            $this->alreadyParsedFunctions,
+            $this->alreadyParsedColumns
+        );
         parent::shouldNotSupportColumnAndValue($rawColumn, $rawValue);
     }
 
@@ -76,7 +93,11 @@ class FunctionParserTest extends AbstractParserTestCase
      */
     public function shouldParseColumnAndValue(string $rawColumn, $rawValue, array $expected): void
     {
-        $this->parser->setQueryParameters([$rawColumn => $rawValue]);
+        $this->parser->setQueryParameters(
+            [$rawColumn => $rawValue],
+            $this->alreadyParsedFunctions,
+            $this->alreadyParsedColumns
+        );
         parent::shouldParseColumnAndValue($rawColumn, $rawValue, $expected);
     }
 
@@ -166,7 +187,7 @@ class FunctionParserTest extends AbstractParserTestCase
      */
     public function shouldSupportQueryParameters(array $queryParameters): void
     {
-        $this->parser->setQueryParameters($queryParameters);
+        $this->parser->setQueryParameters($queryParameters, $this->alreadyParsedFunctions, $this->alreadyParsedColumns);
 
         foreach ($queryParameters as $column => $value) {
             $this->assertTrue($this->parser->supports($column, $value));
@@ -179,7 +200,7 @@ class FunctionParserTest extends AbstractParserTestCase
      */
     public function shouldNotSupportInsufficientFunctionParameters(array $queryParameters): void
     {
-        $this->parser->setQueryParameters($queryParameters);
+        $this->parser->setQueryParameters($queryParameters, $this->alreadyParsedFunctions, $this->alreadyParsedColumns);
 
         foreach ($queryParameters as $column => $value) {
             $this->assertFalse($this->parser->supports($column, $value));
@@ -205,7 +226,7 @@ class FunctionParserTest extends AbstractParserTestCase
      */
     public function shouldParseQueryParameters(array $queryParameters, array $expected): void
     {
-        $this->parser->setQueryParameters($queryParameters);
+        $this->parser->setQueryParameters($queryParameters, $this->alreadyParsedFunctions, $this->alreadyParsedColumns);
         $result = [];
 
         foreach ($queryParameters as $column => $value) {
@@ -415,7 +436,7 @@ class FunctionParserTest extends AbstractParserTestCase
         // ?fun=fullName&firstName=Jon&surname=Snow
         $queryParameters = ['function' => 'fullName', 'firstName' => 'Jon', 'surname' => 'Snow'];
 
-        $this->parser->setQueryParameters($queryParameters);
+        $this->parser->setQueryParameters($queryParameters, $this->alreadyParsedFunctions, $this->alreadyParsedColumns);
 
         foreach ($queryParameters as $column => $value) {
             $this->assertTrue($this->parser->supports($column, $value));
@@ -439,7 +460,11 @@ class FunctionParserTest extends AbstractParserTestCase
         // ?fullName=Jon,Snow
         $column = 'fullName';
         $value = 'Jon,Snow';
-        $this->parser->setQueryParameters([$column => $value]);
+        $this->parser->setQueryParameters(
+            [$column => $value],
+            $this->alreadyParsedFunctions,
+            $this->alreadyParsedColumns
+        );
 
         $this->assertTrue($this->parser->supports($column, $value));
 
@@ -460,7 +485,11 @@ class FunctionParserTest extends AbstractParserTestCase
         // ?fullName[]=(Jon,Snow)&fullName[]=(Peter,Parker)
         $column = 'fullName';
         $value = ['(Jon,Snow)', '(Peter,Parker)'];
-        $this->parser->setQueryParameters([$column => $value]);
+        $this->parser->setQueryParameters(
+            [$column => $value],
+            $this->alreadyParsedFunctions,
+            $this->alreadyParsedColumns
+        );
 
         $this->assertTrue($this->parser->supports($column, $value));
 
@@ -484,7 +513,7 @@ class FunctionParserTest extends AbstractParserTestCase
             'fullName' => '(Peter,Parker)',
         ];
 
-        $this->parser->setQueryParameters($queryParameters);
+        $this->parser->setQueryParameters($queryParameters, $this->alreadyParsedFunctions, $this->alreadyParsedColumns);
 
         foreach ($queryParameters as $column => $value) {
             $this->assertTrue($this->parser->supports($column, $value));
