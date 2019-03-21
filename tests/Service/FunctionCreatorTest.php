@@ -7,7 +7,9 @@ use Lmc\ApiFilter\Applicator\SqlApplicator;
 use Lmc\ApiFilter\Entity\ParameterDefinition;
 use Lmc\ApiFilter\Entity\Value;
 use Lmc\ApiFilter\Exception\ApiFilterExceptionInterface;
+use Lmc\ApiFilter\Exception\InvalidArgumentException;
 use Lmc\ApiFilter\Filter\FunctionParameter;
+use Lmc\ApiFilter\Filters\Filters;
 
 /** @covers \Lmc\ApiFilter\Service\FunctionCreator */
 class FunctionCreatorTest extends AbstractTestCase
@@ -16,15 +18,13 @@ class FunctionCreatorTest extends AbstractTestCase
     private $functionCreator;
     /** @var FilterApplicator */
     private $filterApplicator;
-    /**
-     * @deprecated
-     * @var Functions
-     */
+    /** @var Functions */
     private $functions;
 
     protected function setUp(): void
     {
-        $this->filterApplicator = new FilterApplicator();
+        $this->functions = new Functions();
+        $this->filterApplicator = new FilterApplicator($this->functions);
 
         $this->filterApplicator->registerApplicator(new SqlApplicator(), 1);
 
@@ -79,12 +79,14 @@ class FunctionCreatorTest extends AbstractTestCase
 
         $firstName = new FunctionParameter('firstName', new Value('Jon'));
         $surname = new FunctionParameter('surname', new Value('Snow'));
+        $this->filterApplicator->setFilters(Filters::from([$firstName, $surname]));
 
         $parameters = ['firstName', 'surname'];
         $functionWithImplicitFilters = $this->functionCreator->createByParameters(
             $this->filterApplicator,
             $this->functionCreator->normalizeParameters($parameters)
         );
+        $this->functions->register('fullName', $parameters, $functionWithImplicitFilters);
 
         $result = $functionWithImplicitFilters($sql, $firstName, $surname);
         $this->assertSame(
@@ -111,11 +113,13 @@ class FunctionCreatorTest extends AbstractTestCase
         $ageFrom = new FunctionParameter('ageFrom', new Value(18));
         $ageTo = new FunctionParameter('ageTo', new Value(30));
         $size = new FunctionParameter('size', new Value(['A4', 'A5']));
+        $this->filterApplicator->setFilters(Filters::from([$ageFrom, $ageTo, $size]));
 
         $functionWithImplicitFilters = $this->functionCreator->createByParameters(
             $this->filterApplicator,
             $this->functionCreator->normalizeParameters($parameters)
         );
+        $this->functions->register('fullName', ['ageFrom', 'ageTo', 'size'], $functionWithImplicitFilters);
 
         $result = $functionWithImplicitFilters($sql, $ageFrom, $ageTo, $size);
         $this->assertSame($expectedResult, $result);
@@ -184,6 +188,27 @@ class FunctionCreatorTest extends AbstractTestCase
                 'Parameter for function creator must be either string, array or instance of Lmc\ApiFilter\Entity\Parameter but "Lmc\ApiFilter\Entity\Value" given.',
             ],
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function shouldNotApplyFunctionWithoutAllParameters(): void
+    {
+        $firstName = new FunctionParameter('firstName', new Value('Jon'));
+        $this->filterApplicator->setFilters(Filters::from([$firstName]));
+
+        $parameters = ['firstName', 'surname'];
+        $functionWithImplicitFilters = $this->functionCreator->createByParameters(
+            $this->filterApplicator,
+            $this->functionCreator->normalizeParameters($parameters)
+        );
+        $this->functions->register('fullName', $parameters, $functionWithImplicitFilters);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Parameter "surname" is required and must have a value.');
+
+        $functionWithImplicitFilters('SELECT * FROM person', $firstName);
     }
 
     /**

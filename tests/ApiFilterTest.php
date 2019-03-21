@@ -223,7 +223,7 @@ class ApiFilterTest extends AbstractTestCase
         $this->expectException(ApiFilterExceptionInterface::class);
         $this->expectExceptionMessage($expectedMessage);
 
-        $this->apiFilter->applyFilter($filter, $filterable);
+        $this->apiFilter->applyFilter($filter, $filterable, Filters::from([$filter]));
     }
 
     public function provideNotSupportedFilterable(): array

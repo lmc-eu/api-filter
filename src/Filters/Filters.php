@@ -3,9 +3,11 @@
 namespace Lmc\ApiFilter\Filters;
 
 use Lmc\ApiFilter\Applicator\ApplicatorInterface;
+use Lmc\ApiFilter\Assertion;
 use Lmc\ApiFilter\Entity\Filterable;
 use Lmc\ApiFilter\Filter\FilterIn;
 use Lmc\ApiFilter\Filter\FilterInterface;
+use Lmc\ApiFilter\Filter\FunctionParameter;
 use Lmc\ApiFilter\Service\FilterApplicator;
 use MF\Collection\Immutable\Generic\IList;
 use MF\Collection\Immutable\Generic\ListCollection;
@@ -101,5 +103,25 @@ class Filters implements FiltersInterface
     public function toArray(): array
     {
         return $this->filters->toArray();
+    }
+
+    public function filterByColumns(array $columns): FiltersInterface
+    {
+        $filtered = $this->filters->filter(function (FilterInterface $filter) use ($columns) {
+            return in_array($filter->getColumn(), $columns, true);
+        });
+
+        return self::from($filtered->toArray());
+    }
+
+    public function getFunctionParameter(string $parameter): FunctionParameter
+    {
+        $functionParameter = $this->filters->firstBy(function (FilterInterface $filter) use ($parameter) {
+            return $filter instanceof FunctionParameter && $filter->getColumn() === $parameter;
+        });
+
+        Assertion::notNull($functionParameter, sprintf('Function parameter "%s" is missing.', $parameter));
+
+        return $functionParameter;
     }
 }

@@ -3,7 +3,10 @@
 namespace Lmc\ApiFilter\Service;
 
 use Lmc\ApiFilter\Assertion;
+use Lmc\ApiFilter\Entity\Filterable;
 use Lmc\ApiFilter\Entity\ParameterDefinition;
+use Lmc\ApiFilter\Filter\FilterInterface;
+use Lmc\ApiFilter\Filters\FiltersInterface;
 use MF\Collection\Mutable\Generic\IMap;
 use MF\Collection\Mutable\Generic\Map;
 
@@ -119,5 +122,37 @@ class Functions
         sort($array);
 
         return $array;
+    }
+
+    /** @return ParameterDefinition[] */
+    public function getParameterDefinitionsFor(string $functionName): array
+    {
+        $this->assertRegistered($functionName);
+
+        return $this->parameterDefinitions[$functionName];
+    }
+
+    /** @param FiltersInterface|FilterInterface[] $filters */
+    public function execute(string $functionName, FiltersInterface $filters, Filterable $filterable): Filterable
+    {
+        $this->assertRegistered($functionName);
+        $function = $this->functions[$functionName];
+        $parameters = $this->functionParameters[$functionName];
+
+        $functionParameters = $filters->filterByColumns($parameters);
+        $this->assertFiltersByParameters($parameters, $functionParameters);
+
+        $applied = $function($filterable->getValue(), ...$functionParameters);
+
+        return new Filterable($applied);
+    }
+
+    private function assertFiltersByParameters(array $parameters, FiltersInterface $filterByParameters): void
+    {
+        Assertion::same(
+            count($filterByParameters),
+            count($parameters),
+            'There are not filters (%s) for parameters (%s).'
+        );
     }
 }
