@@ -5,6 +5,7 @@ namespace Lmc\ApiFilter\Filters;
 use Lmc\ApiFilter\Applicator\ApplicatorInterface;
 use Lmc\ApiFilter\Assertion;
 use Lmc\ApiFilter\Entity\Filterable;
+use Lmc\ApiFilter\Filter\FilterFunction;
 use Lmc\ApiFilter\Filter\FilterIn;
 use Lmc\ApiFilter\Filter\FilterInterface;
 use Lmc\ApiFilter\Filter\FunctionParameter;
@@ -48,11 +49,19 @@ class Filters implements FiltersInterface
         yield from $this->filters;
     }
 
-    public function getPreparedValues(ApplicatorInterface $applicator): array
-    {
+    public function getPreparedValues(
+        ApplicatorInterface $applicator,
+        callable $findParametersForFunction,
+        callable $findParameterDefinitions
+    ): array {
         $preparedValues = [];
         foreach ($this->filters as $filter) {
-            $preparedValues += $applicator->getPreparedValue($filter);
+            $preparedValues += $filter instanceof FilterFunction
+                ? $applicator->getPreparedValuesForFunction(
+                    $findParametersForFunction($filter),
+                    $findParameterDefinitions($filter)
+                )
+                : $applicator->getPreparedValue($filter);
         }
 
         return $preparedValues;

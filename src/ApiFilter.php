@@ -7,6 +7,7 @@ use Lmc\ApiFilter\Applicator\QueryBuilderApplicator;
 use Lmc\ApiFilter\Constant\Priority;
 use Lmc\ApiFilter\Entity\Filterable;
 use Lmc\ApiFilter\Exception\ApiFilterExceptionInterface;
+use Lmc\ApiFilter\Exception\TupleException;
 use Lmc\ApiFilter\Filter\FilterInterface;
 use Lmc\ApiFilter\Filters\FiltersInterface;
 use Lmc\ApiFilter\Service\FilterApplicator;
@@ -14,6 +15,9 @@ use Lmc\ApiFilter\Service\FilterFactory;
 use Lmc\ApiFilter\Service\FunctionCreator;
 use Lmc\ApiFilter\Service\Functions;
 use Lmc\ApiFilter\Service\QueryParametersParser;
+use MF\Collection\Exception\TupleExceptionInterface;
+use MF\Collection\Immutable\ITuple;
+use MF\Collection\Immutable\Tuple;
 
 class ApiFilter
 {
@@ -287,5 +291,43 @@ class ApiFilter
         return $this->functions
             ->execute($functionName, $filters, new Filterable($filterable))
             ->getValue();
+    }
+
+    /**
+     * Apply a function with parsed query parameters and prepare values
+     *
+     * It will parse filters and apply registered function with parsed filters + prepare values for applied function
+     *
+     * @example
+     * Applying a function directly on filterable
+     * [$sql, $preparedValues] = $apiFilter
+     *      ->declareFunction('fullName', ['firstName', 'surname'])
+     *      ->applyFunction('fullName', ['fullName' => '(Jon, Snow)'], 'SELECT * FROM person');
+     *
+     * $sql:            SELECT * FROM person WHERE firstName = :firstName_function_parameter AND surname = :surname_function_parameter
+     * $preparedValues: ['firstName_function_parameter' => 'Jon', 'surname_function_parameter' => 'Snow']
+     *
+     * @see ApiFilter::declareFunction()
+     * @see ApiFilter::registerFunction()
+     * @see ApiFilter::executeFunction() if you just want to bypass ApiFilter applicators
+     *
+     * @param mixed $filterable of type <T>
+     * @throws ApiFilterExceptionInterface
+     * @return ITuple (<U>, array) where <U> is the output of the registered function and array contains prepared values
+     */
+    public function applyFunction(string $functionName, array $queryParameters, $filterable): ITuple
+    {
+        try {
+            $filters = $this->parser->parse($queryParameters);
+            $this->applicator->setFilters($filters);
+            $filterable = new Filterable($filterable);
+
+            $appliedFilterable = $this->functions->execute($functionName, $filters, $filterable);
+            $preparedValues = $this->applicator->getPreparedValues($filters, $filterable);
+
+            return Tuple::of($appliedFilterable->getValue(), $preparedValues);
+        } catch (TupleExceptionInterface $e) {
+            throw TupleException::forBaseTupleException($e);
+        }
     }
 }
