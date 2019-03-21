@@ -25,6 +25,19 @@ class ApiFilterRegisterFunctionTest extends AbstractTestCase
     /**
      * @test
      */
+    public function shouldNotAllowToDeclareFunctionsWithSameParameters(): void
+    {
+        $this->expectException(ApiFilterExceptionInterface::class);
+        $this->expectExceptionMessage('There is already a function "person1" with parameter "name" registered. Parameters must be unique.');
+
+        $this->apiFilter
+            ->declareFunction('person1', ['name', 'age'])
+            ->declareFunction('person2', ['name', 'ageTo', 'ageFrom']);
+    }
+
+    /**
+     * @test
+     */
     public function shouldNotAllowToRegisterFunctionsWithSameParameters(): void
     {
         $this->expectException(ApiFilterExceptionInterface::class);
