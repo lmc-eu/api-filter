@@ -12,6 +12,10 @@ class ExplicitFunctionDefinitionByValueParser extends AbstractFunctionParser
      */
     protected function supportsParameters(array $queryParameters, string $rawColumn, $rawValue): bool
     {
+        if ($this->isColumnParsed(Column::FUNCTION)) {
+            return false;
+        }
+
         return array_key_exists(Column::FUNCTION, $queryParameters);
     }
 

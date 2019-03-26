@@ -12,7 +12,7 @@ use Lmc\ApiFilter\Service\Parser\FunctionParser\FunctionInFilterParameterParser;
 use Lmc\ApiFilter\Service\Parser\FunctionParser\FunctionParserInterface;
 use Lmc\ApiFilter\Service\Parser\FunctionParser\ImplicitFunctionDefinitionByTupleParser;
 use Lmc\ApiFilter\Service\Parser\FunctionParser\ImplicitFunctionDefinitionByValueParser;
-use MF\Collection\Mutable\Generic\Map;
+use MF\Collection\Mutable\Generic\IMap;
 use MF\Collection\Mutable\Generic\PrioritizedCollection;
 
 class FunctionParser extends AbstractParser
@@ -33,13 +33,13 @@ class FunctionParser extends AbstractParser
         $this->parsers->add(new ImplicitFunctionDefinitionByTupleParser($filterFactory, $functions), Priority::LOWER);
     }
 
-    public function setQueryParameters(array $queryParameters): void
-    {
-        $alreadyParsedFunctions = new Map('string', 'bool');
-        $alreadyParsedQueryParameters = new Map('string', 'bool');
-
+    public function setQueryParameters(
+        array $queryParameters,
+        IMap $alreadyParsedFunctions,
+        IMap $alreadyParsedColumns
+    ): void {
         foreach ($this->parsers as $parser) {
-            $parser->setCommonValues($queryParameters, $alreadyParsedFunctions, $alreadyParsedQueryParameters);
+            $parser->setCommonValues($queryParameters, $alreadyParsedFunctions, $alreadyParsedColumns);
         }
     }
 

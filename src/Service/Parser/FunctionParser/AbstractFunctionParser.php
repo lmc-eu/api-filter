@@ -8,7 +8,6 @@ use Lmc\ApiFilter\Service\FilterFactory;
 use Lmc\ApiFilter\Service\Functions;
 use Lmc\ApiFilter\Service\Parser\AbstractParser;
 use MF\Collection\Mutable\Generic\IMap;
-use MF\Collection\Mutable\Generic\Map;
 
 abstract class AbstractFunctionParser extends AbstractParser implements FunctionParserInterface
 {
@@ -19,9 +18,9 @@ abstract class AbstractFunctionParser extends AbstractParser implements Function
     protected $functions;
     /** @var ?array */
     private $queryParameters;
-    /** @var Map<string,bool>|IMap|null */
+    /** @var IMap<string,bool>|IMap|null */
     private $alreadyParsedFunctions;
-    /** @var Map<string,bool>|IMap|null */
+    /** @var IMap<string,bool>|IMap|null */
     private $alreadyParsedColumns;
 
     public function __construct(FilterFactory $filterFactory, Functions $functions)

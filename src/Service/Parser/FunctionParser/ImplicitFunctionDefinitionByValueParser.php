@@ -23,6 +23,10 @@ class ImplicitFunctionDefinitionByValueParser extends AbstractFunctionParser
      */
     protected function supportsParameters(array $queryParameters, string $rawColumn, $rawValue): bool
     {
+        if ($this->isAllImplicitFunctionDefinitionsChecked) {
+            return false;
+        }
+
         foreach ($this->functions->getFunctionNamesByParameter($rawColumn) as $functionName) {
             // - are there all parameters for at least one of the functions?
             foreach ($this->functions->getParametersFor($functionName) as $parameter) {
