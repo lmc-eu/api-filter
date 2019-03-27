@@ -98,6 +98,14 @@ class FilterApplicator
 
     public function getPreparedValues(FiltersInterface $filters, Filterable $filterable): array
     {
-        return $filters->getPreparedValues($this->findApplicatorFor($filterable));
+        return $filters->getPreparedValues(
+            $this->findApplicatorFor($filterable),
+            function (FilterFunction $filterFunction) {
+                return $this->getParametersForFunction($filterFunction);
+            },
+            function (FilterFunction $filterFunction) {
+                return $this->functions->getParameterDefinitionsFor($filterFunction->getColumn());
+            }
+        );
     }
 }

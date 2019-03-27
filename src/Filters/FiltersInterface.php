@@ -16,7 +16,15 @@ interface FiltersInterface extends IEnumerable
      */
     public function applyAllTo(Filterable $filterable, FilterApplicator $filterApplicator): Filterable;
 
-    public function getPreparedValues(ApplicatorInterface $applicator): array;
+    /**
+     * @param callable $findParametersForFunction (FilterFunction): FunctionParameter[]
+     * @param callable $findParameterDefinitions (FilterFunction): ParameterDefinition[]
+     */
+    public function getPreparedValues(
+        ApplicatorInterface $applicator,
+        callable $findParametersForFunction,
+        callable $findParameterDefinitions
+    ): array;
 
     public function hasFilter(FilterInterface $filter): bool;
 

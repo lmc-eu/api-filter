@@ -32,7 +32,7 @@ abstract class AbstractTestCase extends TestCase
         if ($expectedDqlWhere === null) {
             $this->assertNull($where);
         } else {
-            $this->assertSame($expectedDqlWhere, $where->getParts());
+            $this->assertSameValues($expectedDqlWhere, $where->getParts());
         }
     }
 
@@ -62,5 +62,21 @@ abstract class AbstractTestCase extends TestCase
         }
 
         return $result;
+    }
+
+    protected function assertSameValues(array $expected, array $actual): void
+    {
+        if (!empty($expected)) {
+            [$key] = array_keys($expected);
+            if (is_int($key)) {
+                sort($expected);
+                sort($actual);
+            } else {
+                asort($expected);
+                asort($actual);
+            }
+        }
+
+        $this->assertSame($expected, $actual);
     }
 }

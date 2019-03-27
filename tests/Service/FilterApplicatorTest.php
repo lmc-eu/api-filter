@@ -242,9 +242,6 @@ class FilterApplicatorTest extends AbstractTestCase
             };
         };
 
-        $sqlFullName = $fullName($sqlApplicator);
-        $queryBuilderFullName = $fullName($queryBuilderApplicator);
-
         return [
             // applicator, filters, filterable, expected, functions
             'sql - between' => [
@@ -272,7 +269,7 @@ class FilterApplicatorTest extends AbstractTestCase
                 [
                     new FilterWithOperator('allowed', new Value('true'), '=', 'eq'),
                     new FilterIn('color', new Value(['red', 'blue'])),
-                    new FilterFunction('fullName', new Value($sqlFullName)),
+                    new FilterFunction('fullName', new Value($fullName($sqlApplicator))),
                     new FunctionParameter('firstName', new Value('Jon')),
                     new FunctionParameter('surname', new Value('Snow')),
                 ],
@@ -285,7 +282,6 @@ class FilterApplicatorTest extends AbstractTestCase
                     'allowed_eq' => 'true',
                     'color_in_0' => 'red',
                     'color_in_1' => 'blue',
-                    'fullName_function' => $sqlFullName,
                     'firstName_function_parameter' => 'Jon',
                     'surname_function_parameter' => 'Snow',
                 ],
@@ -318,7 +314,7 @@ class FilterApplicatorTest extends AbstractTestCase
                 [
                     new FilterWithOperator('allowed', new Value('true'), '=', 'eq'),
                     new FilterIn('color', new Value(['red', 'blue'])),
-                    new FilterFunction('fullName', new Value($queryBuilderFullName)),
+                    new FilterFunction('fullName', new Value($fullName($queryBuilderApplicator))),
                     new FunctionParameter('firstName', new Value('Jon')),
                     new FunctionParameter('surname', new Value('Snow')),
                 ],
@@ -331,7 +327,6 @@ class FilterApplicatorTest extends AbstractTestCase
                 [
                     'allowed_eq' => 'true',
                     'color_in' => ['red', 'blue'],
-                    'fullName_function' => $queryBuilderFullName,
                     'firstName_function_parameter' => 'Jon',
                     'surname_function_parameter' => 'Snow',
                 ],

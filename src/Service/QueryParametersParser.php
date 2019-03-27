@@ -4,6 +4,7 @@ namespace Lmc\ApiFilter\Service;
 
 use Lmc\ApiFilter\Constant\Priority;
 use Lmc\ApiFilter\Exception\TupleException;
+use Lmc\ApiFilter\Filter\FilterInterface;
 use Lmc\ApiFilter\Filters\Filters;
 use Lmc\ApiFilter\Filters\FiltersInterface;
 use Lmc\ApiFilter\Service\Parser\FunctionParser;
@@ -64,6 +65,7 @@ class QueryParametersParser
         }
     }
 
+    /** @return FilterInterface[] */
     private function parseFilters(array $queryParameters): iterable
     {
         foreach ($queryParameters as $rawColumn => $rawValue) {
