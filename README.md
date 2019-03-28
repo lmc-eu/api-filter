@@ -80,7 +80,7 @@ $filters = $apiFilter->parseFilters($request->query->all());
 ```php
 // in EntityRepository/Model
 $queryBuilder = $this->createQueryBuilder('alias');
-$queryBuilder = $apiFilter->applyAll($filters, $queryBuilder);
+$queryBuilder = $apiFilter->applyFilters($filters, $queryBuilder);
 
 // or one by one
 foreach ($filters as $filter) {
@@ -102,7 +102,7 @@ $queryBuilder
 $queryBuilder = $this->createQueryBuilder('alias');
 
 $apiFilter
-    ->applyAll($filters, $queryBuilder)                                     // query builder with applied filters
+    ->applyFilters($filters, $queryBuilder)                                     // query builder with applied filters
     ->setParameters($apiFilter->getPreparedValues($filters, $queryBuilder)) // ['field_eq' => 'value']
     ->getQuery();
 ```
@@ -140,7 +140,7 @@ $stmt->execute($preparedValues);
 ```php
 // in EntityRepository/Model
 $sql = 'SELECT * FROM table';
-$stmt = $connection->prepare($apiFilter->applyAll($filters, $sql)); // SELECT * FROM table WHERE 1 AND field = :field_eq 
+$stmt = $connection->prepare($apiFilter->applyFilters($filters, $sql)); // SELECT * FROM table WHERE 1 AND field = :field_eq 
 $stmt->execute($apiFilter->getPreparedValues($filters, $sql));      // ['field_eq' => 'value']
 ```
 
