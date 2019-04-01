@@ -28,6 +28,14 @@ Same if you want different settings per entity/table, it should be done by a spe
     - [IN + EQ](#in--eq-filter)
     - [GT + LT _(between)_](#gt--lt-filter-between)
     - [EQ `Tuple`](#eq-with-tuple)
+- [Functions in filters](#functions-in-filters)
+    - [Example for fullName function](#example-for-fullname-function)
+    - [Function parameters definition](#function-parameters-definition)
+        - [By string](#defined-as-string)
+        - [By array](#defined-as-array)
+        - [By object](#defined-as-object)
+        - [Combinations](#combinations)
+    - [Register and Execute function](#register-and-execute-function)
 - [Exceptions and error handling](#exceptions-and-error-handling)
 - [Development](#development)
 
@@ -72,7 +80,7 @@ $filters = $apiFilter->parseFilters($request->query->all());
 ```php
 // in EntityRepository/Model
 $queryBuilder = $this->createQueryBuilder('alias');
-$queryBuilder = $apiFilter->applyAll($filters, $queryBuilder);
+$queryBuilder = $apiFilter->applyFilters($filters, $queryBuilder);
 
 // or one by one
 foreach ($filters as $filter) {
@@ -94,7 +102,7 @@ $queryBuilder
 $queryBuilder = $this->createQueryBuilder('alias');
 
 $apiFilter
-    ->applyAll($filters, $queryBuilder)                                     // query builder with applied filters
+    ->applyFilters($filters, $queryBuilder)                                     // query builder with applied filters
     ->setParameters($apiFilter->getPreparedValues($filters, $queryBuilder)) // ['field_eq' => 'value']
     ->getQuery();
 ```
@@ -132,7 +140,7 @@ $stmt->execute($preparedValues);
 ```php
 // in EntityRepository/Model
 $sql = 'SELECT * FROM table';
-$stmt = $connection->prepare($apiFilter->applyAll($filters, $sql)); // SELECT * FROM table WHERE 1 AND field = :field_eq 
+$stmt = $connection->prepare($apiFilter->applyFilters($filters, $sql)); // SELECT * FROM table WHERE 1 AND field = :field_eq 
 $stmt->execute($apiFilter->getPreparedValues($filters, $sql));      // ['field_eq' => 'value']
 ```
 
@@ -170,6 +178,12 @@ GET http://host/endpoint/?field[lte]=value
 GET http://host/endpoint/?type[in][]=one&type[in][]=two
 ```
 - `Tuples` are not allowed in `IN` filter
+
+### Function
+```http request
+GET http://host/endpoint?fullName=(Jon,Snow)
+```
+- there is much more options and possibilities with `functions` which you can see [here](#functions-in-filters)
 
 ## `Tuples` in filters
 `Tuples`
@@ -383,6 +397,221 @@ Result:
 -   column: genre
     filters: in
     value: [ action, fantasy ]
+```
+
+## Functions in filters
+With function you can handle all kinds of situations, which might be problematic with just a simple filters like `eq`, etc.
+
+Let's see how to work with functions and what is required to do. We will show it right on the example.
+
+### Example for `fullName` function
+
+#### Expected api
+```http request
+GET http://host/endpoint?fullName=(Jon,Snow)
+```
+☝️ _this shows what we want to offer to our consumers. It's easy and explicit enough._
+
+It may even hide some inner differences, for example with simple filters, database column must have same name as the field in the filter, but with function, we can change it.
+
+Let's say that in database we have something like:
+```fs
+type Person = {
+    first_name: string
+    lastname: string
+}
+```
+
+#### Initialization
+First of all, you have to define functions you want to use.
+```php
+// in DI container/factory
+$apiFilter = new ApiFilter();
+
+$apiFilter->declareFunction(
+    'fullName',
+    [
+        new ParameterDefinition('firstName', 'eq', 'first_name'),   // parameter name and field name are different, so we need to define it
+        'lastname`,              // parameter name and field name are the same and we use the implicit `eq` filter, so it is defined simply
+    ]
+);
+```
+Method `declareFunction` will create a function with filters based on parameters.
+_There is also [registerFunction](#register-and-execute-function) method, which allows you to pass any function you want. This may be useful when you don't need filter functionality at all or have some custom logic/storage, etc._
+
+#### Parsing and applying filters
+Now when request with `?fullName=(Jon,Snow)` comes, `ApiFilter` can parse it to:
+```php
+// in service/controller/...
+$sql = 'SELECT * FROM person';
+
+$filters = $apiFilter->parseFilters($request->query->all());
+// [
+//      0 => Lmc\ApiFilter\Filter\FilterFunction {
+//        private $title  => 'function'
+//        private $column => 'fullName'
+//        private $value  => Lmc\ApiFilter\Entity\Value {
+//          private $value => Closure
+//        }
+//      },
+//
+//      1 => Lmc\ApiFilter\Filter\FunctionParameter {
+//        private $title => 'function_parameter'
+//        private $column => 'firstName'
+//        private $value => Lmc\ApiFilter\Entity\Value {
+//          private $value => 'Jon'
+//        }
+//      },
+//
+//      2 => Lmc\ApiFilter\Filter\FunctionParameter {
+//        private $title => 'function_parameter'
+//        private $column => 'lastname'
+//        private $value => Lmc\ApiFilter\Entity\Value {
+//          private $value => 'Snow'
+//        }
+//      }
+// ]
+
+$appliedSql = $apiFilter->applyFilters($filters, $sql);
+// SELECT *
+// FROM person
+// WHERE
+//      first_name = :firstName_function_parameter AND
+//      lastname = :lastname_function_parameter
+
+$preparedValues = $apiFilter->getPreparedValues($filters, $sql);
+// [
+//      'firstName_function_parameter' => 'Jon',
+//      'lastname_function_parameter' => 'Snow',
+// ]
+```
+
+#### Supported function usage
+All examples below results the same. We have that many options, so we can allow as many different consumers as possible.
+
+```http request
+### Explicit function call
+GET http://host/endpoint?fullName=(Jon,Snow)
+
+### Explicit function call with values
+GET http://host/endpoint?function=fullName&firstName=Jon&lastname=Snow
+
+### Implicit function call by values
+GET http://host/endpoint?firstName=Jon&lastname=Snow
+
+### Explicit function call by tuple
+GET http://host/endpoint?(function,firstName,surname)=(fullName, Jon, Snow)
+
+### Implicit function call by tuple
+GET http://host/endpoint?(firstName,surname)=(Jon, Snow)
+
+### Explicit function call by filter parameter
+GET http://host/endpoint?filter[]=(fullName,Jon,Snow)
+```
+
+### Function Parameters Definition
+To `declare` or `register` function, you have to define its parameters. There are many ways/needs to do it.
+
+#### Defined as string
+This is the easiest way to do it. You just define a parameter(s) name.
+
+```php
+$apiFilter->declareFunction('fullName', ['firstName', 'surname']);
+```
+
+It means:
+- you want `eq` filter (_or `IN` for array_) and the column name and parameter name are the same
+- the value for this parameter is mandatory
+
+#### Defined as array
+This allows you to pass more options for a paramater.
+
+##### Only one item
+If you declare it just by giving the only item, it is the same as definition by string above.
+```php
+$apiFilter->declareFunction('fullName', [['firstName'], ['surname']]);
+```
+
+##### More than one item
+```php
+$apiFilter->declareFunction('fullName', [
+    ['firstName', 'eq', 'first_name'],
+    ['surname', 'eq', 'lastname', 'Snow']
+]);
+```
+
+It means
+- `firstName` parameter uses `eq` filter, has `first_name` column in a storage and is mandatory
+- `surname` parameter uses `eq` filter, has `lastname` column in a storage and its value is `Snow` (_which will always be used and no value can override it_)
+
+#### Defined as object
+This allows you to pass same options as with the array, but explicitly defined in the object. (_It even has some special constructor methods to simplify special needs._)
+```php
+$apiFilter->declareFunction('fullName', [
+    new ParameterDefinition('firstName', 'eq', 'first_name'),
+    new ParameterDefinition('surname', 'eq', 'lastname, new Value('Snow'))
+]);
+```
+
+#### Combinations
+All options can be combined to best suite the parameter.
+
+##### Declaration
+```php
+$apiFilter->declareFunction('fullNameGrownMan', [
+    ['firstName', 'eq', 'first_name'],
+    'surname',
+    ['age', 'gte', 'age', 18],
+    ParameterDefinition::equalToDefaultValue('gender', new Value('male')),
+]);
+```
+
+##### Usage
+```http request
+GET http://endpoint/host?fullNameGrownMan=(Jon,Snow)
+```
+
+### Register and Execute function
+Example below is just for explicit demonstration, you should probably never allow execute SQL queries like this.
+
+#### Usage in PHP
+```php
+// in DI container/factory
+$apiFilter = new ApiFilter();
+
+$apiFilter->registerFunction(
+    'sql',
+    ['query'],
+    function (\PDO $client, FunctionParameter $query): \PDOStatement {
+        return $client->query($query->getValue()->getValue());
+    }
+)
+
+// in service/controller/...
+$statement = $apiFilter->executeFunction('sql', $queryParameters, $client);    // \PDOStatement
+
+$statement->execute();
+// fetch result, etc...
+```
+
+#### Usage of the API
+All examples below results the same. We have that many options, so we can allow as many different consumers as possible.
+
+```http request
+### Explicit function call
+GET http://endpoint/host?sql=SELECT * FROM person
+
+### Explicit function call with values
+GET http://host/endpoint?function=sql&query=SELECT * FROM person
+
+### Implicit function call by values
+GET http://host/endpoint?query=SELECT * FROM person
+
+### Explicit function call by tuple
+GET http://host/endpoint?(function,query)=(sql, SELECT * FROM person)
+
+### Explicit function call by filter parameter
+GET http://host/endpoint?filter[]=(sql, SELECT * FROM person)
 ```
 
 ## Exceptions and error handling
