@@ -11,6 +11,8 @@
 - Add `ApiFilterExceptionInterface` to covers all (_known_) internal exceptions.
 - Fix parsing `lte` filter.
 - Allow explicit filter definition in a **Tuple** _raw column_.
+- [**BC**] Require PHP >= 7.3
+- Update `mf/collections-php` to `4.0`
 
 ## 1.0.0 - 2018-08-28
 - Initial version.
