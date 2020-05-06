@@ -4,6 +4,8 @@
 <!-- There should always be "Unreleased" section at the beginning. -->
 
 ## Unreleased
+
+## 2.0.0 - 2020-05-06
 - Forbid `Value` and `Filterable` to be nested.
 - Change Filter title format to allow upper case letters and underscore.
 - Extends `IEnumerable` interface by `FiltersInterface` to implement both `Countable` and `IteratorAgregate` interfaces.
