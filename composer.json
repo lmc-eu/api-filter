@@ -13,10 +13,10 @@
         }
     },
     "require": {
-        "php": "^7.1",
+        "php": "^7.3",
         "ext-mbstring": "*",
         "beberlei/assert": "^2.9 || ^3.0",
-        "mf/collections-php": "^3.18"
+        "mf/collections-php": "^4.0"
     },
     "suggest": {
         "doctrine/orm": "To allow applying filters directly to QueryBuilder"
