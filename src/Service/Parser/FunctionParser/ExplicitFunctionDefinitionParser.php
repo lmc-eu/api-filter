@@ -7,17 +7,11 @@ use MF\Collection\Immutable\Tuple;
 
 class ExplicitFunctionDefinitionParser extends AbstractFunctionParser
 {
-    /**
-     * @param string|array $rawValue Raw value from query parameters
-     */
     protected function supportsParameters(array $queryParameters, string $rawColumn, $rawValue): bool
     {
         return !$this->isTuple($rawColumn) && $this->functions->isFunctionRegistered($rawColumn);
     }
 
-    /**
-     * @param string|array $rawValue Raw value from query parameters
-     */
     protected function parseParameters(array $queryParameters, string $rawColumn, $rawValue): iterable
     {
         if (!$this->functions->isFunctionRegistered($rawColumn)) {
@@ -41,6 +35,9 @@ class ExplicitFunctionDefinitionParser extends AbstractFunctionParser
         }
     }
 
+    /**
+     * @param string|array $rawValue Raw value from query parameters
+     */
     protected function assertSingleStringValue($rawValue): void
     {
         Assertion::false(

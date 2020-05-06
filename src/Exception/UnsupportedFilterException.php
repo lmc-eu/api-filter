@@ -8,6 +8,6 @@ class UnsupportedFilterException extends InvalidArgumentException
 {
     public static function forFilter(FilterInterface $filter): self
     {
-        return new static(sprintf('Unsupported filter given "%s".', get_class($filter)));
+        return new self(sprintf('Unsupported filter given "%s".', get_class($filter)));
     }
 }

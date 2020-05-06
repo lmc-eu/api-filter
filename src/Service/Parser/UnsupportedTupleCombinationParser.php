@@ -20,6 +20,7 @@ class UnsupportedTupleCombinationParser extends AbstractParser
         ));
     }
 
+    /** @param string|string[] $inputValue */
     private function formatForException($inputValue): string
     {
         if (!is_array($inputValue)) {

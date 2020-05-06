@@ -13,6 +13,9 @@ class InvalidArgumentException extends \InvalidArgumentException implements ApiF
     /** @var array */
     private $constraints;
 
+    /**
+     * @param mixed $value
+     */
     public function __construct(
         string $message,
         int $code = null,

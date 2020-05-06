@@ -2,6 +2,7 @@
 
 namespace Lmc\ApiFilter\Service\Parser;
 
+use Lmc\ApiFilter\Assertion;
 use Lmc\ApiFilter\Constant\Filter;
 use MF\Collection\Immutable\ITuple;
 use MF\Collection\Immutable\Tuple;
@@ -15,6 +16,7 @@ class TupleColumnTupleValueParser extends AbstractParser
 
     public function parse(string $rawColumn, $rawValue): iterable
     {
+        Assertion::string($rawValue);
         [$columns, $values] = $this->parseColumnsAndValues($rawColumn, $rawValue);
 
         foreach ($columns as $column) {

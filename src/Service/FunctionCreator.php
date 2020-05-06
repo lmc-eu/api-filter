@@ -44,9 +44,8 @@ class FunctionCreator
     }
 
     /**
-     * @see FunctionCreator::normalizeParameters()
-     *
      * @param ParameterDefinition[]|IMap $normalizedParameters IMap<string, Parameter>
+     * @see FunctionCreator::normalizeParameters()
      */
     public function getParameterNames(IMap $normalizedParameters): array
     {
@@ -59,9 +58,8 @@ class FunctionCreator
     }
 
     /**
-     * @see FunctionCreator::normalizeParameters()
-     *
      * @param ParameterDefinition[]|IMap $normalizedParameters IMap<string, Parameter>
+     * @see FunctionCreator::normalizeParameters()
      */
     public function createByParameters(FilterApplicator $applicator, IMap $normalizedParameters): callable
     {
@@ -75,6 +73,9 @@ class FunctionCreator
         };
     }
 
+    /**
+     * @param mixed $parameter
+     */
     private function assertParameter($parameter): void
     {
         Assertion::true(
@@ -126,10 +127,9 @@ class FunctionCreator
     }
 
     /**
-     * @see FunctionCreator::normalizeParameters()
-     *
      * @param ParameterDefinition[]|IMap $normalizedParameters IMap<string, Parameter>
      * @return ParameterDefinition[]
+     * @see FunctionCreator::normalizeParameters()
      */
     public function getParameterDefinitions(IMap $normalizedParameters): array
     {

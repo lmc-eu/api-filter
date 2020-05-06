@@ -15,6 +15,7 @@ class TupleColumnArrayValueParser extends AbstractParser
 
     public function parse(string $rawColumn, $rawValue): iterable
     {
+        Assertion::isArray($rawValue);
         $columns = Tuple::parse($rawColumn)->toArray();
         $columnsCount = count($columns);
 

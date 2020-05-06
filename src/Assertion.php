@@ -16,7 +16,7 @@ class Assertion extends BaseAssertion
      * @param mixed $value
      * @param string|callable|null $message
      */
-    public static function isTuple($value, $message = null, ?string $propertyPath = null)
+    public static function isTuple($value, $message = null, ?string $propertyPath = null): bool
     {
         if (self::isTupleValue($value)) {
             return true;
@@ -30,6 +30,7 @@ class Assertion extends BaseAssertion
         throw static::createException($value, $message, 0, $propertyPath);
     }
 
+    /** @param mixed $value */
     private static function isTupleValue($value): bool
     {
         return $value instanceof ITuple || (is_string($value) && mb_substr($value, 0, 1) === '(');

@@ -17,6 +17,9 @@ abstract class AbstractParser implements ParserInterface
         $this->filterFactory = $filterFactory;
     }
 
+    /**
+     * @param string|array $value
+     */
     protected function isTuple($value): bool
     {
         return is_string($value) && mb_substr($value, 0, 1) === '(';
@@ -40,6 +43,9 @@ abstract class AbstractParser implements ParserInterface
         return mb_strpos($column, '[') !== false || mb_strpos($column, ']') !== false;
     }
 
+    /**
+     * @param mixed $value
+     */
     protected function createFilter(string $column, string $filter, $value): FilterInterface
     {
         return $this->filterFactory->createFilter($column, $filter, new Value($value));

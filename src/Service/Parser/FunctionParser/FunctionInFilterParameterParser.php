@@ -17,9 +17,6 @@ class FunctionInFilterParameterParser extends AbstractFunctionParser
         return array_key_exists(Column::FILTER, $queryParameters);
     }
 
-    /**
-     * @param string|array $rawValue Raw value from query parameters
-     */
     protected function parseParameters(array $queryParameters, string $rawColumn, $rawValue): iterable
     {
         if ($this->isColumnParsed(Column::FILTER)) {

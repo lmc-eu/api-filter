@@ -47,6 +47,9 @@ abstract class AbstractFunctionParser extends AbstractParser implements Function
         return $this->supportsParameters($this->assertQueryParameters(), $rawColumn, $rawValue);
     }
 
+    /**
+     * @param string|array $rawValue Raw value from query parameters
+     */
     abstract protected function supportsParameters(array $queryParameters, string $rawColumn, $rawValue): bool;
 
     private function assertQueryParameters(): array

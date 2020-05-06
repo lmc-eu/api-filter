@@ -1,3 +1,2 @@
-includes:
-    - vendor/phpstan/phpstan-beberlei-assert/extension.neon
-    - vendor/phpstan/phpstan-mockery/extension.neon
+parameters:
+    checkMissingIterableValueType: false

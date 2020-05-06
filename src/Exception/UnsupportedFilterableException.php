@@ -10,7 +10,7 @@ class UnsupportedFilterableException extends InvalidArgumentException
     {
         $filterableValue = $filterable->getValue();
 
-        return new static(
+        return new self(
             sprintf(
                 'Unsupported filterable of type "%s".',
                 is_object($filterableValue)

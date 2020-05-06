@@ -8,6 +8,6 @@ class TupleException extends InvalidArgumentException implements TupleExceptionI
 {
     public static function forBaseTupleException(TupleExceptionInterface $e): self
     {
-        return new static($e->getMessage(), $e->getCode(), null, null, [], $e);
+        return new self($e->getMessage(), $e->getCode(), null, null, [], $e);
     }
 }
