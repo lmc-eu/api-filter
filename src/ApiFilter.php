@@ -209,7 +209,7 @@ class ApiFilter
      * @param array $parameters names or definition of needed parameters (parameters will be passed to function in given order)
      * @throws ApiFilterExceptionInterface
      */
-    public function declareFunction(string $functionName, array $parameters)
+    public function declareFunction(string $functionName, array $parameters): self
     {
         $parameters = $this->functionCreator->normalizeParameters($parameters);
 

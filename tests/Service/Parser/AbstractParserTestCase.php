@@ -160,6 +160,7 @@ abstract class AbstractParserTestCase extends AbstractTestCase
         $this->assertSame($expected, $result);
     }
 
+    /** @param mixed $rawValue */
     protected function parseColumnAndValue(string $rawColumn, $rawValue): array
     {
         $result = [];

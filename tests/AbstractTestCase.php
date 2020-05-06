@@ -16,7 +16,7 @@ abstract class AbstractTestCase extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
-    protected function setUpQueryBuilder($alias = 't'): QueryBuilder
+    protected function setUpQueryBuilder(string $alias = 't'): QueryBuilder
     {
         $queryBuilder = new QueryBuilder(m::mock(EntityManagerInterface::class));
         $queryBuilder->from('table', $alias);

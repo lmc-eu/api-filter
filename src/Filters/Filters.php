@@ -15,7 +15,7 @@ use MF\Collection\Immutable\Generic\ListCollection;
 
 class Filters implements FiltersInterface
 {
-    /** @var IList|FilterInterface[] */
+    /** @var IList<FilterInterface> */
     private $filters;
 
     /** @param FilterInterface[] $filters */
@@ -27,7 +27,10 @@ class Filters implements FiltersInterface
     /** @param FilterInterface[] $filters */
     public function __construct(array $filters = [])
     {
-        $this->filters = ListCollection::fromT(FilterInterface::class, $filters);
+        /** @var IList<FilterInterface> $filterCollection */
+        $filterCollection = ListCollection::fromT(FilterInterface::class, $filters);
+
+        $this->filters = $filterCollection;
     }
 
     /**

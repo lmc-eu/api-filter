@@ -54,7 +54,7 @@ class FunctionsTest extends AbstractTestCase
 
         // assert function definition
         $fullNameFunction = $this->functions->getFunction('fullName');
-        $this->assertInternalType('callable', $fullNameFunction);
+        $this->assertIsCallable($fullNameFunction);
 
         // assert parameters definition
         $parameters = $this->functions->getParametersFor('fullName');

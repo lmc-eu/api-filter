@@ -11,14 +11,11 @@ use Lmc\ApiFilter\Applicator\SqlApplicator;
 use Lmc\ApiFilter\Entity\Filterable;
 use Lmc\ApiFilter\Entity\Value;
 use Lmc\ApiFilter\Exception\InvalidArgumentException;
-use Lmc\ApiFilter\Exception\UnsupportedFilterableException;
-use Lmc\ApiFilter\Exception\UnsupportedFilterException;
 use Lmc\ApiFilter\Filter\FilterFunction;
 use Lmc\ApiFilter\Filter\FilterIn;
 use Lmc\ApiFilter\Filter\FilterWithOperator;
 use Lmc\ApiFilter\Filter\FunctionParameter;
 use Lmc\ApiFilter\Filters\Filters;
-use Lmc\ApiFilter\Fixture\UnsupportedFilter;
 use Mockery as m;
 
 class FilterApplicatorTest extends AbstractTestCase
@@ -243,9 +240,9 @@ class FilterApplicatorTest extends AbstractTestCase
         };
 
         return [
-            // applicator, filters, filterable, expected, functions
+            // applicator, filters, filterable, expected
             'sql - between' => [
-                new SqlApplicator(),
+                $sqlApplicator,
                 [
                     new FilterWithOperator('column', new Value('min'), '>', 'gt'),
                     new FilterWithOperator('column', new Value('max'), '<', 'lt'),
@@ -255,7 +252,7 @@ class FilterApplicatorTest extends AbstractTestCase
                 ['column_gt' => 'min', 'column_lt' => 'max'],
             ],
             'sql - eq + in' => [
-                new SqlApplicator(),
+                $sqlApplicator,
                 [
                     new FilterWithOperator('allowed', new Value('true'), '=', 'eq'),
                     new FilterIn('color', new Value(['red', 'blue'])),
@@ -290,7 +287,7 @@ class FilterApplicatorTest extends AbstractTestCase
                 ],
             ],
             'queryBuilder - between' => [
-                new QueryBuilderApplicator(),
+                $queryBuilderApplicator,
                 [
                     new FilterWithOperator('column', new Value('min'), '>', 'gt'),
                     new FilterWithOperator('column', new Value('max'), '<', 'lt'),
@@ -300,7 +297,7 @@ class FilterApplicatorTest extends AbstractTestCase
                 ['column_gt' => 'min', 'column_lt' => 'max'],
             ],
             'queryBuilder - eq + in' => [
-                new QueryBuilderApplicator(),
+                $queryBuilderApplicator,
                 [
                     new FilterWithOperator('allowed', new Value('true'), '=', 'eq'),
                     new FilterIn('color', new Value(['red', 'blue'])),
@@ -349,9 +346,10 @@ class FilterApplicatorTest extends AbstractTestCase
     ): void {
         $filterable = new Filterable($filterableInput);
         $filter = new FilterWithOperator('any', new Value('filter'), 'any', 'any');
+
         $this->filterApplicator->setFilters(Filters::from([$filter]));
 
-        $this->expectException(UnsupportedFilterableException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage($expectedMessage);
 
         $this->filterApplicator->apply($filter, $filterable);
@@ -370,21 +368,6 @@ class FilterApplicatorTest extends AbstractTestCase
                 'Unsupported filterable of type "Doctrine\ORM\QueryBuilder".',
             ],
         ];
-    }
-
-    /**
-     * @test
-     */
-    public function shouldNotApplyUnsupportedFilter(): void
-    {
-        $filter = new UnsupportedFilter();
-        $this->filterApplicator->registerApplicator(new SqlApplicator(), 1);
-        $this->filterApplicator->setFilters(Filters::from([$filter]));
-
-        $this->expectException(UnsupportedFilterException::class);
-        $this->expectExceptionMessage('Unsupported filter given "Lmc\ApiFilter\Fixture\UnsupportedFilter"');
-
-        $this->filterApplicator->apply($filter, new Filterable('foo'));
     }
 
     /**

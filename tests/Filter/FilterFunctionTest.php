@@ -35,7 +35,7 @@ class FilterFunctionTest extends AbstractTestCase
 
         $this->assertSame('fooFunction', $filterFunction->getColumn());
         $this->assertSame('fooFunction_foo', $filterFunction->getTitle());
-        $this->assertInternalType('callable', $function, 'Function in filter is not callable');
+        $this->assertIsCallable($function, 'Function in filter is not callable');
         $this->assertSame('fooBar', $function());
     }
 

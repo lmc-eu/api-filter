@@ -8,7 +8,7 @@ class UnknownFilterException extends InvalidArgumentException
 {
     public static function forFilterWithColumnAndValue(string $filter, string $column, Value $value): self
     {
-        return new static(
+        return new self(
             sprintf(
                 'Filter "%s" is not implemented. For column "%s" with value "%s".',
                 $filter,
