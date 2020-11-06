@@ -18,6 +18,8 @@ class FilterFactory
         switch (mb_strtolower($filter)) {
             case Filter::EQUALS:
                 return new FilterWithOperator($column, $value, '=', $title ?? Filter::EQUALS);
+            case Filter::NOT_EQUALS:
+                return new FilterWithOperator($column, $value, '!=', $title ?? Filter::NOT_EQUALS);
             case Filter::GREATER_THAN:
                 return new FilterWithOperator($column, $value, '>', $title ?? Filter::GREATER_THAN);
             case Filter::LESS_THEN:
