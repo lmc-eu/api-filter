@@ -18,6 +18,7 @@ Same if you want different settings per entity/table, it should be done by a spe
     - [With simple SQL](#with-sql-applicator)
 - [Supported filters](#supported-filters)
     - [Equals](#equals---eq-)
+    - [Not Equals](#not-equals---neq-)
     - [Greater than](#greater-than---gt-)
     - [Greater than or Equals](#greater-than-or-equals---gte-)
     - [Lower than](#lower-than---lt-)
@@ -152,6 +153,11 @@ GET http://host/endpoint/?field[eq]=value
 GET http://host/endpoint/?field=value
 ```
 _Both examples ☝ are equal_
+
+### Not Equals - NEQ (!=)
+```http request
+GET http://host/endpoint/?field[neq]=value
+```
 
 ### Greater Than - GT (>)
 ```http request
