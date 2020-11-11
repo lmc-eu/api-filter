@@ -55,6 +55,7 @@ class FilterFactoryTest extends AbstractTestCase
         return [
             // filter, expectedFilterClass, ?expectedTitle, ?rawValue, ?expectedValue
             'eq' => ['eq', FilterWithOperator::class],
+            'neq' => ['neq', FilterWithOperator::class],
             'gt' => ['gt', FilterWithOperator::class],
             'gte' => ['gte', FilterWithOperator::class],
             'lt' => ['lt', FilterWithOperator::class],

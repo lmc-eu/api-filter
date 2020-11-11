@@ -100,6 +100,13 @@ class FilterApplicatorTest extends AbstractTestCase
                 'SELECT * FROM table WHERE public = 1 AND col = :col_eq',
                 ['col_eq' => 'val'],
             ],
+            'sql - neq' => [
+                $sqlApplicator,
+                [new FilterWithOperator('col', new Value('val'), '!=', 'neq')],
+                'SELECT * FROM table WHERE public != 1',
+                'SELECT * FROM table WHERE public != 1 AND col != :col_neq',
+                ['col_neq' => 'val'],
+            ],
             'sql - gt' => [
                 $sqlApplicator,
                 [new FilterWithOperator('col', new Value('val'), '>', 'gt')],

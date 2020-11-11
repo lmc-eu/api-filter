@@ -5,6 +5,7 @@ namespace Lmc\ApiFilter\Constant;
 final class Filter
 {
     public const EQUALS = 'eq';
+    public const NOT_EQUALS = 'neq';
     public const LESS_THEN_OR_EQUAL = 'lte';
     public const LESS_THEN = 'lt';
     public const GREATER_THAN = 'gt';
