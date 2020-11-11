@@ -4,6 +4,8 @@
 <!-- There should always be "Unreleased" section at the beginning. -->
 
 ## Unreleased
+- Add **Filter**
+    - Not Equal to (⭐ thanks to [wshafer](https://github.com/wshafer))
 
 ## 2.0.0 - 2020-05-06
 - Forbid `Value` and `Filterable` to be nested.
@@ -20,17 +22,17 @@
 - Initial version.
     - **Filters**
         - Equal to
-        - Lower than 
+        - Lower than
         - Lower or equal than
         - Greater than
         - Greater or equal than
         - IN
     - **Applicators**
         - Doctrine Query Builder
-        - _Naive_ SQL 
+        - _Naive_ SQL
     - **Tuple** allowed in
         - Equal to
-        - Lower than 
+        - Lower than
         - Lower or equal than
         - Greater than
         - Greater or equal than
