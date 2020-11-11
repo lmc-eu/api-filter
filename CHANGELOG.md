@@ -4,8 +4,10 @@
 <!-- There should always be "Unreleased" section at the beginning. -->
 
 ## Unreleased
+
+## 2.1.0 - 2020-11-11
 - Add **Filter**
-    - Not Equal to (⭐ thanks to [wshafer](https://github.com/wshafer))
+    - Not Equal to (⭐  _thanks to [wshafer](https://github.com/wshafer)_)
 
 ## 2.0.0 - 2020-05-06
 - Forbid `Value` and `Filterable` to be nested.
