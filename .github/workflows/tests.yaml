@@ -1,0 +1,75 @@
+name: Tests and linting
+
+on:
+    push:
+    pull_request:
+    schedule:
+        - cron:  '0 3 * * *'
+
+jobs:
+    unit-tests:
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                php-version: ['7.3']
+                dependencies: ['']
+                include:
+                    - { php-version: '7.3', dependencies: '--prefer-lowest --prefer-stable' }
+
+        name: Unit tests - PHP ${{ matrix.dependencies }}
+
+        steps:
+            - uses: actions/checkout@v2
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php-version }}
+                  extensions: mbstring, intl
+                  coverage: xdebug
+
+            - name: Install dependencies
+              run: composer update --no-progress --no-interaction ${{ matrix.dependencies }}
+
+            - name: Run tests
+              run: |
+                  composer tests-ci
+
+            - name: Submit coverage to Coveralls
+              env:
+                  COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  COVERALLS_PARALLEL: true
+                  COVERALLS_FLAG_NAME: ${{ github.job }}-PHP-${{ matrix.php-version }} ${{ matrix.dependencies }}
+              run: |
+                  composer global require php-coveralls/php-coveralls
+                  ~/.composer/vendor/bin/php-coveralls --coverage_clover=./reports/clover.xml --json_path=./reports/coveralls-upload.json -v
+
+    finish-tests:
+        name: Tests finished
+        needs: [unit-tests]
+        runs-on: ubuntu-latest
+        steps:
+            - name: Notify Coveralls
+              uses: coverallsapp/github-action@master
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  parallel-finished: true
+
+    codestyle:
+        name: "Code style and static analysis"
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '7.3'
+                  extensions: mbstring, intl
+
+            - name: Install dependencies
+              run: composer update --no-progress
+
+            - name: Run checks
+              run: composer analyze
