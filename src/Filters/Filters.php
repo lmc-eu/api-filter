@@ -16,7 +16,7 @@ use MF\Collection\Immutable\Generic\ListCollection;
 class Filters implements FiltersInterface
 {
     /** @var IList<FilterInterface> */
-    private $filters;
+    private IList $filters;
 
     /** @param FilterInterface[] $filters */
     public static function from(array $filters): FiltersInterface

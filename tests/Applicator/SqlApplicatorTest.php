@@ -12,8 +12,7 @@ use Lmc\ApiFilter\Filter\FunctionParameter;
 
 class SqlApplicatorTest extends AbstractTestCase
 {
-    /** @var SqlApplicator */
-    private $sqlApplicator;
+    private SqlApplicator $sqlApplicator;
 
     protected function setUp(): void
     {

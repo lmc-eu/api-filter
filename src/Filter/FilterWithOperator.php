@@ -6,8 +6,7 @@ use Lmc\ApiFilter\Entity\Value;
 
 class FilterWithOperator extends AbstractFilter
 {
-    /** @var string */
-    private $operator;
+    private string $operator;
 
     public function __construct(string $column, Value $value, string $operator, string $title)
     {

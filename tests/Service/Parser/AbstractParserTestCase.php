@@ -105,8 +105,7 @@ abstract class AbstractParserTestCase extends AbstractTestCase
         ],
     ];
 
-    /** @var ParserInterface */
-    protected $parser;
+    protected ParserInterface $parser;
 
     protected function mockFilterFactory(): FilterFactory
     {

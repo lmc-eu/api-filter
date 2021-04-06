@@ -9,8 +9,7 @@ use Lmc\ApiFilter\Service\FilterFactory;
 
 abstract class AbstractParser implements ParserInterface
 {
-    /** @var FilterFactory */
-    private $filterFactory;
+    private FilterFactory $filterFactory;
 
     public function __construct(FilterFactory $filterFactory)
     {

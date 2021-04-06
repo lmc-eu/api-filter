@@ -15,13 +15,13 @@ class Functions
     private const FUNCTION_NAME_TYPE = 'string';
 
     /** @var IMap<string, callable> */
-    private $functions;
+    private IMap $functions;
     /** @var IMap<string, array> */
-    private $functionParameters;
+    private IMap $functionParameters;
     /** @var IMap<string, array<ParameterDefinition>> */
-    private $parameterDefinitions;
+    private IMap $parameterDefinitions;
     /** @var array<string, string> parameterName => functionName */
-    private $registeredParameters;
+    private array $registeredParameters;
 
     public function __construct()
     {

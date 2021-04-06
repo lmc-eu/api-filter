@@ -18,10 +18,8 @@ use Lmc\ApiFilter\Filters\Filters;
  */
 class QueryParametersParserTest extends AbstractTestCase
 {
-    /** @var QueryParametersParser */
-    private $queryParametersParser;
-    /** @var Functions */
-    private $functions;
+    private QueryParametersParser $queryParametersParser;
+    private Functions $functions;
 
     protected function setUp(): void
     {

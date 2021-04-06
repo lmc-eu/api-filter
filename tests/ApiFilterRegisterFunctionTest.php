@@ -13,10 +13,8 @@ use Lmc\ApiFilter\Fixture\SimpleClient;
 
 class ApiFilterRegisterFunctionTest extends AbstractTestCase
 {
-    /** @var ApiFilter */
-    private $apiFilter;
-    /** @var QueryBuilder */
-    private $queryBuilder;
+    private ApiFilter $apiFilter;
+    private QueryBuilder $queryBuilder;
 
     protected function setUp(): void
     {

@@ -21,14 +21,10 @@ use MF\Collection\Immutable\Tuple;
 
 class ApiFilter
 {
-    /** @var Functions */
-    private $functions;
-    /** @var QueryParametersParser */
-    private $parser;
-    /** @var FilterApplicator */
-    private $applicator;
-    /** @var FunctionCreator */
-    private $functionCreator;
+    private Functions $functions;
+    private QueryParametersParser $parser;
+    private FilterApplicator $applicator;
+    private FunctionCreator $functionCreator;
 
     public function __construct()
     {

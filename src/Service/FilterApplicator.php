@@ -18,11 +18,9 @@ use MF\Collection\Mutable\Generic\PrioritizedCollection;
 class FilterApplicator
 {
     /** @var PrioritizedCollection|ApplicatorInterface[] */
-    private $applicators;
-    /** @var Functions */
-    private $functions;
-    /** @var FiltersInterface */
-    private $filters;
+    private PrioritizedCollection $applicators;
+    private Functions $functions;
+    private ?FiltersInterface $filters = null;
 
     public function __construct(Functions $functions)
     {

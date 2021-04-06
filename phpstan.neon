@@ -4,3 +4,6 @@ parameters:
     paths:
         - src/
         - tests/
+
+    ignoreErrors:
+        - '#Parameter \#1 \$expected of method PHPUnit\\Framework\\Assert::assertInstanceOf\(\) expects class\-string<object>, string given.#'

@@ -6,12 +6,10 @@ use Assert\AssertionFailedException;
 
 class InvalidArgumentException extends \InvalidArgumentException implements ApiFilterExceptionInterface, AssertionFailedException
 {
-    /** @var null|string */
-    private $propertyPath;
+    private ?string $propertyPath;
     /** @var mixed */
     private $value;
-    /** @var array */
-    private $constraints;
+    private array $constraints;
 
     /**
      * @param mixed $value

@@ -14,14 +14,12 @@ abstract class AbstractFunctionParser extends AbstractParser implements Function
     private const ERROR_MULTIPLE_FUNCTION_CALL = 'It is not allowed to call one function multiple times.';
     protected const ERROR_FUNCTION_DEFINITION_BY_TUPLE_WITHOUT_TUPLE_VALUES = 'Function definition by a tuple must have a tuple value.';
 
-    /** @var Functions */
-    protected $functions;
-    /** @var ?array */
-    private $queryParameters;
+    protected Functions $functions;
+    private ?array $queryParameters = null;
     /** @var IMap<string,bool>|IMap|null */
-    private $alreadyParsedFunctions;
+    private ?IMap $alreadyParsedFunctions;
     /** @var IMap<string,bool>|IMap|null */
-    private $alreadyParsedColumns;
+    private ?IMap $alreadyParsedColumns;
 
     public function __construct(FilterFactory $filterFactory, Functions $functions)
     {
