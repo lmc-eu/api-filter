@@ -26,7 +26,7 @@ class TupleColumnArrayValueParser extends AbstractParser
             foreach ($columns as $column) {
                 $this->assertColumnWithoutFilter($column);
 
-                yield $this->createFilter($column, $filter, array_shift($values));
+                yield $this->createFilter($column, (string) $filter, array_shift($values));
             }
         }
     }
