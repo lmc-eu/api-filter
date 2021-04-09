@@ -12,8 +12,7 @@ use Lmc\ApiFilter\Filter\FunctionParameter;
  */
 class FunctionsTest extends AbstractTestCase
 {
-    /** @var Functions */
-    private $functions;
+    private Functions $functions;
 
     protected function setUp(): void
     {

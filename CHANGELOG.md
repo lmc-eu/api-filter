@@ -4,6 +4,7 @@
 <!-- There should always be "Unreleased" section at the beginning. -->
 
 ## Unreleased
+- Require php 7.4 and update dependencies
 
 ## 2.1.0 - 2020-11-11
 - Add **Filter**

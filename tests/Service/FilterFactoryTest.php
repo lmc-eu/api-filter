@@ -16,8 +16,7 @@ class FilterFactoryTest extends AbstractTestCase
 {
     private const COLUMN = 'column';
 
-    /** @var FilterFactory */
-    private $filterFactory;
+    private FilterFactory $filterFactory;
 
     protected function setUp(): void
     {

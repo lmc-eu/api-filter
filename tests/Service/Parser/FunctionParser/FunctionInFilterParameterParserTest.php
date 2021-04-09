@@ -13,8 +13,7 @@ use MF\Collection\Mutable\Generic\Map;
  */
 class FunctionInFilterParameterParserTest extends AbstractFunctionParserTestCase
 {
-    /** @var Functions */
-    private $functions;
+    private Functions $functions;
 
     protected function setUp(): void
     {

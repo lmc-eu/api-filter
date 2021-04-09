@@ -18,7 +18,7 @@ use MF\Collection\Mutable\Generic\PrioritizedCollection;
 class FunctionParser extends AbstractParser
 {
     /** @var PrioritizedCollection|FunctionParserInterface[] */
-    private $parsers;
+    private PrioritizedCollection $parsers;
 
     public function __construct(FilterFactory $filterFactory, Functions $functions)
     {

@@ -14,8 +14,7 @@ use MF\Collection\Immutable\Generic\Map;
 
 class FunctionCreator
 {
-    /** @var FilterFactory */
-    private $filterFactory;
+    private FilterFactory $filterFactory;
 
     public function __construct(FilterFactory $filterFactory)
     {

@@ -6,8 +6,7 @@ use MF\Collection\Mutable\Generic\IMap;
 
 class ImplicitFunctionDefinitionByValueParser extends AbstractFunctionParser
 {
-    /** @var ?bool */
-    private $isAllImplicitFunctionDefinitionsChecked;
+    private ?bool $isAllImplicitFunctionDefinitionsChecked;
 
     public function setCommonValues(
         array $queryParameters,

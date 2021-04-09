@@ -13,10 +13,8 @@ use Lmc\ApiFilter\Filter\FunctionParameter;
 
 class QueryBuilderApplicatorTest extends AbstractTestCase
 {
-    /** @var QueryBuilderApplicator */
-    private $queryBuilderApplicator;
-    /** @var QueryBuilder */
-    private $queryBuilder;
+    private QueryBuilderApplicator $queryBuilderApplicator;
+    private QueryBuilder $queryBuilder;
 
     protected function setUp(): void
     {

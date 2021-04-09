@@ -20,10 +20,8 @@ use Mockery as m;
 
 class FilterApplicatorTest extends AbstractTestCase
 {
-    /** @var FilterApplicator */
-    private $filterApplicator;
-    /** @var Functions */
-    private $functions;
+    private FilterApplicator $filterApplicator;
+    private Functions $functions;
 
     protected function setUp(): void
     {

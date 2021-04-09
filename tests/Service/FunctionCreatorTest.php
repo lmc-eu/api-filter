@@ -14,12 +14,9 @@ use Lmc\ApiFilter\Filters\Filters;
 /** @covers \Lmc\ApiFilter\Service\FunctionCreator */
 class FunctionCreatorTest extends AbstractTestCase
 {
-    /** @var FunctionCreator */
-    private $functionCreator;
-    /** @var FilterApplicator */
-    private $filterApplicator;
-    /** @var Functions */
-    private $functions;
+    private FunctionCreator $functionCreator;
+    private FilterApplicator $filterApplicator;
+    private Functions $functions;
 
     protected function setUp(): void
     {

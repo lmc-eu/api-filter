@@ -7,14 +7,10 @@ use Lmc\ApiFilter\Entity\Value;
 
 abstract class AbstractFilter implements FilterInterface
 {
-    /** @var string */
-    private $title;
-    /** @var string */
-    private $column;
-    /** @var Value */
-    private $value;
-    /** @var ?string */
-    private $fullTitle;
+    private string $title;
+    private string $column;
+    private Value $value;
+    private ?string $fullTitle = null;
 
     public function __construct(string $title, string $column, Value $value)
     {

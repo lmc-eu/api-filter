@@ -8,14 +8,10 @@ use Lmc\ApiFilter\Filter\FunctionParameter;
 
 class ParameterDefinition
 {
-    /** @var string */
-    private $name;
-    /** @var string */
-    private $filter;
-    /** @var string */
-    private $column;
-    /** @var ?Value */
-    private $defaultValue;
+    private string $name;
+    private string $filter;
+    private string $column;
+    private ?Value $defaultValue;
 
     /**
      * Shortcut for creating parameter with just a name and a default value

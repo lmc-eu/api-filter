@@ -22,13 +22,12 @@ use MF\Collection\Mutable\Generic\PrioritizedCollection;
 class QueryParametersParser
 {
     /** @var PrioritizedCollection|ParserInterface[] */
-    private $parsers;
-    /** @var FunctionParser */
-    private $functionParser;
+    private PrioritizedCollection $parsers;
+    private FunctionParser $functionParser;
     /** @var IMap<string,bool>|IMap */
-    private $alreadyParsedFunctions;
+    private IMap $alreadyParsedFunctions;
     /** @var IMap<string,bool>|IMap */
-    private $alreadyParsedColumns;
+    private IMap $alreadyParsedColumns;
 
     public function __construct(FilterFactory $filterFactory, Functions $functions)
     {

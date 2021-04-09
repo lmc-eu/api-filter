@@ -14,13 +14,12 @@ use MF\Collection\Mutable\Generic\Map;
 class FunctionParserTest extends AbstractParserTestCase
 {
     /** @var FunctionParser */
-    protected $parser;
-    /** @var Functions */
-    private $functions;
+    protected ParserInterface $parser;
+    private Functions $functions;
     /** @var IMap<string,bool>|IMap */
-    private $alreadyParsedFunctions;
+    private IMap $alreadyParsedFunctions;
     /** @var IMap<string,bool>|IMap */
-    private $alreadyParsedColumns;
+    private IMap $alreadyParsedColumns;
 
     protected function setUp(): void
     {

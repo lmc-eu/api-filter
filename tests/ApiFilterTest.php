@@ -12,10 +12,8 @@ use Lmc\ApiFilter\Filters\Filters;
 
 class ApiFilterTest extends AbstractTestCase
 {
-    /** @var ApiFilter */
-    private $apiFilter;
-    /** @var QueryBuilder */
-    private $queryBuilder;
+    private ApiFilter $apiFilter;
+    private QueryBuilder $queryBuilder;
 
     protected function setUp(): void
     {

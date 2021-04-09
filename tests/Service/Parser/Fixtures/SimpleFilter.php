@@ -7,12 +7,9 @@ use Lmc\ApiFilter\Filter\FilterInterface;
 
 class SimpleFilter implements FilterInterface
 {
-    /** @var string */
-    private $column;
-    /** @var string */
-    private $operator;
-    /** @var Value */
-    private $value;
+    private string $column;
+    private string $operator;
+    private Value $value;
 
     /** @param mixed $value */
     public function __construct(string $column, string $operator, $value)
