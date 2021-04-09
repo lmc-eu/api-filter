@@ -4,13 +4,7 @@ namespace Lmc\ApiFilter\Service\Parser;
 
 interface ParserInterface
 {
-    /**
-     * @param string|array $rawValue Raw value from query parameters
-     */
-    public function supports(string $rawColumn, $rawValue): bool;
+    public function supports(string $rawColumn, string|array $rawValue): bool;
 
-    /**
-     * @param string|array $rawValue Raw value from query parameters
-     */
-    public function parse(string $rawColumn, $rawValue): iterable;
+    public function parse(string $rawColumn, string|array $rawValue): iterable;
 }

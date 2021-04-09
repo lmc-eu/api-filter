@@ -4,6 +4,9 @@
 <!-- There should always be "Unreleased" section at the beginning. -->
 
 ## Unreleased
+- Require php 8.0
+- [**BC**] Use strong types (even union-types) (_it is considered BC, because some types annotated before were not correct in all places_)
+- Update dependencies
 
 ## 2.2.0 - 2021-04-09
 - Require php 7.4 and update dependencies

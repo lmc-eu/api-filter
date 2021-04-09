@@ -14,10 +14,8 @@ class AssertionTest extends AbstractTestCase
     /**
      * @test
      * @dataProvider provideValidTuple
-     *
-     * @param string|ITuple $tuple
      */
-    public function shouldAssertTuple($tuple): void
+    public function shouldAssertTuple(string|ITuple $tuple): void
     {
         $this->assertTrue(Assertion::isTuple($tuple));
     }
@@ -35,10 +33,8 @@ class AssertionTest extends AbstractTestCase
     /**
      * @test
      * @dataProvider provideInvalidTuple
-     *
-     * @param mixed $tuple Invalid tuple
      */
-    public function shouldThrowExceptionOnInvalidTuple($tuple, string $expectedMessage): void
+    public function shouldThrowExceptionOnInvalidTuple(mixed $tuple, string $expectedMessage): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage($expectedMessage);

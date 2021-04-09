@@ -44,10 +44,8 @@ class ExplicitFunctionDefinitionParserTest extends AbstractFunctionParserTestCas
     /**
      * @test
      * @dataProvider provideInvalidSingleValue
-     *
-     * @param string|array $value
      */
-    public function shouldParseSingleParameterFunctionWithSingleValueOnly($value): void
+    public function shouldParseSingleParameterFunctionWithSingleValueOnly(string|array $value): void
     {
         $column = 'sql';
 

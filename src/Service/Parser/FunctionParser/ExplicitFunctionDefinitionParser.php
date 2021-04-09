@@ -3,16 +3,15 @@
 namespace Lmc\ApiFilter\Service\Parser\FunctionParser;
 
 use Lmc\ApiFilter\Assertion;
-use MF\Collection\Immutable\Tuple;
 
 class ExplicitFunctionDefinitionParser extends AbstractFunctionParser
 {
-    protected function supportsParameters(array $queryParameters, string $rawColumn, $rawValue): bool
+    protected function supportsParameters(array $queryParameters, string $rawColumn, string|array $rawValue): bool
     {
         return !$this->isTuple($rawColumn) && $this->functions->isFunctionRegistered($rawColumn);
     }
 
-    protected function parseParameters(array $queryParameters, string $rawColumn, $rawValue): iterable
+    protected function parseParameters(array $queryParameters, string $rawColumn, string|array $rawValue): iterable
     {
         if (!$this->functions->isFunctionRegistered($rawColumn)) {
             return;
@@ -28,17 +27,14 @@ class ExplicitFunctionDefinitionParser extends AbstractFunctionParser
         } else {
             $rawValue = $this->validateTupleValue($rawValue, 'Explicit function definition must have a tuple value.');
 
-            $values = Tuple::parse($rawValue, count($parameters))->toArray();
+            $values = $this->parseRawValueFromTuple($rawValue, count($parameters));
             foreach ($parameters as $parameter) {
                 yield from $this->parseFunctionParameter($parameter, array_shift($values));
             }
         }
     }
 
-    /**
-     * @param string|array $rawValue Raw value from query parameters
-     */
-    protected function assertSingleStringValue($rawValue): void
+    protected function assertSingleStringValue(string|array $rawValue): void
     {
         Assertion::false(
             $this->isTuple($rawValue) || is_array($rawValue),

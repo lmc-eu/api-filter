@@ -40,12 +40,10 @@ class FunctionParserTest extends AbstractParserTestCase
     }
 
     /**
-     * @param mixed $rawValue Value from query parameters
-     *
      * @test
      * @dataProvider provideParseableColumnAndValue
      */
-    public function shouldSupportColumnAndValue(string $rawColumn, $rawValue): void
+    public function shouldSupportColumnAndValue(string $rawColumn, mixed $rawValue): void
     {
         $this->parser->setQueryParameters(
             [$rawColumn => $rawValue],
@@ -56,12 +54,10 @@ class FunctionParserTest extends AbstractParserTestCase
     }
 
     /**
-     * @param mixed $rawValue Value from query parameters
-     *
      * @test
      * @dataProvider provideNotSupportedColumnAndValue
      */
-    public function shouldNotSupportColumnAndValue(string $rawColumn, $rawValue): void
+    public function shouldNotSupportColumnAndValue(string $rawColumn, mixed $rawValue): void
     {
         $this->parser->setQueryParameters(
             [$rawColumn => $rawValue],
@@ -85,12 +81,10 @@ class FunctionParserTest extends AbstractParserTestCase
     }
 
     /**
-     * @param mixed $rawValue Value from query parameters
-     *
      * @test
      * @dataProvider provideParseableColumnAndValue
      */
-    public function shouldParseColumnAndValue(string $rawColumn, $rawValue, array $expected): void
+    public function shouldParseColumnAndValue(string $rawColumn, mixed $rawValue, array $expected): void
     {
         $this->parser->setQueryParameters(
             [$rawColumn => $rawValue],
@@ -138,8 +132,8 @@ class FunctionParserTest extends AbstractParserTestCase
                 '(18, 30, [A4; A5])',
                 [
                     ['perfectBook', 'function', 'callable'],
-                    ['ageFrom', 'function_parameter', 18],
-                    ['ageTo', 'function_parameter', 30],
+                    ['ageFrom', 'function_parameter', '18'],
+                    ['ageTo', 'function_parameter', '30'],
                     ['size', 'function_parameter', ['A4', 'A5']],
                 ],
             ],
@@ -148,8 +142,8 @@ class FunctionParserTest extends AbstractParserTestCase
                 '(perfectBook, 18, 30, [A4; A5])',
                 [
                     ['perfectBook', 'function', 'callable'],
-                    ['ageFrom', 'function_parameter', 18],
-                    ['ageTo', 'function_parameter', 30],
+                    ['ageFrom', 'function_parameter', '18'],
+                    ['ageTo', 'function_parameter', '30'],
                     ['size', 'function_parameter', ['A4', 'A5']],
                 ],
             ],
@@ -325,8 +319,8 @@ class FunctionParserTest extends AbstractParserTestCase
                     ['firstName', 'function_parameter', 'Jon'],
                     ['surname', 'function_parameter', 'Snow'],
                     ['perfectBook', 'function', 'callable'],
-                    ['ageFrom', 'function_parameter', 18],
-                    ['ageTo', 'function_parameter', 30],
+                    ['ageFrom', 'function_parameter', '18'],
+                    ['ageTo', 'function_parameter', '30'],
                     ['size', 'function_parameter', ['A4', 'A5']],
                 ],
             ],
@@ -337,8 +331,8 @@ class FunctionParserTest extends AbstractParserTestCase
                     ['firstName', 'function_parameter', 'Jon'],
                     ['surname', 'function_parameter', 'Snow'],
                     ['perfectBook', 'function', 'callable'],
-                    ['ageFrom', 'function_parameter', 18],
-                    ['ageTo', 'function_parameter', 30],
+                    ['ageFrom', 'function_parameter', '18'],
+                    ['ageTo', 'function_parameter', '30'],
                     ['size', 'function_parameter', ['A4', 'A5']],
                 ],
             ],
@@ -349,20 +343,20 @@ class FunctionParserTest extends AbstractParserTestCase
                     ['firstName', 'function_parameter', 'Jon'],
                     ['surname', 'function_parameter', 'Snow'],
                     ['perfectBook', 'function', 'callable'],
-                    ['ageFrom', 'function_parameter', 18],
-                    ['ageTo', 'function_parameter', 30],
+                    ['ageFrom', 'function_parameter', '18'],
+                    ['ageTo', 'function_parameter', '30'],
                     ['size', 'function_parameter', ['A4', 'A5']],
                 ],
             ],
             'multiple - implicit - values' => [
-                ['firstName' => 'Jon', 'surname' => 'Snow', 'ageFrom' => 18, 'ageTo' => 30, 'size' => ['A4', 'A5']],
+                ['firstName' => 'Jon', 'surname' => 'Snow', 'ageFrom' => '18', 'ageTo' => '30', 'size' => ['A4', 'A5']],
                 [
                     ['fullName', 'function', 'callable'],
                     ['firstName', 'function_parameter', 'Jon'],
                     ['surname', 'function_parameter', 'Snow'],
                     ['perfectBook', 'function', 'callable'],
-                    ['ageFrom', 'function_parameter', 18],
-                    ['ageTo', 'function_parameter', 30],
+                    ['ageFrom', 'function_parameter', '18'],
+                    ['ageTo', 'function_parameter', '30'],
                     ['size', 'function_parameter', ['A4', 'A5']],
                 ],
             ],
@@ -376,8 +370,8 @@ class FunctionParserTest extends AbstractParserTestCase
                     ['firstName', 'function_parameter', 'Jon'],
                     ['surname', 'function_parameter', 'Snow'],
                     ['perfectBook', 'function', 'callable'],
-                    ['ageFrom', 'function_parameter', 18],
-                    ['ageTo', 'function_parameter', 30],
+                    ['ageFrom', 'function_parameter', '18'],
+                    ['ageTo', 'function_parameter', '30'],
                     ['size', 'function_parameter', ['A4', 'A5']],
                 ],
             ],
@@ -387,16 +381,16 @@ class FunctionParserTest extends AbstractParserTestCase
                     'size' => ['A4', 'A5'],
                     'firstName' => 'Jon',
                     'surname' => 'Snow',
-                    'ageFrom' => 18,
-                    'ageTo' => 30,
+                    'ageFrom' => '18',
+                    'ageTo' => '30',
                 ],
                 [
                     ['fullName', 'function', 'callable'],
                     ['firstName', 'function_parameter', 'Jon'],
                     ['surname', 'function_parameter', 'Snow'],
                     ['perfectBook', 'function', 'callable'],
-                    ['ageFrom', 'function_parameter', 18],
-                    ['ageTo', 'function_parameter', 30],
+                    ['ageFrom', 'function_parameter', '18'],
+                    ['ageTo', 'function_parameter', '30'],
                     ['size', 'function_parameter', ['A4', 'A5']],
                 ],
             ],

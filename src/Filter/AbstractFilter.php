@@ -7,17 +7,11 @@ use Lmc\ApiFilter\Entity\Value;
 
 abstract class AbstractFilter implements FilterInterface
 {
-    private string $title;
-    private string $column;
-    private Value $value;
     private ?string $fullTitle = null;
 
-    public function __construct(string $title, string $column, Value $value)
+    public function __construct(private string $title, private string $column, private Value $value)
     {
         Assertion::regex($title, '/^[a-zA-Z_]+$/', 'Title must be only [a-zA-Z_] letters but "%s" given.');
-        $this->title = $title;
-        $this->column = $column;
-        $this->value = $value;
     }
 
     public function getTitle(): string

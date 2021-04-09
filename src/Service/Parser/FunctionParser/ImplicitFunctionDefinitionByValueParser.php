@@ -17,10 +17,7 @@ class ImplicitFunctionDefinitionByValueParser extends AbstractFunctionParser
         $this->isAllImplicitFunctionDefinitionsChecked = false;
     }
 
-    /**
-     * @param string|array $rawValue Raw value from query parameters
-     */
-    protected function supportsParameters(array $queryParameters, string $rawColumn, $rawValue): bool
+    protected function supportsParameters(array $queryParameters, string $rawColumn, string|array $rawValue): bool
     {
         if ($this->isAllImplicitFunctionDefinitionsChecked) {
             return false;
@@ -42,10 +39,7 @@ class ImplicitFunctionDefinitionByValueParser extends AbstractFunctionParser
         return false;
     }
 
-    /**
-     * @param string|array $rawValue Raw value from query parameters
-     */
-    protected function parseParameters(array $queryParameters, string $rawColumn, $rawValue): iterable
+    protected function parseParameters(array $queryParameters, string $rawColumn, string|array $rawValue): iterable
     {
         if ($this->isAllImplicitFunctionDefinitionsChecked) {
             return;

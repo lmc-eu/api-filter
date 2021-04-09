@@ -25,9 +25,8 @@ class UnsupportedTupleCombinationParserTest extends AbstractParserTestCase
     /**
      * @test
      * @dataProvider provideParseableColumnAndValue
-     * @param mixed $rawValue
      */
-    public function shouldParseColumnAndValue(string $rawColumn, $rawValue, array $expected): void
+    public function shouldParseColumnAndValue(string $rawColumn, mixed $rawValue, array $expected): void
     {
         $this->expectException(InvalidArgumentException::class);
 
@@ -45,13 +44,10 @@ class UnsupportedTupleCombinationParserTest extends AbstractParserTestCase
     }
 
     /**
-     * @param mixed $rawColumn Column from query parameters
-     * @param mixed $rawValue Value from query parameters
-     *
      * @test
      * @dataProvider provideUnsupportedColumnAndValue
      */
-    public function shouldNotSupportParsing($rawColumn, $rawValue, string $expectedMessage): void
+    public function shouldNotSupportParsing(mixed $rawColumn, mixed $rawValue, string $expectedMessage): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage($expectedMessage);

@@ -119,12 +119,10 @@ abstract class AbstractParserTestCase extends AbstractTestCase
     }
 
     /**
-     * @param mixed $rawValue Value from query parameters
-     *
      * @test
      * @dataProvider provideParseableColumnAndValue
      */
-    public function shouldSupportColumnAndValue(string $rawColumn, $rawValue): void
+    public function shouldSupportColumnAndValue(string $rawColumn, mixed $rawValue): void
     {
         $result = $this->parser->supports($rawColumn, $rawValue);
 
@@ -132,12 +130,10 @@ abstract class AbstractParserTestCase extends AbstractTestCase
     }
 
     /**
-     * @param mixed $rawValue Value from query parameters
-     *
      * @test
      * @dataProvider provideNotSupportedColumnAndValue
      */
-    public function shouldNotSupportColumnAndValue(string $rawColumn, $rawValue): void
+    public function shouldNotSupportColumnAndValue(string $rawColumn, mixed $rawValue): void
     {
         $result = $this->parser->supports($rawColumn, $rawValue);
 
@@ -147,20 +143,17 @@ abstract class AbstractParserTestCase extends AbstractTestCase
     abstract public function provideNotSupportedColumnAndValue(): array;
 
     /**
-     * @param mixed $rawValue Value from query parameters
-     *
      * @test
      * @dataProvider provideParseableColumnAndValue
      */
-    public function shouldParseColumnAndValue(string $rawColumn, $rawValue, array $expected): void
+    public function shouldParseColumnAndValue(string $rawColumn, mixed $rawValue, array $expected): void
     {
         $result = $this->parseColumnAndValue($rawColumn, $rawValue);
 
         $this->assertSame($expected, $result);
     }
 
-    /** @param mixed $rawValue */
-    protected function parseColumnAndValue(string $rawColumn, $rawValue): array
+    protected function parseColumnAndValue(string $rawColumn, mixed $rawValue): array
     {
         $result = [];
 

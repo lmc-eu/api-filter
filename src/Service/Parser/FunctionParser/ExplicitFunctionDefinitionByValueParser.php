@@ -7,10 +7,7 @@ use Lmc\ApiFilter\Constant\Column;
 
 class ExplicitFunctionDefinitionByValueParser extends AbstractFunctionParser
 {
-    /**
-     * @param string|array $rawValue Raw value from query parameters
-     */
-    protected function supportsParameters(array $queryParameters, string $rawColumn, $rawValue): bool
+    protected function supportsParameters(array $queryParameters, string $rawColumn, string|array $rawValue): bool
     {
         if ($this->isColumnParsed(Column::FUNCTION)) {
             return false;
@@ -19,10 +16,7 @@ class ExplicitFunctionDefinitionByValueParser extends AbstractFunctionParser
         return array_key_exists(Column::FUNCTION, $queryParameters);
     }
 
-    /**
-     * @param string|array $rawValue Raw value from query parameters
-     */
-    protected function parseParameters(array $queryParameters, string $rawColumn, $rawValue): iterable
+    protected function parseParameters(array $queryParameters, string $rawColumn, string|array $rawValue): iterable
     {
         if ($this->isColumnParsed(Column::FUNCTION)) {
             return;

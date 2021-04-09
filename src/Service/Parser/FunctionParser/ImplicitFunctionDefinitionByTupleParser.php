@@ -6,10 +6,7 @@ use MF\Collection\Immutable\Tuple;
 
 class ImplicitFunctionDefinitionByTupleParser extends AbstractFunctionParser
 {
-    /**
-     * @param string|array $rawValue Raw value from query parameters
-     */
-    protected function supportsParameters(array $queryParameters, string $rawColumn, $rawValue): bool
+    protected function supportsParameters(array $queryParameters, string $rawColumn, string|array $rawValue): bool
     {
         if ($this->isTuple($rawColumn)) {
             $possibleParameters = Tuple::parse($rawColumn)->toArray();
@@ -22,14 +19,11 @@ class ImplicitFunctionDefinitionByTupleParser extends AbstractFunctionParser
         return false;
     }
 
-    /**
-     * @param string|array $rawValue Raw value from query parameters
-     */
-    protected function parseParameters(array $queryParameters, string $rawColumn, $rawValue): iterable
+    protected function parseParameters(array $queryParameters, string $rawColumn, string|array $rawValue): iterable
     {
         $rawValue = $this->validateTupleValue($rawValue, self::ERROR_FUNCTION_DEFINITION_BY_TUPLE_WITHOUT_TUPLE_VALUES);
         $columns = Tuple::parse($rawColumn)->toArray();
-        $values = Tuple::parse($rawValue, count($columns))->toArray();
+        $values = $this->parseRawValueFromTuple($rawValue, count($columns));
 
         foreach ($this->functions->getFunctionNamesByAllParameters($columns) as $functionName) {
             yield from $this->parseFunction($functionName);

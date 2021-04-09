@@ -12,10 +12,10 @@ jobs:
 
         strategy:
             matrix:
-                php-version: ['7.4']
+                php-version: ['8.0']
                 dependencies: ['']
                 include:
-                    - { php-version: '7.4', dependencies: '--prefer-lowest --prefer-stable' }
+                    - { php-version: '8.0', dependencies: '--prefer-lowest --prefer-stable' }
 
         name: Unit tests - PHP ${{ matrix.dependencies }}
 
@@ -65,7 +65,7 @@ jobs:
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
               with:
-                  php-version: '7.4'
+                  php-version: '8.0'
                   extensions: mbstring, intl
 
             - name: Install dependencies

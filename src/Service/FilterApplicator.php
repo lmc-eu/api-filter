@@ -19,12 +19,10 @@ class FilterApplicator
 {
     /** @var PrioritizedCollection|ApplicatorInterface[] */
     private PrioritizedCollection $applicators;
-    private Functions $functions;
     private ?FiltersInterface $filters = null;
 
-    public function __construct(Functions $functions)
+    public function __construct(private Functions $functions)
     {
-        $this->functions = $functions;
         $this->applicators = new PrioritizedCollection(ApplicatorInterface::class);
     }
 

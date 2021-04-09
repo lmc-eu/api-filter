@@ -24,9 +24,6 @@ class FilterFactoryTest extends AbstractTestCase
     }
 
     /**
-     * @param mixed $rawValue of type <T>
-     * @param mixed $expectedValue of type <T>
-     *
      * @test
      * @dataProvider provideFilters
      */
@@ -34,8 +31,8 @@ class FilterFactoryTest extends AbstractTestCase
         string $filter,
         string $expectedFilterClass,
         string $expectedTitle = null,
-        $rawValue = 'value',
-        $expectedValue = null
+        mixed $rawValue = 'value',
+        mixed $expectedValue = null
     ): void {
         $expectedTitle = $expectedTitle ?? sprintf('%s_%s', self::COLUMN, $filter);
         $expectedValue = $expectedValue ?? $rawValue;

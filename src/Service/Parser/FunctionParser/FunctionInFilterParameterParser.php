@@ -4,11 +4,10 @@ namespace Lmc\ApiFilter\Service\Parser\FunctionParser;
 
 use Lmc\ApiFilter\Assertion;
 use Lmc\ApiFilter\Constant\Column;
-use MF\Collection\Immutable\Tuple;
 
 class FunctionInFilterParameterParser extends AbstractFunctionParser
 {
-    protected function supportsParameters(array $queryParameters, string $rawColumn, $rawValue): bool
+    protected function supportsParameters(array $queryParameters, string $rawColumn, string|array $rawValue): bool
     {
         if ($this->isColumnParsed(Column::FILTER)) {
             return false;
@@ -17,7 +16,7 @@ class FunctionInFilterParameterParser extends AbstractFunctionParser
         return array_key_exists(Column::FILTER, $queryParameters);
     }
 
-    protected function parseParameters(array $queryParameters, string $rawColumn, $rawValue): iterable
+    protected function parseParameters(array $queryParameters, string $rawColumn, string|array $rawValue): iterable
     {
         if ($this->isColumnParsed(Column::FILTER)) {
             return;
@@ -37,7 +36,7 @@ class FunctionInFilterParameterParser extends AbstractFunctionParser
         foreach ($filters as $filter) {
             $this->validateTupleValue($filter, 'All values in filter column must be Tuples.');
 
-            $parsed = Tuple::parse((string) $filter)->toArray();
+            $parsed = $this->parseRawValueFromTuple((string) $filter, null);
             $functionName = array_shift($parsed);
 
             $parameters = $this->functions->getParametersFor($functionName);

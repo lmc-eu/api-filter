@@ -107,9 +107,9 @@ class QueryParametersParserTest extends AbstractTestCase
                 ],
             ],
             'implicit eq + explicit in' => [
-                ['allowed' => true, 'id' => ['in' => [1, 2, 3]]],
+                ['allowed' => 'true', 'id' => ['in' => ['1', '2', '3']]],
                 [
-                    new FilterWithOperator('allowed', new Value(true), '=', 'eq'),
+                    new FilterWithOperator('allowed', new Value('true'), '=', 'eq'),
                     new FilterIn('id', new Value([1, 2, 3])),
                 ],
             ],
@@ -229,8 +229,8 @@ class QueryParametersParserTest extends AbstractTestCase
             ],
             'implicit by values - function - perfectBook + spot + character' => [
                 [
-                    'ageFrom' => 18,
-                    'ageTo' => 30,
+                    'ageFrom' => '18',
+                    'ageTo' => '30',
                     'character' => 'Jon',
                     'size' => ['A4', 'A5'],
                     'zone' => 'all',

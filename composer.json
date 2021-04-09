@@ -4,10 +4,10 @@
     "description": "Parser/builder for filters from API query parameters.",
     "license": "MIT",
     "require": {
-        "php": "^7.4",
+        "php": "^8.0",
         "ext-mbstring": "*",
         "beberlei/assert": "^3.0",
-        "mf/collections-php": "^5.0"
+        "mf/collections-php": "^6.0"
     },
     "require-dev": {
         "doctrine/orm": "^2.7",

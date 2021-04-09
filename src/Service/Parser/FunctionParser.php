@@ -43,7 +43,7 @@ class FunctionParser extends AbstractParser
         }
     }
 
-    public function supports(string $rawColumn, $rawValue): bool
+    public function supports(string $rawColumn, string|array $rawValue): bool
     {
         foreach ($this->parsers as $parser) {
             if ($parser->supports($rawColumn, $rawValue)) {
@@ -54,7 +54,7 @@ class FunctionParser extends AbstractParser
         return false;
     }
 
-    public function parse(string $rawColumn, $rawValue): iterable
+    public function parse(string $rawColumn, string|array $rawValue): iterable
     {
         foreach ($this->parsers as $parser) {
             if ($parser->supports($rawColumn, $rawValue)) {

@@ -14,11 +14,8 @@ use MF\Collection\Immutable\Generic\Map;
 
 class FunctionCreator
 {
-    private FilterFactory $filterFactory;
-
-    public function __construct(FilterFactory $filterFactory)
+    public function __construct(private FilterFactory $filterFactory)
     {
-        $this->filterFactory = $filterFactory;
     }
 
     /** @return ParameterDefinition[]|IMap IMap<string, Parameter> */
@@ -72,10 +69,7 @@ class FunctionCreator
         };
     }
 
-    /**
-     * @param mixed $parameter
-     */
-    private function assertParameter($parameter): void
+    private function assertParameter(mixed $parameter): void
     {
         Assertion::true(
             is_string($parameter) || $parameter instanceof ParameterDefinition || is_array($parameter),

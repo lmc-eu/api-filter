@@ -21,10 +21,8 @@ class FilterInTest extends AbstractTestCase
     /**
      * @test
      * @dataProvider provideValues
-     *
-     * @param mixed $values of type <T>
      */
-    public function shouldCreateFilterIn($values, array $expected): void
+    public function shouldCreateFilterIn(mixed $values, array $expected): void
     {
         $filterIn = new FilterIn('column', new Value($values));
         $filterInValues = $filterIn->getValue()->getValue();
@@ -47,10 +45,8 @@ class FilterInTest extends AbstractTestCase
     /**
      * @test
      * @dataProvider provideInvalidValues
-     *
-     * @param mixed $invalidValues Unsupported value type
      */
-    public function shouldNotCreateFilterIn($invalidValues): void
+    public function shouldNotCreateFilterIn(mixed $invalidValues): void
     {
         $this->expectException(InvalidArgumentException::class);
 

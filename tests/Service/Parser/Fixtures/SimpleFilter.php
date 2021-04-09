@@ -11,8 +11,7 @@ class SimpleFilter implements FilterInterface
     private string $operator;
     private Value $value;
 
-    /** @param mixed $value */
-    public function __construct(string $column, string $operator, $value)
+    public function __construct(string $column, string $operator, mixed $value)
     {
         $this->column = $column;
         $this->operator = $operator;
