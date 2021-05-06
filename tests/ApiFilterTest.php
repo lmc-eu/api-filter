@@ -209,11 +209,9 @@ class ApiFilterTest extends AbstractTestCase
     /**
      * @test
      * @dataProvider provideNotSupportedFilterable
-     *
-     * @param mixed $filterable of type <T>
      */
     public function shouldNotApplyFilterOnInvalidFilterable(
-        $filterable,
+        mixed $filterable,
         string $expectedMessage
     ): void {
         $filter = new FilterWithOperator('any', new Value('filter'), 'any', 'any');
@@ -242,11 +240,9 @@ class ApiFilterTest extends AbstractTestCase
     /**
      * @test
      * @dataProvider provideNotSupportedFilterable
-     *
-     * @param mixed $filterable of type <T>
      */
     public function shouldNotApplyFiltersToUnsupportedFilterable(
-        $filterable,
+        mixed $filterable,
         string $expectedMessage
     ): void {
         $filters = Filters::from([new FilterWithOperator('col', new Value('val'), '=', 'eq')]);
@@ -260,11 +256,9 @@ class ApiFilterTest extends AbstractTestCase
     /**
      * @test
      * @dataProvider provideNotSupportedFilterable
-     *
-     * @param mixed $filterable of type <T>
      */
     public function shouldNotPrepareValueForInvalidFilterable(
-        $filterable,
+        mixed $filterable,
         string $expectedMessage
     ): void {
         $this->expectException(ApiFilterExceptionInterface::class);
@@ -276,11 +270,9 @@ class ApiFilterTest extends AbstractTestCase
     /**
      * @test
      * @dataProvider provideNotSupportedFilterable
-     *
-     * @param mixed $filterable of type <T>
      */
     public function shouldNotPrepareValuesForInvalidFilterable(
-        $filterable,
+        mixed $filterable,
         string $expectedMessage
     ): void {
         $filters = Filters::from([new FilterWithOperator('col', new Value('val'), '=', 'eq')]);

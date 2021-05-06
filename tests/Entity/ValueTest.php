@@ -10,10 +10,8 @@ class ValueTest extends AbstractTestCase
     /**
      * @test
      * @dataProvider provideValidValue
-     *
-     * @param mixed $validValue of type <T>
      */
-    public function shouldCreateValue($validValue): void
+    public function shouldCreateValue(mixed $validValue): void
     {
         $value = new Value($validValue);
 

@@ -67,7 +67,7 @@ class ApiFilterRegisterFunctionTest extends AbstractTestCase
                 [['ageFrom', 'gt', 'age'], new ParameterDefinition('ageTo', 'lt', 'age')],
                 ['inAge' => '(18,30)'],
                 ['t.age > :ageFrom_function_parameter', 't.age < :ageTo_function_parameter'],
-                ['ageFrom_function_parameter' => 18, 'ageTo_function_parameter' => 30],
+                ['ageFrom_function_parameter' => '18', 'ageTo_function_parameter' => '30'],
             ],
             'explicit with defaults' => [
                 'girlInAge',
@@ -79,8 +79,8 @@ class ApiFilterRegisterFunctionTest extends AbstractTestCase
                     't.gender = :gender_function_parameter',
                 ],
                 [
-                    'ageFrom_function_parameter' => 18,
-                    'ageTo_function_parameter' => 30,
+                    'ageFrom_function_parameter' => '18',
+                    'ageTo_function_parameter' => '30',
                     'gender_function_parameter' => 'female',
                 ],
             ],
@@ -98,8 +98,8 @@ class ApiFilterRegisterFunctionTest extends AbstractTestCase
                     't.gender = :gender_function_parameter',
                 ],
                 [
-                    'ageFrom_function_parameter' => 18,
-                    'ageTo_function_parameter' => 30,
+                    'ageFrom_function_parameter' => '18',
+                    'ageTo_function_parameter' => '30',
                     'gender_function_parameter' => 'female',
                 ],
             ],
@@ -117,8 +117,8 @@ class ApiFilterRegisterFunctionTest extends AbstractTestCase
                     't.gender = :gender_function_parameter',
                 ],
                 [
-                    'ageFrom_function_parameter' => 18,
-                    'ageTo_function_parameter' => 30,
+                    'ageFrom_function_parameter' => '18',
+                    'ageTo_function_parameter' => '30',
                     'gender_function_parameter' => 'female',
                 ],
             ],
@@ -136,8 +136,8 @@ class ApiFilterRegisterFunctionTest extends AbstractTestCase
                     't.gender = :gender_function_parameter',
                 ],
                 [
-                    'ageFrom_function_parameter' => 18,
-                    'ageTo_function_parameter' => 30,
+                    'ageFrom_function_parameter' => '18',
+                    'ageTo_function_parameter' => '30',
                     'gender_function_parameter' => 'female',
                 ],
             ],
@@ -159,8 +159,8 @@ class ApiFilterRegisterFunctionTest extends AbstractTestCase
             't.bucket = :bucket_function_parameter',
         ];
         $expectedPreparedValues = [
-            'ageFrom_function_parameter' => 18,
-            'ageTo_function_parameter' => 30,
+            'ageFrom_function_parameter' => '18',
+            'ageTo_function_parameter' => '30',
             'size_function_parameter' => ['A4', 'A5'],
             'firstName_eq' => 'Foo',
             'zone_function_parameter' => 'all',

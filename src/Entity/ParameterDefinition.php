@@ -8,11 +8,6 @@ use Lmc\ApiFilter\Filter\FunctionParameter;
 
 class ParameterDefinition
 {
-    private string $name;
-    private string $filter;
-    private string $column;
-    private ?Value $defaultValue;
-
     /**
      * Shortcut for creating parameter with just a name and a default value
      * Otherwise you would need to pass null as filter and column, or create default values for yourself
@@ -50,15 +45,13 @@ class ParameterDefinition
     }
 
     public function __construct(
-        string $name,
-        ?string $filter = Filter::EQUALS,
-        ?string $column = null,
-        ?Value $defaultValue = null
+        private string $name,
+        private ?string $filter = Filter::EQUALS,
+        private ?string $column = null,
+        private ?Value $defaultValue = null
     ) {
-        $this->name = $name;
         $this->filter = $filter ?? Filter::EQUALS;
         $this->column = $column ?? $name;
-        $this->defaultValue = $defaultValue;
     }
 
     public function getName(): string

@@ -279,7 +279,7 @@ class ApiFilter
      * @throws ApiFilterExceptionInterface
      * @return mixed of type <U> - the output of the registered function
      */
-    public function executeFunction(string $functionName, array $queryParameters, $filterable)
+    public function executeFunction(string $functionName, array $queryParameters, mixed $filterable): mixed
     {
         $filters = $this->parser->parse($queryParameters);
         $this->applicator->setFilters($filters);
@@ -311,7 +311,7 @@ class ApiFilter
      * @throws ApiFilterExceptionInterface
      * @return ITuple (<U>, array) where <U> is the output of the registered function and array contains prepared values
      */
-    public function applyFunction(string $functionName, array $queryParameters, $filterable): ITuple
+    public function applyFunction(string $functionName, array $queryParameters, mixed $filterable): ITuple
     {
         try {
             $filters = $this->parser->parse($queryParameters);

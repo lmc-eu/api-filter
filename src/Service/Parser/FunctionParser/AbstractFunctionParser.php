@@ -7,6 +7,7 @@ use Lmc\ApiFilter\Constant\Filter;
 use Lmc\ApiFilter\Service\FilterFactory;
 use Lmc\ApiFilter\Service\Functions;
 use Lmc\ApiFilter\Service\Parser\AbstractParser;
+use MF\Collection\Immutable\Tuple;
 use MF\Collection\Mutable\Generic\IMap;
 
 abstract class AbstractFunctionParser extends AbstractParser implements FunctionParserInterface
@@ -14,17 +15,15 @@ abstract class AbstractFunctionParser extends AbstractParser implements Function
     private const ERROR_MULTIPLE_FUNCTION_CALL = 'It is not allowed to call one function multiple times.';
     protected const ERROR_FUNCTION_DEFINITION_BY_TUPLE_WITHOUT_TUPLE_VALUES = 'Function definition by a tuple must have a tuple value.';
 
-    protected Functions $functions;
     private ?array $queryParameters = null;
     /** @var IMap<string,bool>|IMap|null */
     private ?IMap $alreadyParsedFunctions;
     /** @var IMap<string,bool>|IMap|null */
     private ?IMap $alreadyParsedColumns;
 
-    public function __construct(FilterFactory $filterFactory, Functions $functions)
+    public function __construct(FilterFactory $filterFactory, protected Functions $functions)
     {
         parent::__construct($filterFactory);
-        $this->functions = $functions;
     }
 
     public function setCommonValues(
@@ -32,23 +31,21 @@ abstract class AbstractFunctionParser extends AbstractParser implements Function
         IMap $alreadyParsedFunctions,
         IMap $alreadyParsedColumns
     ): void {
-        $this->queryParameters = $queryParameters;
+        $this->queryParameters = $this->normalizeQueryParameters($queryParameters);
         $this->alreadyParsedFunctions = $alreadyParsedFunctions;
         $this->alreadyParsedColumns = $alreadyParsedColumns;
     }
 
-    /**
-     * @param string|array $rawValue Raw value from query parameters
-     */
-    final public function supports(string $rawColumn, $rawValue): bool
+    final public function supports(string $rawColumn, string|array $rawValue): bool
     {
         return $this->supportsParameters($this->assertQueryParameters(), $rawColumn, $rawValue);
     }
 
-    /**
-     * @param string|array $rawValue Raw value from query parameters
-     */
-    abstract protected function supportsParameters(array $queryParameters, string $rawColumn, $rawValue): bool;
+    abstract protected function supportsParameters(
+        array $queryParameters,
+        string $rawColumn,
+        string|array $rawValue
+    ): bool;
 
     private function assertQueryParameters(): array
     {
@@ -57,18 +54,16 @@ abstract class AbstractFunctionParser extends AbstractParser implements Function
         return $this->queryParameters;
     }
 
-    /**
-     * @param string|array $rawValue Raw value from query parameters
-     */
-    final public function parse(string $rawColumn, $rawValue): iterable
+    final public function parse(string $rawColumn, string|array $rawValue): iterable
     {
         yield from $this->parseParameters($this->assertQueryParameters(), $rawColumn, $rawValue);
     }
 
-    /**
-     * @param string|array $rawValue Raw value from query parameters
-     */
-    abstract protected function parseParameters(array $queryParameters, string $rawColumn, $rawValue): iterable;
+    abstract protected function parseParameters(
+        array $queryParameters,
+        string $rawColumn,
+        string|array $rawValue
+    ): iterable;
 
     protected function parseFunction(string $functionName): iterable
     {
@@ -84,10 +79,7 @@ abstract class AbstractFunctionParser extends AbstractParser implements Function
         );
     }
 
-    /**
-     * @param string|array $rawValue Raw value from query parameters
-     */
-    protected function parseFunctionParameter(string $parameter, $rawValue): iterable
+    protected function parseFunctionParameter(string $parameter, string|array $rawValue): iterable
     {
         if (!$this->isColumnParsed($parameter)) {
             $this->alreadyParsedColumns[$parameter] = true;
@@ -108,14 +100,31 @@ abstract class AbstractFunctionParser extends AbstractParser implements Function
         $this->alreadyParsedColumns[$column] = true;
     }
 
-    /**
-     * @param string|array $rawValue Raw value from query parameters
-     */
-    protected function validateTupleValue($rawValue, string $errorMessage): string
+    protected function validateTupleValue(string|array $rawValue, string $errorMessage): string
     {
         Assertion::isTuple($rawValue, $errorMessage);
         Assertion::false(is_array($rawValue), $errorMessage);
 
         return $rawValue;
+    }
+
+    protected function parseRawValueFromTuple(string $rawValue, ?int $expectedParametersCount): array
+    {
+        return array_map(
+            fn (mixed $value) => $this->normalizeRawValue($value),
+            Tuple::parse($rawValue, $expectedParametersCount)->toArray()
+        );
+    }
+
+    protected function normalizeRawValue(mixed $value): string|array
+    {
+        return is_array($value)
+            ? array_map(fn (mixed $value) => $this->normalizeRawValue($value), $value)
+            : (string) $value;
+    }
+
+    protected function normalizeQueryParameters(array $queryParameters): array
+    {
+        return array_map(fn (mixed $value) => $this->normalizeRawValue($value), $queryParameters);
     }
 }

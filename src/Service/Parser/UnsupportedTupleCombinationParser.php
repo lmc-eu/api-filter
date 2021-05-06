@@ -6,12 +6,12 @@ use Lmc\ApiFilter\Exception\InvalidArgumentException;
 
 class UnsupportedTupleCombinationParser extends AbstractParser
 {
-    public function supports(string $rawColumn, $rawValue): bool
+    public function supports(string $rawColumn, string|array $rawValue): bool
     {
         return $this->isTuple($rawColumn) || $this->isTuple($rawValue);
     }
 
-    public function parse(string $rawColumn, $rawValue): iterable
+    public function parse(string $rawColumn, string|array $rawValue): iterable
     {
         throw new InvalidArgumentException(sprintf(
             'Invalid combination of a tuple and a scalar. Column %s and value %s.',
@@ -21,7 +21,7 @@ class UnsupportedTupleCombinationParser extends AbstractParser
     }
 
     /** @param string|string[] $inputValue */
-    private function formatForException($inputValue): string
+    private function formatForException(string|array $inputValue): string
     {
         if (!is_array($inputValue)) {
             return (string) $inputValue;

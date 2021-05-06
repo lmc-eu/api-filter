@@ -34,12 +34,10 @@ class TupleColumnArrayValueParserTest extends AbstractParserTestCase
     /**
      * @test
      * @dataProvider provideInvalidQueryParameters
-     *
-     * @param string|array $rawValue
      */
     public function shouldNotCreateFilterForInvalidQueryParameters(
         string $rawColumn,
-        $rawValue,
+        string|array $rawValue,
         string $expectedMessage
     ): void {
         $this->expectException(InvalidArgumentException::class);

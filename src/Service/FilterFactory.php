@@ -15,27 +15,27 @@ class FilterFactory
 {
     public function createFilter(string $column, string $filter, Value $value, string $title = null): FilterInterface
     {
-        switch (mb_strtolower($filter)) {
-            case Filter::EQUALS:
-                return new FilterWithOperator($column, $value, '=', $title ?? Filter::EQUALS);
-            case Filter::NOT_EQUALS:
-                return new FilterWithOperator($column, $value, '!=', $title ?? Filter::NOT_EQUALS);
-            case Filter::GREATER_THAN:
-                return new FilterWithOperator($column, $value, '>', $title ?? Filter::GREATER_THAN);
-            case Filter::LESS_THEN:
-                return new FilterWithOperator($column, $value, '<', $title ?? Filter::LESS_THEN);
-            case Filter::LESS_THEN_OR_EQUAL:
-                return new FilterWithOperator($column, $value, '<=', $title ?? Filter::LESS_THEN_OR_EQUAL);
-            case Filter::GREATER_THAN_OR_EQUAL:
-                return new FilterWithOperator($column, $value, '>=', $title ?? Filter::GREATER_THAN_OR_EQUAL);
-            case Filter::IN:
-                return new FilterIn($column, $value, $title);
-            case Filter::FUNCTION:
-                return new FilterFunction($column, $value, $title);
-            case Filter::FUNCTION_PARAMETER:
-                return new FunctionParameter($column, $value, $title);
-        }
-
-        throw UnknownFilterException::forFilterWithColumnAndValue($filter, $column, $value);
+        return match (mb_strtolower($filter)) {
+            Filter::EQUALS => new FilterWithOperator($column, $value, '=', $title ?? Filter::EQUALS),
+            Filter::NOT_EQUALS => new FilterWithOperator($column, $value, '!=', $title ?? Filter::NOT_EQUALS),
+            Filter::GREATER_THAN => new FilterWithOperator($column, $value, '>', $title ?? Filter::GREATER_THAN),
+            Filter::LESS_THEN => new FilterWithOperator($column, $value, '<', $title ?? Filter::LESS_THEN),
+            Filter::LESS_THEN_OR_EQUAL => new FilterWithOperator(
+                $column,
+                $value,
+                '<=',
+                $title ?? Filter::LESS_THEN_OR_EQUAL
+            ),
+            Filter::GREATER_THAN_OR_EQUAL => new FilterWithOperator(
+                $column,
+                $value,
+                '>=',
+                $title ?? Filter::GREATER_THAN_OR_EQUAL
+            ),
+            Filter::IN => new FilterIn($column, $value, $title),
+            Filter::FUNCTION => new FilterFunction($column, $value, $title),
+            Filter::FUNCTION_PARAMETER => new FunctionParameter($column, $value, $title),
+            default => throw UnknownFilterException::forFilterWithColumnAndValue($filter, $column, $value),
+        };
     }
 }

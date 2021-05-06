@@ -10,10 +10,8 @@ class FilterableTest extends AbstractTestCase
     /**
      * @test
      * @dataProvider provideValidFilterable
-     *
-     * @param mixed $validFilterable of type <T>
      */
-    public function shouldCreateFilterable($validFilterable): void
+    public function shouldCreateFilterable(mixed $validFilterable): void
     {
         $filterable = new Filterable($validFilterable);
 

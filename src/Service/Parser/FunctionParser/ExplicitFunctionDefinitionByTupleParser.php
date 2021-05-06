@@ -7,22 +7,16 @@ use MF\Collection\Immutable\Tuple;
 
 class ExplicitFunctionDefinitionByTupleParser extends AbstractFunctionParser
 {
-    /**
-     * @param string|array $rawValue Raw value from query parameters
-     */
-    public function supportsParameters(array $queryParameters, string $rawColumn, $rawValue): bool
+    public function supportsParameters(array $queryParameters, string $rawColumn, string|array $rawValue): bool
     {
         return $this->isTuple($rawColumn) && Tuple::parse($rawColumn)->first() === Column::FUNCTION;
     }
 
-    /**
-     * @param string|array $rawValue Raw value from query parameters
-     */
-    protected function parseParameters(array $queryParameters, string $rawColumn, $rawValue): iterable
+    protected function parseParameters(array $queryParameters, string $rawColumn, string|array $rawValue): iterable
     {
         $rawValue = $this->validateTupleValue($rawValue, self::ERROR_FUNCTION_DEFINITION_BY_TUPLE_WITHOUT_TUPLE_VALUES);
         $columns = Tuple::parse($rawColumn)->toArray();
-        $values = Tuple::parse($rawValue, count($columns))->toArray();
+        $values = $this->parseRawValueFromTuple($rawValue, count($columns));
 
         array_shift($columns);  // just get rid of the first parameter
         $functionName = array_shift($values);

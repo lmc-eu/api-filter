@@ -68,7 +68,7 @@ class FunctionInFilterParameterParserTest extends AbstractFunctionParserTestCase
                     ['firstName', 'function_parameter', 'Jon'],
                     ['surname', 'function_parameter', 'Snow'],
                     ['adult', 'function', 'callable'],
-                    ['ageFrom', 'function_parameter', 18],
+                    ['ageFrom', 'function_parameter', '18'],
                 ],
             ],
         ];
@@ -91,11 +91,32 @@ class FunctionInFilterParameterParserTest extends AbstractFunctionParserTestCase
 
     /**
      * @test
-     * @dataProvider provideInvalidValue
-     *
-     * @param mixed $value
+     * @dataProvider provideUnsupportedValue
      */
-    public function shouldNotParseFunctionByInvalidValue($value, string $expectedMessage): void
+    public function shouldNotParseFunctionByTypeError(mixed $value, string $expectedMessage): void
+    {
+        $queryParameters = ['filter' => $value];
+
+        $this->expectException(\TypeError::class);
+
+        $this->parseQueryParameters($queryParameters);
+    }
+
+    public function provideUnsupportedValue(): array
+    {
+        return [
+            // value, expectedMessage
+            // - invalid type
+            'null' => [null, 'Filter parameter must have functions in array of in string with Tuple.'],
+            'int' => [42, 'Filter parameter must have functions in array of in string with Tuple.'],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider provideInvalidValue
+     */
+    public function shouldNotParseFunctionByInvalidValue(mixed $value, string $expectedMessage): void
     {
         $queryParameters = ['filter' => $value];
 
@@ -110,8 +131,6 @@ class FunctionInFilterParameterParserTest extends AbstractFunctionParserTestCase
         return [
             // value, expectedMessage
             // - invalid type
-            'null' => [null, 'Filter parameter must have functions in array of in string with Tuple.'],
-            'int' => [42, 'Filter parameter must have functions in array of in string with Tuple.'],
             'string' => ['just string', 'Filter parameter must have functions in array of in string with Tuple.'],
             'null in array' => [[null], 'All values in filter column must be Tuples.'],
             'int in array' => [[42], 'All values in filter column must be Tuples.'],
