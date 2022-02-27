@@ -26,9 +26,9 @@ class ApiFilter
     private FilterApplicator $applicator;
     private FunctionCreator $functionCreator;
 
-    public function __construct()
+    public function __construct(?FilterFactory $filterFactory = null)
     {
-        $filterFactory = new FilterFactory();
+        $filterFactory = $filterFactory ?? new FilterFactory();
         $this->functions = new Functions();
         $this->parser = new QueryParametersParser($filterFactory, $this->functions);
         $this->applicator = new FilterApplicator($this->functions);
